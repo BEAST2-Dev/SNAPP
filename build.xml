@@ -1,0 +1,123 @@
+<!-- Build SnAP. It is also used by Hudson SnAP project. JUnit test is available for this build. -->
+<project basedir="." default="build_all_SnAP" name="BUILD_SnAP">
+	<description>
+	    Build SnAP. 
+            Also used by Hudson SnAP project. 
+	    JUnit test is available for this build.
+	    $Id: build_SnAP.xml $
+	</description>
+
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="lib" location="lib" />
+	<property name="dist" location="${build}/dist" />
+
+	<property name="main_class_SnAP" value="beast.app.BeastMCMC" />
+	<property name="report"  value="${build}/junitreport"/>
+
+	<path id="classpath">
+		<fileset dir="${lib}" includes="**/*.jar"/>
+	</path>
+
+	<!-- start -->
+	<target name="init">
+		<echo message="${ant.project.name}: ${ant.file}" />
+	</target>
+
+
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+
+	<!-- clean previous build, and then compile Java source code, and Juint test -->
+	<target name="build_all_SnAP" depends="clean,compile-all,junit"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- clean previous build, compile Java source code, and Junit test, and make the snap.jar -->
+	<target name="build_jar_all_SnAP" depends="clean,compile-all,dist_all_SnAP"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- No JUnit Test, clean previous build, compile Java source code, and make the snap.jar -->
+	<target name="build_jar_all_SnAP_NoJUnitTest" depends="clean,compile-all,dist_all_SnAP"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- compile Java source code -->
+	<target name="compile-all" depends="init">
+		<mkdir dir="${build}" />
+
+		<!-- Compile the java code from ${src} into ${build} /bin -->
+		<javac srcdir="${src}" destdir="${build}" classpathref="classpath" 
+		       fork="true"
+		       memoryinitialsize="256m"
+		       memorymaximumsize="256m">
+			<include name="snap/**/**" />
+			<!-- compile JUnit test classes -->
+			<include name="test/snap/**" />
+		</javac>
+		<echo message="Successfully compiled." />
+	</target>
+
+	<!-- make the snap.jar and beauti.jar -->
+	<target name="dist_all_SnAP" depends="compile-all" description="create SnAP jar">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}" />
+
+		<!-- Put everything in ${build} into the snap.jar file -->
+		<jar jarfile="${dist}/snap.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${main_class_SnAP}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="snap/**/*.class" />
+			</fileset>
+			<zipgroupfileset dir="${lib}" includes="mtj.jar" />
+			<zipgroupfileset dir="${lib}" includes="beast.jar" />
+		</jar>
+		<jar jarfile="${dist}/snap.src.jar">
+			<fileset dir="${src}">
+				<include name="snap/**/*.java" />
+				<include name="snap/**/*.png" />
+				<include name="snap/**/*.xsl" />
+			</fileset>
+        </jar>
+	</target>
+
+	<!-- run snap.jar -->
+	<target name="run_SnAP">
+		<java jar="${dist}/snap.jar" fork="true" />
+	</target>
+
+	
+	<!-- JUnit test -->
+	<target name="junit">
+		<mkdir dir="${report}" />
+		<junit printsummary="yes">
+			<classpath>
+				<path refid="classpath" />
+				<path location="${build}" />
+			</classpath>
+
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${report}">
+				<fileset dir="${src}">
+                    <include name="test/**/*Test.java"/>                                         
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="JUnit test finished." />
+	</target>
+    
+    <target name="junitreport">
+		<junitreport todir="${report}">
+			<fileset dir="${report}" includes="*.xml"/>
+			<report format="frames" todir="${report}"/>
+		</junitreport>
+		<echo message="JUnit test report finished." />
+	</target>
+</project>
