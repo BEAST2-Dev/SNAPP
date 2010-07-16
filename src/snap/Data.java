@@ -34,7 +34,14 @@ import beast.core.Description;
  "constant sites, but with zero weight. The likelihood calculator "+
  "deals with these different sites.")
 public class Data extends beast.evolution.alignment.Alignment {
-	
+
+	public int getPatternWeight(int id) {
+		if (id < m_nWeight.length) {
+			return m_nWeight[id];
+		}
+		return 0;
+	}
+
 	/** check whether a pattern is all red or all green **/
 	private boolean isConstant(int iSite) {
 		int nTaxa = m_counts.size();
