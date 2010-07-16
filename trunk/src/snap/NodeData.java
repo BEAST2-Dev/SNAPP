@@ -178,38 +178,8 @@ public class NodeData extends Node implements Serializable  {
 	}
 
 	public String getNewickMetaData() {
-		return "[gamma=" + gamma() + ']';
+		return "[theta=" + 2.0/gamma() + ']';
 	}
-
-		
-//		return (NodeData) this.clone();
-//			if (this!=data) {
-//				data = (NodeData) this.clone();
-//				/*
-//				Phylib::basic_newick::copy(data);
-//				resize(data.n);
-//				nspecies = data.nspecies;
-//				set_gamma(data.gamma());
-//				std::copy(data.Nb.begin(),data.Nb.end(),Nb.begin());
-//				std::copy(data.Nt.begin(),data.Nt.end(),Nt.begin());
-//
-//				for(uint i=0;i<F.size();i++)
-//					std::copy(data.F[i].begin(),data.F[i].end(),F[i].begin());
-//				*/
-//			}
-//		}
-
-
-/*
-		NodeData operator=(NodeData& data) {
-			copy(data);
-			return *this;
-		}
-*/		
-
-
-
-
 
 	public void resizeF(int n) {
 		m_Fb.resize(n);
