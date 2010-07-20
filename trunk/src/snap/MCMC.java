@@ -83,6 +83,7 @@ public class MCMC extends beast.core.MCMC {
 				
 				//State proposedState = state.copy();
 	        	state.store();
+	        	posteriorInput.get().store(iSample);
 				Operator operator = operatorSet.selectOperator();
 				double fLogHastingsRatio = operator.proposal(state);
 				if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
@@ -100,6 +101,7 @@ public class MCMC extends beast.core.MCMC {
 					} else {
 						m_stateDistribution.get().restore(iSample);
 			        	state.restore();
+			        	posteriorInput.get().restore(iSample);
 	                    restoreCachables(iSample);
 					}
 				}
