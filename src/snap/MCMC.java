@@ -41,8 +41,8 @@ public class MCMC extends beast.core.MCMC {
 	List<Integer> m_gammas;
 	
 	@Override
-	public void initAndValidate(State state) throws Exception {
-		super.initAndValidate(state);
+	public void initAndValidate() throws Exception {
+		super.initAndValidate();
 		if (m_oStateBurnIn.get() > 0) {
 			if (m_stateDistribution.get() == null) {
 				throw new Exception("stateBurnin is larger than zero, but stateUncertainty not specified");
@@ -85,7 +85,7 @@ public class MCMC extends beast.core.MCMC {
 	        	state.store();
 	        	posteriorInput.get().store(iSample);
 				Operator operator = operatorSet.selectOperator();
-				double fLogHastingsRatio = operator.proposal(state);
+				double fLogHastingsRatio = operator.proposal();
 				if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 					storeCachables(iSample);
 					m_stateDistribution.get().store(iSample);
@@ -128,7 +128,7 @@ public class MCMC extends beast.core.MCMC {
 				h++;
 				//proposedState.makeDirty(State.IS_GORED);
 			}
-			double fLogHastingsRatio = operator.proposal(state);
+			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				//System.out.print("store ");
 				storeCachables(iSample);

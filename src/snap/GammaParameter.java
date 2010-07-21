@@ -29,7 +29,6 @@ package snap;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
@@ -44,7 +43,7 @@ public class GammaParameter extends RealParameter {
 
 
 	@Override
-	public void initAndValidate(State state) throws Exception {
+	public void initAndValidate() throws Exception {
 		Tree tree = m_pTree.get();
 		
 		if (m_bInitFromTree.get() == true) {

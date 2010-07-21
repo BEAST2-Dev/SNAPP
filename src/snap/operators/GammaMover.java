@@ -25,11 +25,11 @@
  */
 package snap.operators;
 
+
 import snap.GammaParameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.State;
 import beast.util.Randomizer;
 
 @Description("Scales single value in gamma parameter.")
@@ -38,18 +38,16 @@ public class GammaMover extends Operator {
 	public Input<Double> m_pScaleGamma = new Input<Double>("pGammaMove", "scale of move");
 
 	double m_fScale;
-	int m_nGamma = -1;
 
 	@Override
-	public void initAndValidate(State state) {
-		m_nGamma = m_pGamma.get().getIndex(state);
+	public void initAndValidate() {
 		m_fScale = m_pScaleGamma.get();
 	}
 	
 	
 	@Override
-	public double proposal(State state) throws Exception {
-		GammaParameter gamma = (GammaParameter) state.getStateNode(m_nGamma);
+	public double proposal() throws Exception {
+		GammaParameter gamma = m_pGamma.get(this);
 		int whichNode = Randomizer.nextInt(gamma.getDimension());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
