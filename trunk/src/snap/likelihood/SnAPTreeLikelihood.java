@@ -68,7 +68,7 @@ public class SnAPTreeLikelihood extends Distribution {
     
     //public SSSTreeLikelihood(Data patternList, State state) {
     @Override
-    public void initAndValidate(State state) {
+    public void initAndValidate() {
     	m_data = m_pData.get();
     	if ( BeastMCMC.m_nThreads == 1) {
     		m_core = new SnAPLikelihoodCore(m_pTree.get().getRoot(), m_pData.get());

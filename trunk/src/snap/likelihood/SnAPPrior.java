@@ -58,11 +58,7 @@ public class SnAPPrior extends Distribution {
 	public SnAPPrior() {
 	}
 	
-	int m_nTreeID = -1;
-	public void initAndValidate(State state) {
-		if (m_nTreeID < 0) {
-			m_nTreeID = ((Tree)state.getStateNode(m_pTree)).getIndex(state);
-		}
+	public void initAndValidate() {
 	}
 	
 

@@ -26,9 +26,9 @@
 package snap.operators;
 
 
+
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -47,19 +47,17 @@ public class NodeBudger extends NodeSwapper {
 //	}
 
 	@Override
-	public void initAndValidate(State state) {
-		m_nTreeID = m_pTree.get().getIndex(state);
-		m_nNodeCount = ((Tree) state.getStateNode(m_nTreeID)).getNodeCount();
+	public void initAndValidate() {
+		m_nNodeCount = m_pTree.get().getNodeCount();
 		m_fWindowSize = m_pWindowSize.get();
 	}
-
-	int m_nTreeID = -1;
 	
 	@Override
-	public double proposal(State state) throws Exception {
+	public double proposal() throws Exception {
 		double hastingsRatio = 1.0;
 		Node [] nodes = new Node[m_nNodeCount];
-		registerNodes(nodes, ((Tree) state.getStateNode(m_nTreeID)).getRoot());
+		Tree tree = m_pTree.get(this);
+		registerNodes(nodes, tree.getRoot());
 
 		//Choose a random node internal node 
 		int whichNode = m_nNodeCount/2 + 1 + Randomizer.nextInt(m_nNodeCount/2 - 1);

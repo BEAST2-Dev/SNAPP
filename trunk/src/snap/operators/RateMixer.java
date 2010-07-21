@@ -29,7 +29,6 @@ import snap.GammaParameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.State;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
@@ -41,21 +40,15 @@ public class RateMixer extends Operator {
 	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 	
 	@Override
-	public void initAndValidate(State state) {
-		m_nGamma = m_pGamma.get().getIndex(state);
+	public void initAndValidate() {
 		m_fMixGamma = m_pScale.get();
-		m_nTreeID = ((Tree)state.getStateNode(m_pTree)).getIndex(state);
 	}
 
 	double m_fMixGamma;
-	int m_nGamma = -1;
-	int m_nTreeID = -1;
-//	public RateMixer(double f) {
-//		m_fMixGamma = f;
-//	}
+
 	@Override
-	public double proposal(State state) throws Exception {
-		GammaParameter gamma = (GammaParameter)state.getStateNode(m_nGamma);
+	public double proposal() throws Exception {
+		GammaParameter gamma = m_pGamma.get(this);
 
 		double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
 		//state.mulValues(scale, gamma);
@@ -63,7 +56,8 @@ public class RateMixer extends Operator {
 			gamma.setValue(i, gamma.getValue(i) * scale);
 		}
 		//gamma.mulValues(scale);
-		((Tree)state.getStateNode(m_nTreeID)).getRoot().scale(1/scale);
+		Tree tree = m_pTree.get(this);
+		tree.getRoot().scale(1/scale);
 
 		return Math.log(scale);
 	}
