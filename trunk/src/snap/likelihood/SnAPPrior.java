@@ -80,12 +80,13 @@ public class SnAPPrior extends Distribution {
 		double heightsum = tree.getRoot().getHeight(); 
 		heightsum += heightSum(tree.getRoot()); 
 
-		int nspecies = tree.getNodeCount()/2+1;
+		int nspecies = (tree.getNodeCount() + 1) / 2;
 		double lambda = m_pLambda.get().getValue();
 		double alpha = m_pAlpha.get().getValue();
 		double beta = m_pBeta.get().getValue();
 		// note: nspecies-2, not nspecies-1
-		logP += (nspecies-2)*Math.log(lambda) - lambda*heightsum;
+		// SHOULD BE -1 not -2?!?
+		logP += (nspecies-1)*Math.log(lambda) - lambda*heightsum;
 
 		//Gamma values in tree
 		RealParameter gamma = m_pGamma.get();
@@ -93,9 +94,6 @@ public class SnAPPrior extends Distribution {
 		//	We assume that theta has a gamma (alpha,beta) distribution, so that
 		//the gamma parameter has 2/gamma(alpha,beta) distribution
 		for (int iNode = 0; iNode < gamma.getDimension(); iNode++) {
-//			if (gamma[iNode] < 5.0) {
-//				return Double.NEGATIVE_INFINITY;
-//			}
 			double x = 2.0/gamma.getValue(iNode);
 			logP += (alpha - 1.0)*Math.log(x) - (beta * x);
 		}
