@@ -264,7 +264,7 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	numberAttemptsTotal = 0;
 	
 	for(int i=0;i<nSites;i++) {
-		simulateSingleSite(simTree, u, v, sampleSizes, redCounts[i],false,numberAttempts, outputTrees);
+		simulateSingleSite(simTree, u, v, sampleSizes, redCounts[i], rejectConstant,numberAttempts, outputTrees);
 		numberAttemptsTotal+=numberAttempts;
 	}
 	
