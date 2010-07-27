@@ -1,0 +1,129 @@
+// !$*UTF8*$!
+{
+	B50DFAB3104E0B3800F1F4FB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B5CC1E450FDF2CC6002E9F52 /* phylo_util.h */;
+		name = "phylo_util.h: 95";
+		rLen = 0;
+		rLoc = 2695;
+		rType = 0;
+		vrLen = 1240;
+		vrLoc = 2301;
+	};
+	B50DFAB5104E0B3800F1F4FB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B5CC1E450FDF2CC6002E9F52 /* phylo_util.h */;
+		name = "phylo_util.h: 95";
+		rLen = 0;
+		rLoc = 2695;
+		rType = 0;
+		vrLen = 1240;
+		vrLoc = 2301;
+	};
+	B50DFAB6104E0B3800F1F4FB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B5CC1E420FDF2CC6002E9F52 /* phylo.h */;
+		name = "phylo.h: 910";
+		rLen = 43;
+		rLoc = 26147;
+		rType = 0;
+		vrLen = 1836;
+		vrLoc = 23842;
+	};
+	B50DFAC1104E0C7B00F1F4FB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B5CC1E420FDF2CC6002E9F52 /* phylo.h */;
+		name = "phylo.h: 910";
+		rLen = 43;
+		rLoc = 26147;
+		rType = 0;
+		vrLen = 1865;
+		vrLoc = 23813;
+	};
+	B5CC1DF50FDF2B9C002E9F52 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		addToTargets = (
+		);
+		breakpoints = (
+		);
+		codeSenseManager = B5CC1DFA0FDF2B9C002E9F52 /* Code sense */;
+		ignoreBreakpointsInProjectsDict = {
+		};
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					735,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 273550449;
+			PBXWorkspaceStateSaveDate = 273550449;
+		};
+		perUserProjectItems = {
+			B50DFAB3104E0B3800F1F4FB /* PBXTextBookmark */ = B50DFAB3104E0B3800F1F4FB /* PBXTextBookmark */;
+			B50DFAB5104E0B3800F1F4FB /* PBXTextBookmark */ = B50DFAB5104E0B3800F1F4FB /* PBXTextBookmark */;
+			B50DFAB6104E0B3800F1F4FB /* PBXTextBookmark */ = B50DFAB6104E0B3800F1F4FB /* PBXTextBookmark */;
+			B50DFAC1104E0C7B00F1F4FB /* PBXTextBookmark */ = B50DFAC1104E0C7B00F1F4FB /* PBXTextBookmark */;
+		};
+		sourceControlManager = B5CC1DF90FDF2B9C002E9F52 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	B5CC1DF90FDF2B9C002E9F52 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryName = "University of Auckland";
+		};
+	};
+	B5CC1DFA0FDF2B9C002E9F52 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	B5CC1E420FDF2CC6002E9F52 /* phylo.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {918, 15022}}";
+			sepNavSelRange = "{26147, 43}";
+			sepNavVisRange = "{23813, 1865}";
+		};
+	};
+	B5CC1E430FDF2CC6002E9F52 /* phylo_io.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {913, 4270}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 633}";
+		};
+	};
+	B5CC1E440FDF2CC6002E9F52 /* phylo_sim.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {913, 2100}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1016}";
+		};
+	};
+	B5CC1E450FDF2CC6002E9F52 /* phylo_util.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1110, 3528}}";
+			sepNavSelRange = "{3014, 0}";
+			sepNavVisRange = "{1853, 1869}";
+			sepNavWindowFrame = "{{781, 197}, {1169, 958}}";
+		};
+	};
+}

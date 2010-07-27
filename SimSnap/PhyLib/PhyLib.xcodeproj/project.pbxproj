@@ -1,0 +1,115 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXFileReference section */
+		B5CC1E3D0FDF2CC6002E9F52 /* stdIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stdIncludes.h; path = global/stdIncludes.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E3E0FDF2CC6002E9F52 /* phylib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phylib.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E400FDF2CC6002E9F52 /* memman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memman.h; path = trees/memman.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E420FDF2CC6002E9F52 /* phylo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phylo.h; path = trees/phylo.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E430FDF2CC6002E9F52 /* phylo_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phylo_io.h; path = trees/phylo_io.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E440FDF2CC6002E9F52 /* phylo_sim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phylo_sim.h; path = trees/phylo_sim.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E450FDF2CC6002E9F52 /* phylo_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phylo_util.h; path = trees/phylo_util.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E470FDF2CC6002E9F52 /* optimisation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = optimisation.h; path = utilities/optimisation.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E480FDF2CC6002E9F52 /* optimiser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = optimiser.h; path = utilities/optimiser.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E490FDF2CC6002E9F52 /* phylibException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = phylibException.h; path = utilities/phylibException.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E4A0FDF2CC6002E9F52 /* praxis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = praxis.h; path = utilities/praxis.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E4B0FDF2CC6002E9F52 /* random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = random.h; path = utilities/random.h; sourceTree = SOURCE_ROOT; };
+		B5CC1E4C0FDF2CC6002E9F52 /* sorting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sorting.h; path = utilities/sorting.h; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		B5CC1DF30FDF2B9C002E9F52 = {
+			isa = PBXGroup;
+			children = (
+				B5CC1E3C0FDF2CC6002E9F52 /* global */,
+				B5CC1E3E0FDF2CC6002E9F52 /* phylib.h */,
+				B5CC1E3F0FDF2CC6002E9F52 /* trees */,
+				B5CC1E460FDF2CC6002E9F52 /* utilities */,
+			);
+			sourceTree = "<group>";
+		};
+		B5CC1E3C0FDF2CC6002E9F52 /* global */ = {
+			isa = PBXGroup;
+			children = (
+				B5CC1E3D0FDF2CC6002E9F52 /* stdIncludes.h */,
+			);
+			path = global;
+			sourceTree = SOURCE_ROOT;
+		};
+		B5CC1E3F0FDF2CC6002E9F52 /* trees */ = {
+			isa = PBXGroup;
+			children = (
+				B5CC1E400FDF2CC6002E9F52 /* memman.h */,
+				B5CC1E420FDF2CC6002E9F52 /* phylo.h */,
+				B5CC1E430FDF2CC6002E9F52 /* phylo_io.h */,
+				B5CC1E440FDF2CC6002E9F52 /* phylo_sim.h */,
+				B5CC1E450FDF2CC6002E9F52 /* phylo_util.h */,
+			);
+			path = trees;
+			sourceTree = SOURCE_ROOT;
+		};
+		B5CC1E460FDF2CC6002E9F52 /* utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B5CC1E470FDF2CC6002E9F52 /* optimisation.h */,
+				B5CC1E480FDF2CC6002E9F52 /* optimiser.h */,
+				B5CC1E490FDF2CC6002E9F52 /* phylibException.h */,
+				B5CC1E4A0FDF2CC6002E9F52 /* praxis.h */,
+				B5CC1E4B0FDF2CC6002E9F52 /* random.h */,
+				B5CC1E4C0FDF2CC6002E9F52 /* sorting.h */,
+			);
+			path = utilities;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		B5CC1DF50FDF2B9C002E9F52 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = B5CC1DF80FDF2B9C002E9F52 /* Build configuration list for PBXProject "PhyLib" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 0;
+			mainGroup = B5CC1DF30FDF2B9C002E9F52;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		B5CC1DF60FDF2B9C002E9F52 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		B5CC1DF70FDF2B9C002E9F52 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B5CC1DF80FDF2B9C002E9F52 /* Build configuration list for PBXProject "PhyLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5CC1DF60FDF2B9C002E9F52 /* Debug */,
+				B5CC1DF70FDF2B9C002E9F52 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B5CC1DF50FDF2B9C002E9F52 /* Project object */;
+}
