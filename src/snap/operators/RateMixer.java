@@ -25,6 +25,7 @@
  */
 package snap.operators;
 
+
 import snap.GammaParameter;
 import beast.core.Description;
 import beast.core.Input;
@@ -50,7 +51,8 @@ public class RateMixer extends Operator {
 	public double proposal() throws Exception {
 		GammaParameter gamma = m_pGamma.get(this);
 
-		double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
+		//double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
+        double scale = (m_fMixGamma + (Randomizer.nextDouble() * ((1.0 / m_fMixGamma) - m_fMixGamma)));
 		//state.mulValues(scale, gamma);
 		for (int i = 0; i < gamma.getDimension(); i++) {
 			gamma.setValue(i, gamma.getValue(i) * scale);
@@ -59,7 +61,7 @@ public class RateMixer extends Operator {
 		Tree tree = m_pTree.get(this);
 		tree.getRoot().scale(1/scale);
 
-		return Math.log(scale);
+		return -Math.log(scale) * (gamma.getDimension() + (tree.getNodeCount()-1)/2 - 1);
 	}
 
 	/** automatic parameter tuning **/
