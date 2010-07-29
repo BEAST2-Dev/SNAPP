@@ -1,0 +1,129 @@
+<!-- Generated with SimSnap -->
+<!-- -->
+<!-- input tree: (((0[0.01]:0.01,1[0.01]:0.01)[0.01]:0.01,(2[0.01]:0.01,3[0.01]:0.01)[0.01]:0.01)[0.01]:0.02,(4[0.01]:0.03,(5[0.01]:0.02,(6[0.01]:0.01,7[0.01]:0.01)[0.01]:0.01)[0.01]:0.01)[0.01]:0.01)[0.01];-->
+<snap version='2.0' namespace='snap:beast.util'>
+
+<map name='snapprior'>snap.likelihood.SnAPPrior</map>
+<map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
+
+
+
+	<!-- n = 100 -->
+	<data id='alignment' dataType='integerdata' statecount='3'>
+		<sequence taxon='A' totalcount='2'>
+2,0,2,2,2,0,2,2,2,0,2,2,2,2,2,0,0,2,0,0,0,0,1,2,2,0,2,0,0,2,2,0,2,0,0,2,2,2,2,0,2,0,0,2,0,2,2,1,2,2,0,2,2,0,0,0,0,2,2,0,2,0,0,0,0,1,0,0,0,2,0,2,0,0,0,0,0,0,2,0,0,2,0,2,0,2,0,2,2,2,0,0,2,0,2,2,0,2,2,0,
+		</sequence>
+		<sequence taxon='B' totalcount='2'>
+2,2,2,2,2,0,2,2,2,0,2,2,1,2,2,0,0,2,0,0,0,1,0,2,2,0,2,0,0,2,2,0,2,0,0,2,2,2,2,0,2,0,0,2,0,2,2,2,2,2,0,2,0,0,0,0,0,2,2,0,0,0,0,0,2,2,1,0,0,2,0,0,0,0,0,0,0,2,2,0,0,2,2,0,2,2,0,2,2,0,2,0,2,0,2,2,0,2,2,0,
+		</sequence>
+		<sequence taxon='C' totalcount='2'>
+2,0,2,2,2,0,2,2,2,0,2,2,2,2,0,0,2,2,0,0,0,0,2,2,2,0,2,0,0,0,0,0,2,0,0,0,0,2,2,0,2,0,0,1,0,2,2,2,2,0,1,2,2,0,0,0,2,2,2,0,0,0,0,0,2,2,0,0,0,2,1,0,0,0,0,2,0,0,2,0,2,2,0,2,2,2,0,2,2,0,2,0,2,0,2,2,0,1,0,2,
+		</sequence>
+		<sequence taxon='D' totalcount='2'>
+2,0,2,2,2,0,1,2,2,0,2,2,2,2,0,0,2,0,0,0,0,0,2,2,2,0,1,0,2,0,2,0,1,2,0,0,0,2,2,0,2,0,2,2,0,1,2,2,2,0,0,2,2,0,0,0,2,2,1,0,0,0,0,0,2,0,0,0,0,2,0,0,0,0,0,0,2,0,2,0,1,2,0,2,2,2,0,2,2,0,2,2,2,0,2,2,1,2,2,2,
+		</sequence>
+		<sequence taxon='E' totalcount='2'>
+0,0,2,2,0,2,2,2,0,1,2,2,2,2,2,0,2,2,0,0,2,0,2,1,2,0,2,0,0,0,2,0,0,0,2,2,2,2,2,2,0,0,0,2,2,2,2,2,2,2,0,0,2,2,0,1,0,2,2,0,0,0,0,0,2,2,0,0,0,2,0,0,2,1,2,0,0,0,2,2,0,2,0,2,2,2,0,0,2,0,2,0,0,0,2,2,0,2,2,0,
+		</sequence>
+		<sequence taxon='F' totalcount='2'>
+0,0,0,2,0,2,2,2,0,0,2,2,0,2,2,2,2,2,0,0,0,0,2,2,2,0,2,0,0,0,2,2,0,0,0,2,2,2,2,0,2,0,0,2,2,2,1,2,2,2,0,2,2,0,2,0,2,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,2,0,2,0,0,0,2,2,0,0,0,2,2,2,0,2,0,0,2,0,0,0,0,1,0,0,2,0,
+		</sequence>
+		<sequence taxon='G' totalcount='2'>
+0,0,2,0,0,2,2,2,0,0,0,0,0,1,2,2,2,2,2,1,0,0,2,2,0,2,2,2,0,0,2,0,0,2,0,2,2,2,0,0,2,2,0,2,2,2,2,2,1,2,0,2,2,0,0,0,2,2,2,0,0,0,0,1,2,0,0,0,1,0,0,0,2,0,2,0,0,0,0,2,0,0,0,2,2,2,0,2,0,0,2,0,0,1,2,2,0,0,2,0,
+		</sequence>
+		<sequence taxon='H' totalcount='2'>
+0,0,2,2,0,2,2,0,0,0,2,2,0,0,2,2,2,2,0,0,0,0,2,2,2,2,2,0,0,0,2,0,0,0,0,2,2,0,0,0,2,0,0,2,2,2,2,2,2,2,0,2,2,0,0,0,2,2,2,2,0,2,2,0,2,0,0,0,0,0,0,0,2,0,2,0,0,0,2,2,1,0,0,2,2,1,2,2,0,0,2,0,0,0,2,2,0,0,2,0,
+		</sequence>
+	</data>
+
+
+
+<run id='mcmc' spec='snap.MCMC' chainLength='100000' preBurnin='0' stateBurnin='100000'>
+        <state>
+          <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10'>
+            <tree idref='tree'/>
+          </stateNode>
+
+          <parameter name='stateNode' id='v' value='1' lower='0.0'/>
+          <parameter name='stateNode' id='u' value='1' lower='0.0'/>
+          <parameter name='stateNode' id='alpha'  value='2' lower='0.0'/>
+          <parameter name='stateNode' id='beta'   value='200' lower='0.0'/>
+          <parameter name='stateNode' id='lambda' value='10' lower='0.0'/>
+
+          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>
+               <input name='taxa' idref='alignment'/>
+          </tree>
+        </state>
+
+        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>
+ 	    <snapprior name='distribution' id='prior'>
+	        <input name='alpha' idref='alpha'/>
+    		<input name='beta' idref='beta'/>
+	    	<input name='lambda' idref='lambda'/>
+	        <input name='gamma' idref='gamma'/>
+		<input name='tree' idref='tree'/>
+            </snapprior>
+            <snaptreelikelihood name='distribution' id='treeLikelihood'>
+                <input name='data' idref='alignment'/>
+                <input name='tree' idref='tree'/>
+                <input name='mutationRateU' idref='u'/>
+                <input name='mutationRateV' idref='v'/>
+            </snaptreelikelihood>
+        </distribution>
+
+        <stateDistribution idref='prior'/>
+
+    	<operator spec='operators.NodeSwapper' weight='0.5'>
+	        <tree name='tree' idref='tree'/>
+    	</operator>
+        <operator spec='operators.NodeBudger' weight='0.5' size='0.5'>
+            <tree name='tree' idref='tree'/>
+        </operator>
+	    <operator spec='beast.evolution.operators.ScaleOperator' scaleFactor='0.25' weight='0.5'>
+	        <tree name='tree' idref='tree'/>
+    	</operator>
+        <operator spec='operators.GammaMover' pGammaMove='0.5' weight='8'>
+	        <parameter name='gamma' idref='gamma'/>
+        </operator>
+        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>
+	        <tree name='tree' idref='tree'/>
+	        <parameter name='gamma' idref='gamma'/>
+        </operator>
+
+        <log logEvery='100'>
+	    <model idref='posterior'/>
+            <parameter name='log' idref='u'/>
+            <parameter name='log' idref='v'/>
+            <distribution name='log' idref='prior'/>
+            <distribution name='log' idref='treeLikelihood'/>
+            <distribution name='log' idref='posterior'/>
+	    <parameter name='log' idref='gamma'/>
+	    <log spec='snap.ThetaLogger'>
+		<gamma idref='gamma'/>
+	    </log>
+	    <log spec='beast.evolution.tree.TreeHeightLogger'>
+		<tree idref='tree'/>
+	    </log>
+        </log>
+        <log logEvery='100' fileName='test.$(seed).log'>
+	    <model idref='posterior'/>
+            <parameter name='log' idref='u'/>
+            <parameter name='log' idref='v'/>
+            <distribution name='log' idref='prior'/>
+            <distribution name='log' idref='treeLikelihood'/>
+            <distribution name='log' idref='posterior'/>
+	    <parameter name='log' idref='gamma'/>
+	    <log spec='snap.ThetaLogger'>
+		<gamma idref='gamma'/>
+	    </log>
+	    <log spec='beast.evolution.tree.TreeHeightLogger'>
+		<tree idref='tree'/>
+	    </log>
+        </log>
+        <log logEvery='100' fileName='test.$(seed).trees'>
+            <tree name='log' idref='tree'/>
+        </log>
+</run>
+
+
+</snap>
