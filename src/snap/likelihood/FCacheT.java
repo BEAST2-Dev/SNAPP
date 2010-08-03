@@ -106,7 +106,7 @@ public class FCacheT extends FCache {
 					// in case antoher thread got here first
 					return getBottomOfBrancheF(nCacheID1, nCacheID2, u1, u2, parent);
 				}
-				nodeCache2 = new Vector<CacheObject2>();
+				nodeCache2 = new Vector<CacheObject2>(1024,128);
 			}
 			m_BottomOfBranche.set(nCacheID1, nodeCache2);
 			// not in cache, try to fetch from cache with IDs swapped

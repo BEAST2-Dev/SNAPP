@@ -67,16 +67,17 @@ public class FCache {
 	@SuppressWarnings("unchecked")
 	public FCache(int nNodeNrMax, int nRedsMax) {
 		m_leafCache = new CacheObject[nNodeNrMax][nRedsMax];
-		m_TopOfBranche = new Vector<CacheObject>();
+		m_TopOfBranche = new Vector<CacheObject>(1024,128);
 		m_TopOfBrancheID = new Vector[nNodeNrMax];
 		for (int i = 0; i < nNodeNrMax; i++) {
-			m_TopOfBrancheID[i] = new Vector<CacheObject>();
+			m_TopOfBrancheID[i] = new Vector<CacheObject>(1024,128);
 		}
-		m_BottomOfBranche = new Vector<Vector<CacheObject2>>();
+		m_BottomOfBranche = new Vector<Vector<CacheObject2>>(1024,128);
 		m_BottomOfBrancheID = new Vector[nNodeNrMax];
 		for (int i = 0; i < nNodeNrMax; i++) {
-			m_BottomOfBrancheID[i] = new Vector<CacheObject2>();
+			m_BottomOfBrancheID[i] = new Vector<CacheObject2>(1024,128);
 		}
+		g_nID = 0;
 	} //c'tor
 
 	/** remove all elements from cache **/
@@ -92,6 +93,7 @@ public class FCache {
 		for (int iNode = 0; iNode < m_BottomOfBrancheID.length; iNode++) {
 			clearNode(iNode);
 		}
+		g_nID = 0;
 	} // clear
 
 	public void clearNode(int iNode) {
@@ -159,7 +161,7 @@ public class FCache {
 		}
 		Vector<CacheObject2> nodeCache2 = m_BottomOfBranche.elementAt(nCacheID1);
 		if (nodeCache2 == null) {
-			nodeCache2 = new Vector<CacheObject2>();
+			nodeCache2 = new Vector<CacheObject2>(1024,128);
 			m_BottomOfBranche.set(nCacheID1, nodeCache2);
 			// not in cache, try to fetch from cache with IDs swapped
 			// TODO: this does not get any hits as long as branch lengths (=t*gamma) are not part of the Key.
