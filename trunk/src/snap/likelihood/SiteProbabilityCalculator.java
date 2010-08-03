@@ -142,7 +142,8 @@ public class SiteProbabilityCalculator {
 	} // doRootLikelihood
 
 
-	static FCache m_cache; 
+	static 
+	FCache m_cache; 
 
 	public static void clearCache(int nNodeNrMax, int nRedsMax) {
 		//m_cache = new FCache(nNodeNrMax, nRedsMax + 1);
