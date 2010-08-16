@@ -46,7 +46,7 @@ public class GammaMover extends Operator {
 	
 	
 	@Override
-	public double proposal() throws Exception {
+	public double proposal() { // throws Exception {
 		GammaParameter gamma = m_pGamma.get(this);
 		int whichNode = Randomizer.nextInt(gamma.getDimension());
 		

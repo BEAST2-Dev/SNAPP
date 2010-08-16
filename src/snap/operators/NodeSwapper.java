@@ -55,7 +55,7 @@ public class NodeSwapper extends Operator {
 		}
 	}
 	@Override
-	public double proposal() throws Exception {
+	public double proposal() { // throws Exception {
 		double hastingsRatio = 1.0;
 		Node [] nodes = new Node[m_nNodeCount];
 		Tree tree = m_pTree.get(this);

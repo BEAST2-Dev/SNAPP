@@ -40,25 +40,30 @@ public class GammaParameter extends RealParameter {
 	
 	public GammaParameter() {
 	}
-
-
+	
+	// do not try this at home: this is here as long as variable Traits are not 
+	// properly handled in Beast II 
+	static Tree m_tree;
+	
 	@Override
 	public void initAndValidate() throws Exception {
-		Tree tree = m_pTree.get();
+		super.initAndValidate();
+		m_tree = m_pTree.get();
 		
 		if (m_bInitFromTree.get() == true) {
-			values = new Double[tree.getNodeCount()];
-			tree.getMetaData(tree.getRoot(), values, m_pPattern.get());
+			values = new Double[m_tree.getNodeCount()];
+			m_tree.getMetaData(m_tree.getRoot(), values, m_pPattern.get());
 			m_nDimension.setValue(new Integer(values.length), this);
 		} else {
-			values = new Double[tree.getNodeCount()];
+			values = new Double[m_tree.getNodeCount()];
 			m_nDimension.setValue(new Integer(values.length), this);
 			for (int i = 0; i < values.length; i++) {
 				values[i] = (Double) m_pValues.get();
 			}
-			tree.setMetaData(tree.getRoot(), values, m_pPattern.get());
+			m_tree.setMetaData(m_tree.getRoot(), values, m_pPattern.get());
 		}
     	m_bIsDirty = new boolean[m_nDimension.get()];
+    	m_pTree.setValue(null, this);
 	}
 	
 	@Override
@@ -78,7 +83,10 @@ public class GammaParameter extends RealParameter {
     }
     
     public void prepare() {
-		syncTree(m_pTree.get().getRoot(), values, m_pPattern.get());
+		//syncTree(m_pTree.get().getRoot(), values, m_pPattern.get());
+    	Tree tree = (Tree)m_tree.getCurrent();
+    	Node node = tree.getRoot();
+		syncTree(node, values, m_pPattern.get());
 	}
     
 	void syncTree(Node node, Double [] fValues, String sPattern) {
@@ -89,16 +97,16 @@ public class GammaParameter extends RealParameter {
 		}
 	}
 
-    public String toString() {
-    	StringBuffer buf = new StringBuffer();
-    	buf.append(m_sID);
-    	buf.append(": ");
-    	for (int i = 0; i < values.length; i++) {
-    		buf.append(values[i] + " ");
-    	}
-		if (m_pTree != null) {
-			buf.append("Associated with " + m_pPattern.get() + " for tree '" + m_pTree.get().getID() + "'");
-		}
-    	return buf.toString();
-    }
+//    public String toString() {
+//    	StringBuffer buf = new StringBuffer();
+//    	buf.append(m_sID);
+//    	buf.append(": ");
+//    	for (int i = 0; i < values.length; i++) {
+//    		buf.append(values[i] + " ");
+//    	}
+//		if (m_pTree != null) {
+//			buf.append("Associated with " + m_pPattern.get() + " for tree '" + m_tree.getID() + "'");
+//		}
+//    	return buf.toString();
+//    }
 }

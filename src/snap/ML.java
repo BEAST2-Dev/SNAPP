@@ -52,7 +52,7 @@ public class ML extends beast.core.MCMC {
 		m_gammas = new ArrayList<Integer>();
 		for (StateNode stateNode: state.stateNode) {
 			if (stateNode instanceof GammaParameter) {
-				m_gammas.add(stateNode.getIndex(state));
+				m_gammas.add(stateNode.index);
 			}
 		}
 	} // init
@@ -60,7 +60,7 @@ public class ML extends beast.core.MCMC {
 
 	public void run() throws Exception {
 		long tStart = System.currentTimeMillis();
-		state.setDirty(true);
+		state.setEverythingDirty(true);
 		
 		int nBurnIn = m_oBurnIn.get();
 		int nChainLength = m_oChainLength.get();
@@ -115,13 +115,13 @@ public class ML extends beast.core.MCMC {
 //		
 		// Go into the main loop
 		boolean bDebug = false;
-		state.setDirty(true);
+		state.setEverythingDirty(true);
 		double fOldLogLikelihood = calc();
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
 			
 			//State proposedState = state.copy();
-        	state.store();
+        	state.store(iSample);
 			Operator operator = operatorSet.selectOperator();
 			if (iSample == 24) {
 				int h = 3;
@@ -131,15 +131,15 @@ public class ML extends beast.core.MCMC {
 			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				//System.out.print("store ");
-				storeCachables(iSample);
+				state.storeCalculationNodes();
 //				proposedState.makeDirty(State.IS_GORED);
 				//System.out.print(operator.getName()+ "\n");
 				//System.err.println(proposedState.toString());
-				if (bDebug) {
+				//if (bDebug) {
 					//System.out.print(operator.getName()+ "\n");
 					//System.err.println(proposedState.toString());
-					state.validate();
-				}			
+					//state.validate();
+				//}			
 				
 				
 				
@@ -148,7 +148,7 @@ public class ML extends beast.core.MCMC {
 	            if (logAlpha>=0) {// || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 					// accept
 					fOldLogLikelihood = fNewLogLikelihood;
-					state.setDirty(false);
+					state.setEverythingDirty(false);
 					if (iSample>=0) {
 						operator.accept();
 					}
@@ -158,8 +158,8 @@ public class ML extends beast.core.MCMC {
 						operator.reject();
 					}
 					state.restore();
-                    state.setDirty(false);
-					restoreCachables(iSample);
+                    state.setEverythingDirty(false);
+                    state.restoreCalculationNodes();
 					//System.out.println("restore ");
 				}
 			} else {
@@ -171,8 +171,8 @@ public class ML extends beast.core.MCMC {
 			log(iSample);
 			
 			if (bDebug) {
-				state.validate();
-				state.setDirty(true);
+				//state.validate();
+				state.setEverythingDirty(true);
 				//System.err.println(m_state.toString());
 				double fLogLikelihood = calc();
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
@@ -185,7 +185,7 @@ public class ML extends beast.core.MCMC {
 				operator.optimize(logAlpha);
 			}
 		}
-		showOperatorRates(System.out);
+		operatorSet.showOperatorRates(System.out);
 		long tEnd = System.currentTimeMillis();
 		System.out.println("Total calculation time: " + (tEnd - tStart)/1000.0 + " seconds");
 		close();

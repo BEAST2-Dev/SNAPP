@@ -64,18 +64,19 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
         </state>
 
         <distribution id="posterior" spec='beast.core.util.CompoundDistribution'>
- 	    <snapprior name='distribution' id='prior'>
-	        <input name='alpha' idref='alpha'/>
-    		<input name='beta' idref='beta'/>
-	    	<input name='lambda' idref='lambda'/>
-	        <input name='gamma' idref='gamma'/>
-		<input name='tree' idref='tree'/>
-            </snapprior>
-            <snaptreelikelihood name='distribution' id='treeLikelihood'>
-                <input name='data' idref='alignment'/>
-                <input name='tree' idref='tree'/>
-                <input name='mutationRateU' idref='u'/>
-                <input name='mutationRateV' idref='v'/>
+     	    <snapprior name='distribution' id='prior'>
+    	        <alpha idref='alpha'/>
+        		<beta idref='beta'/>
+    	    	<lambda idref='lambda'/>
+        		<input name='tree' idref='tree'/>
+       	        <gamma idref='gamma'/>
+             </snapprior>
+             <snaptreelikelihood name='distribution' id='treeLikelihood'>
+                <data idref='alignment'/>
+                <tree idref='tree'/>
+                <mutationRateU idref='u'/>
+                <mutationRateV idref='v'/>
+    	        <gamma idref='gamma'/>
             </snaptreelikelihood>
         </distribution>
 

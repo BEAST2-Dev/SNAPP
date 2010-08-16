@@ -48,7 +48,7 @@ public class RateMixer extends Operator {
 	double m_fMixGamma;
 
 	@Override
-	public double proposal() throws Exception {
+	public double proposal() { // throws Exception {
 		GammaParameter gamma = m_pGamma.get(this);
 
 		//double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
@@ -59,7 +59,11 @@ public class RateMixer extends Operator {
 		}
 		//gamma.mulValues(scale);
 		Tree tree = m_pTree.get(this);
-		tree.getRoot().scale(1/scale);
+		try {
+			tree.getRoot().scale(1/scale);
+		} catch (Exception e) {
+			return Double.NEGATIVE_INFINITY;
+		}
 
 		return -Math.log(scale) * (gamma.getDimension() + (tree.getNodeCount()-1)/2 - 1);
 	}
