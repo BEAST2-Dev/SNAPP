@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.Plugin;
-import beast.core.State;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 
@@ -19,7 +18,7 @@ public class ThetaLogger extends Plugin implements Loggable {
 	
 
 	@Override
-	public void init(State state, PrintStream out) throws Exception {
+	public void init(PrintStream out) throws Exception {
 		RealParameter param = (RealParameter) m_pGamma.get();
         int nValues = param.getDimension();
         if (nValues == 1) {
@@ -32,7 +31,7 @@ public class ThetaLogger extends Plugin implements Loggable {
 	}
 
 	@Override
-	public void log(int nSample, State state, PrintStream out) {
+	public void log(int nSample, PrintStream out) {
         RealParameter var = (RealParameter) m_pGamma.get();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {

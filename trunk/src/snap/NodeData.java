@@ -236,7 +236,12 @@ public class NodeData extends Node implements Serializable  {
 		}
 		return super.getMetaData(sPattern);
 	}
-	
+
+//	@Override
+//	public void assignFromFragile(Node other) {
+//		m_fGamma = ((NodeData)other).m_fGamma;
+//	}
+
 	public String toString() {
 		return toNewick(null);
 	}

@@ -41,6 +41,7 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
+import snap.GammaParameter;
 import snap.NodeData;
 import snap.likelihood.SnAPLikelihoodCore;
 
@@ -57,6 +58,7 @@ public class SnAPTreeLikelihood extends Distribution {
 	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 	public Input<RealParameter> m_pU = new Input<RealParameter>("mutationRateU", "mutation rate from red to green?");
 	public Input<RealParameter> m_pV = new Input<RealParameter>("mutationRateV", "mutation rate from green to red?");
+	public Input<GammaParameter> m_pGamma = new Input<GammaParameter>("gamma", "population size parameter with one value for each node in the tree");
 	
 	
     /**
@@ -98,7 +100,11 @@ public class SnAPTreeLikelihood extends Distribution {
     @Override
     public double calculateLogP() {
     	try {
-	    	NodeData root = (NodeData) m_pTree.get().getRoot();
+    		// get tree, make a copy in the state, just to be sure
+	    	NodeData root = (NodeData) m_pTree.get(null).getRoot();
+	    	// assing gamma values to tree
+	    	m_pGamma.get().prepare();
+	    	
 	    	double u = m_pU.get().getValue();
 	    	double v  = m_pV.get().getValue();
 			boolean useCache = true;
@@ -116,14 +122,14 @@ public class SnAPTreeLikelihood extends Distribution {
     } // calculateLogLikelihood
 
 	@Override
-	public void store(int nSample) {
-    	super.store(nSample);
+	public void store() {
+    	super.store();
     	m_core.m_bReuseCache = true;
     }
 
 	@Override
-    public void restore(int nSample) {
-    	super.restore(nSample);
+    public void restore() {
+    	super.restore();
     	m_core.m_bReuseCache = false;
     }
 

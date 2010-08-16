@@ -38,6 +38,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
 import beast.core.State;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.Node;
@@ -50,11 +51,11 @@ import beast.evolution.tree.Node;
 public class SnAPPrior extends Distribution {
 //	public Input<Parameter> m_pU = new Input<Parameter>("mutationRateU", "mutation rate from red to green?");
     //	public Input<Parameter> m_pV = new Input<Parameter>("mutationRateV", "mutation rate from green to red?");
-    public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "prior parameter -- see docs for details");
-    public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "prior parameter -- see docs for details");
-    public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process");
-    public Input<RealParameter> m_pGamma = new Input<RealParameter>("gamma", "Populations sizes for the nodes in the tree");
-    public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
+    public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "prior parameter -- see docs for details", Validate.REQUIRED);
+    public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "prior parameter -- see docs for details", Validate.REQUIRED);
+    public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process", Validate.REQUIRED);
+    public Input<RealParameter> m_pGamma = new Input<RealParameter>("gamma", "Populations sizes for the nodes in the tree", Validate.REQUIRED);
+    public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations", Validate.REQUIRED);
 
     public SnAPPrior() {
     }
