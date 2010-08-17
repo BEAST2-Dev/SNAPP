@@ -31,7 +31,7 @@
 	</target>
 
 	<!-- clean previous build, and then compile Java source code, and Juint test -->
-	<target name="build_all_SnAP" depends="clean,compile-all,junit"
+	<target name="build_all_SnAP" depends="clean,compile-all,junit,dist_all_SnAP"
         description="Clean and Build all run-time stuff">
 	</target>
 
