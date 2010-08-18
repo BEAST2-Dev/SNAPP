@@ -35,8 +35,9 @@ import beast.util.*;
 @Description("Allow sampling from the prior.")
 public class MCMC extends beast.core.MCMC {
 	
-	public Input<Integer> m_oStateBurnIn = new Input<Integer>("stateBurnin", "Number of burn in samples taken on the prior only to determine initial state", new Integer(0));
+	public Input<Integer> m_oStateBurnIn = new Input<Integer>("stateBurnin", "Number of burn in samples taken on the prior only to determine initial state", 0);
 	public Input<Distribution> m_stateDistribution = new Input<Distribution>("stateDistribution", "Uncertainty from which the initial state is sampled for 'stateBurnin' of samples. Must be specified if stateBurnin is larger than zero.");
+	public Input<Integer> m_killAfterXSeconds = new Input<Integer>("killAfter", "Number of seconds after which the job is killed. When negative (default) this is ignored", -1);
 	
 	List<Integer> m_gammas;
 	
@@ -74,6 +75,7 @@ public class MCMC extends beast.core.MCMC {
 		int nBurnIn = m_oBurnIn.get();
 		int nChainLength = m_oChainLength.get();
 		int nStateBurnin = m_oStateBurnIn.get();
+		int nKillAfterXSeconds = m_killAfterXSeconds.get();
 
 		System.err.println("Start state:");
 		System.err.println(state.toString());
@@ -130,7 +132,8 @@ public class MCMC extends beast.core.MCMC {
 		state.setEverythingDirty(true);
 		double fOldLogLikelihood = calc();
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
-		for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
+		boolean bStayAlive = true;
+		for (int iSample = -nBurnIn; iSample <= nChainLength && bStayAlive; iSample++) {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);
@@ -161,6 +164,7 @@ public class MCMC extends beast.core.MCMC {
 					// accept
 					fOldLogLikelihood = fNewLogLikelihood;
 					state.setEverythingDirty(false);
+                    state.acceptCalculationNodes();
 					if (iSample>=0) {
 						operator.accept();
 					}
@@ -196,6 +200,13 @@ public class MCMC extends beast.core.MCMC {
 			} else {
 				operator.optimize(logAlpha);
 			}
+			if (nKillAfterXSeconds > 0) {
+				long tEnd = System.currentTimeMillis();
+				if ((tEnd - tStart)/1000 >= nKillAfterXSeconds) {
+					System.out.println("\n\nTime is up! Going to terminate now.\n");
+					bStayAlive = false;
+				}
+			}
 		}
 		operatorSet.showOperatorRates(System.out);
 		long tEnd = System.currentTimeMillis();
@@ -203,7 +214,11 @@ public class MCMC extends beast.core.MCMC {
 		close();
 
 	
-		System.err.println("End state:");
+		state.setEverythingDirty(true);
+		//System.err.println(m_state.toString());
+		double fLogLikelihood = calc();
+        System.err.println("End likelihood: " + fOldLogLikelihood + " " + fLogLikelihood);
+        System.err.println("End state:");
 		System.err.println(state.toString());
 		state.storeToFile();
 	} // run;

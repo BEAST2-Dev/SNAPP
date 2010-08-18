@@ -41,7 +41,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
-<run id="mcmc" spec='snap.ML' chainLength="100000" preBurnin="0" stateBurnin='100000'>
+<run id="mcmc" spec='snap.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='100000' killAfter='5'>
         <state>
           <stateNode spec='GammaParameter' id='gamma' initFromTree='true' pattern='gamma' value='10'>
             <tree idref="tree"/>
