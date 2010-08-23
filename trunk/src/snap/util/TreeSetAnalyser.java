@@ -45,9 +45,9 @@ public class TreeSetAnalyser {
 	
 	String getHeader(Node node) {
 		if (node.isLeaf()) {
-			return "theta" +node.getNr() + " height"+node.getNr(); 
+			return "theta" +node.getNr() + "\theight"+node.getNr(); 
 		} else {
-			return getHeader(node.m_left) + " " + getHeader(node.m_right) + " theta" +node.getNr() + " height"+node.getNr();
+			return getHeader(node.m_left) + "\t" + getHeader(node.m_right) + "\ttheta" +node.getNr() + "\theight"+node.getNr();
 		}
 	}
 	double getHeight(Node node) {
@@ -66,13 +66,13 @@ public class TreeSetAnalyser {
 			double fHeight = (getHeight(node) - node.m_fLength);
 			m_thetas[node.getNr()].add(Double.parseDouble(sMetaData));
 			m_heights[node.getNr()].add(fHeight);
-			return sMetaData + " " +fHeight; 
+			return sMetaData + "\t" +fHeight; 
 		} else {
 			String sMetaData = getTheta(node.m_sMetaData);
 			double fHeight = (getHeight(node) - node.m_fLength);
 			m_thetas[node.getNr()].add(Double.parseDouble(sMetaData));
 			m_heights[node.getNr()].add(fHeight);
-			return getTreeData(node.m_left) + " " + getTreeData(node.m_right) + " " + sMetaData + " "+ fHeight;
+			return getTreeData(node.m_left) + "\t" + getTreeData(node.m_right) + "\t" + sMetaData + "\t"+ fHeight;
 		}
 	}
 	
@@ -245,11 +245,11 @@ public class TreeSetAnalyser {
 			int j = 0;
 			for (i = 0; i < m_nTopologies; i++) {
 				System.out.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + getTopology(m_cTrees[i], sLabels));//m_cTrees[i].toString(sLabels));
-				System.out.println("nr " + getHeader(m_cTrees[i]));
+				System.out.println("nr\t" + getHeader(m_cTrees[i]));
 				initLists(nNodes);
 				boolean bSameTree = true;
 				while (bSameTree) {
-					System.out.println(j + " " +getTreeData(m_trees[j]));
+					System.out.println(j + "\t" +getTreeData(m_trees[j]));
 					j++;
 					bSameTree = (j < m_trees.length) && (m_nTopology[j] == m_nTopology[j-1]);
 				}
