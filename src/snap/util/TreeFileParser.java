@@ -91,7 +91,7 @@ public class TreeFileParser {
 					tree.sort();
 					tree.labelInternalNodes(m_nNrOfLabels);
 					trees.add(tree);
-					if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {System.err.print(trees.size() + " ");}}
+					//if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {System.err.print(trees.size() + " ");}}
 //					sNewickTrees.add(sStr);
 				}
 			}
@@ -169,7 +169,7 @@ public class TreeFileParser {
 						tree.sort();
 						tree.labelInternalNodes(m_nNrOfLabels);
 						trees.add(tree);
-						if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {System.err.print(trees.size() + " ");}}
+						//if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {System.err.print(trees.size() + " ");}}
 						//sNewickTrees.add(sStr);
 					} else {
 						nBurnIn--;
