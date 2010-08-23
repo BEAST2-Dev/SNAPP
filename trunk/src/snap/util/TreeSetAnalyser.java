@@ -1,6 +1,7 @@
 package snap.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import snap.util.TreeFileParser;
@@ -30,6 +31,40 @@ public class TreeSetAnalyser {
 			addLength(src.m_right, target.m_right);
 		}
 		target.m_fLength += src.m_fLength;
+	}
+
+	static String getTopology(Node node, List<String> sLabels) {
+		if (node.isLeaf()) {
+			return sLabels.get(node.getNr()) + "[theta" +node.getNr() + "]:height"+node.getNr(); 
+		} else {
+			return "(" + getTopology(node.m_left, sLabels) + "," + getTopology(node.m_right, sLabels)  
+			+")[theta" +node.getNr() + "]:height"+node.getNr(); 
+		}
+	}
+	
+	static String getHeader(Node node) {
+		if (node.isLeaf()) {
+			return "theta" +node.getNr() + " height"+node.getNr(); 
+		} else {
+			return getHeader(node.m_left) + " " + getHeader(node.m_right) + " theta" +node.getNr() + " height"+node.getNr();
+		}
+	}
+	static double getHeight(Node node) {
+		if (node.isLeaf()) {
+			return node.m_fLength;
+		} else {
+			return getHeight(node.m_left) + node.m_fLength; 
+		}
+	}
+	static String getTheta(String sTheta) {
+		return sTheta.replaceAll("theta=", "");
+	}
+	static String getTreeData(Node node) {
+		if (node.isLeaf()) {
+			return getTheta(node.m_sMetaData) + " "+(getHeight(node) - node.m_fLength); 
+		} else {
+			return getTreeData(node.m_left) + " " + getTreeData(node.m_right) + " " + getTheta(node.m_sMetaData) + " "+(getHeight(node) - node.m_fLength);
+		}
 	}
 
 	public static void main(String [] args) {
@@ -114,9 +149,17 @@ public class TreeSetAnalyser {
 				m_nTopologyByPopularity[i] = nColor; 
 			}
 			
-			System.out.println("nr coverage tree");
+			System.out.println("#nr coverage tree");
+			int j = 0;
 			for (i = 0; i < m_nTopologies; i++) {
-				System.out.println(i + " " + m_fTreeWeight[i]*100 + "% " + m_cTrees[i].toString(sLabels));
+				System.out.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + getTopology(m_cTrees[i], sLabels));//m_cTrees[i].toString(sLabels));
+				System.out.println("nr " + getHeader(m_cTrees[i]));
+				boolean bSameTree = true;
+				while (bSameTree) {
+					System.out.println(getTreeData(m_trees[j]));
+					j++;
+					bSameTree = (j < m_trees.length) && (m_nTopology[j] == m_nTopology[j-1]);
+				}
 			}
 			
 		} catch (Exception e) {
@@ -124,3 +167,15 @@ public class TreeSetAnalyser {
 		}
 	} // main
 }
+
+/**
+ * 
+#Tree 1.  Frequency = 500. 
+# ((A[theta = theta0, height = 0],B[theta=theta1, height=0]]):[theta=theta2,height=h0],C:[theta=theta3,height=0]):[theta=theta4,height=height1]
+nr        samplenr theta0    ...          theta4        height0        …        height1
+1        120        0.2        ….        0.3           1.1                     2.0
+2        180        0.1        ….        0.1           1.2                     2.1
+3        210        0.3        ….        0.2           1.3                     2.0
+...
+500      121        0.3        ….        0.2           1.3                     2.0 
+**/

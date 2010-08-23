@@ -177,8 +177,8 @@ public class TreeFileParser {
 				}
 			}
 		}
-		System.err.println();
-		System.err.println("Geo: " +m_fMinLong + "x" + m_fMinLat + " " + m_fMaxLong + "x" + m_fMaxLat);
+		//System.err.println();
+		//System.err.println("Geo: " +m_fMinLong + "x" + m_fMinLat + " " + m_fMaxLong + "x" + m_fMaxLat);
 		return trees.toArray(new Node[1]);
 	} // parseFile
 
