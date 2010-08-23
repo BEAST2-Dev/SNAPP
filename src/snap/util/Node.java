@@ -137,14 +137,20 @@ public class Node {
 			buf.append(m_right.toString(sLabels));
 			buf.append(")");
 		} else {
-			buf.append(sLabels.elementAt(m_iLabel));
+			if (sLabels == null) {
+				buf.append(m_iLabel);
+			} else {
+				buf.append(sLabels.elementAt(m_iLabel));
+			}
 		}
-		if (m_sMetaData != null) {
-			buf.append('[');
-			buf.append(m_sMetaData);
-			buf.append(']');
+		if (sLabels != null) {
+			if (m_sMetaData != null) {
+				buf.append('[');
+				buf.append(m_sMetaData);
+				buf.append(']');
+			}
+			buf.append(":" + m_fLength);
 		}
-		buf.append(":" + m_fLength);
 		return buf.toString();
 	}
 	public String toString() {
