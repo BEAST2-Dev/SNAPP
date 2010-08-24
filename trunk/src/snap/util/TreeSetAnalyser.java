@@ -1,9 +1,14 @@
 package snap.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+
+import beast.core.Logger;
+import beast.util.Randomizer;
+import beast.util.XMLParser;
 
 import snap.util.TreeFileParser;
 
@@ -135,8 +140,9 @@ public class TreeSetAnalyser {
 	
 	
 	void printUsageAndExit() {
-		System.out.println("Usage: " + getClass().getName() + " <tree set file>\n");
+		System.out.println("Usage: " + getClass().getName() + " [-n] <tree set file>\n");
 		System.out.println("Prints tree from tree set in order of popularity of topology.\n" +
+				"-n : only the most popular topology is shown in the output.\n\n" +
 				"On stdout, it prints header lines and a table with individual heights and thetas, like this: " +
 				"#Tree 1.  Frequency = 500. \n" +
 				"# ((A[theta = theta0, height = 0],B[theta=theta1, height=0]]):[theta=theta2,height=h0],C:[theta=theta3,height=0]):[theta=theta4,height=height1]\n" +
@@ -152,17 +158,49 @@ public class TreeSetAnalyser {
 				"#Tree 1. 0.1998002% ((0[mTheta=0.0514]:1.4090,(1[mTheta=0.0938]:0.6033,2[mTheta=0.0821]:0.6033)[mTheta=0.0455]:0.8056)[mTheta=0.0171]:2.7178,3[mTheta=0.0066]:4.1268)[mTheta=0.0263]:0.0\n" +
 				"#Tree 2. 0.0999001% (0[mTheta=0.0036]:0.0862,((1[mTheta=0.0200]:0.0189,2[mTheta=0.0037]:0.0189)[mTheta=0.0125]:0.0275,3[mTheta=0.0012]:0.0465)[mTheta=0.0071]:0.0397)[mTheta=0.0188]:0.0\n" +
 				"");
+		System.exit(0);
 	}
 
-	public TreeSetAnalyser(String [] args) {
-		if (args.length < 0) {
+	void parseArgs(String [] args) {
+		int i = 0;
+		try {
+			while (i < args.length) {
+				int iOld = i;
+				if (i < args.length) {
+					if (args[i].equals("")) {
+						i += 1;
+					} else if (args[i].equals("-n")) {
+						m_bFirstTopologyOnly = true;
+						i += 1;
+					}
+					if (i == iOld) {
+						if (i == args.length-1) {
+							m_sFileName = args[i];
+							i++;
+						} else {
+							throw new Exception("Wrong argument");
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n");
 			printUsageAndExit();
 		}
+		if (m_sFileName == null) {
+			printUsageAndExit();
+		}
+	} // parseArgs
+	
+	String m_sFileName;
+	boolean m_bFirstTopologyOnly = false;
+	public TreeSetAnalyser(String [] args) {
+		parseArgs(args);
 		try {
 			Vector<String> sLabels = new Vector<String>();
-			String sFile = args[args.length - 1];
 			TreeFileParser parser = new TreeFileParser(sLabels, null, null, 0);
-			Node [] m_trees = parser.parseFile(sFile);
+			Node [] m_trees = parser.parseFile(m_sFileName);
 		
 			// count tree topologies
 			// first step is find how many different topologies are present
@@ -255,6 +293,9 @@ public class TreeSetAnalyser {
 				}
 				calcMean(m_cTrees[i]);
 				System.err.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + toString(m_cTrees[i], sLabels));
+				if (m_bFirstTopologyOnly) {
+					return;
+				}
 			}
 			
 		} catch (Exception e) {
