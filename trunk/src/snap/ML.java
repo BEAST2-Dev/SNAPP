@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beast.core.*;
-import beast.util.*;
 
 @Description("Maximum likelihood search by hill climbing.")
 public class ML extends beast.core.MCMC {
@@ -64,7 +63,7 @@ public class ML extends beast.core.MCMC {
 		
 		int nBurnIn = m_oBurnIn.get();
 		int nChainLength = m_oChainLength.get();
-		int nStateBurnin = m_oStateBurnIn.get();
+		//int nStateBurnin = m_oStateBurnIn.get();
 
 		System.err.println("Start state:");
 		System.err.println(state.toString());

@@ -41,9 +41,10 @@ import beast.evolution.tree.Node;
 
 /** threaded version of SSSLikelihoodCore **/ 
 public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
-
+	SiteProbabilityCalculatorT m_siteProbabilityCalculatorT;
 	public SnAPLikelihoodCoreT(Node root, Alignment data) {
 		super(root, data);
+		m_siteProbabilityCalculatorT = new SiteProbabilityCalculatorT();
 	}
 	
 	static boolean stopRequested = false;
@@ -78,7 +79,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			try {
 				int [] thisSite = m_data.getPattern(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
-				siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, 0);
+				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, 0);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -113,7 +114,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
-		LineageCountCalculator.computeCountProbabilities(root,sampleSizes,dprint);
+		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,dprint);
 		//dprint = true;
 			
 			//TODO: Partial subtree updates over all sites.
@@ -126,7 +127,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			patternProb = new double[numPatterns];
 			Arrays.fill(patternProb, -1);
 			int nThreads = BeastMCMC.m_nThreads;
-			SiteProbabilityCalculatorT.clearCache(root.getNodeCount(), data.getMaxStateCount(), nThreads);
+			m_siteProbabilityCalculatorT.clearCache(root.getNodeCount(), data.getMaxStateCount(), nThreads);
 
 			m_lock = new ReentrantLock[nThreads];
 			for (int i = 0; i < nThreads; i++) {

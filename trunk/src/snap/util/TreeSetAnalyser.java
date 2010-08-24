@@ -1,14 +1,11 @@
 package snap.util;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-
-import beast.core.Logger;
-import beast.util.Randomizer;
-import beast.util.XMLParser;
 
 import snap.util.TreeFileParser;
 
@@ -109,7 +106,7 @@ public class TreeSetAnalyser {
 		return sStr;
 	}
 	void calcMean(Node node) {
-		List<Double> fHeights = m_heights[node.getNr()];
+		//List<Double> fHeights = m_heights[node.getNr()];
 		List<Double> fThetas = m_thetas[node.getNr()];
 		double fMeanTheta = mean(fThetas);
 		node.m_sMetaData = "mTheta=" + truncate(fMeanTheta, 6);
@@ -305,7 +302,7 @@ public class TreeSetAnalyser {
 	}
 	
 	public static void main(String [] args) {
-		TreeSetAnalyser analyser = new TreeSetAnalyser(args);
+		new TreeSetAnalyser(args);
 	} // main
 }
 

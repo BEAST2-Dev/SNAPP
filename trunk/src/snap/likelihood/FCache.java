@@ -115,11 +115,11 @@ public class FCache {
 		return g_nID++;
 	} // nextID
 
-	CacheObject getLeafF(NodeData node, int numReds) {
+	CacheObject getLeafF(NodeData node, int numReds, SiteProbabilityCalculator spc) {
 		
 		if (m_leafCache[node.getNr()][numReds] == null) {
 			// it's not in the cache yet, so create the object
-			SiteProbabilityCalculator.doLeafLikelihood(node, numReds, false);
+			spc.doLeafLikelihood(node, numReds, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			CacheObject o = new CacheObject(Fb, nextID());
@@ -128,14 +128,14 @@ public class FCache {
 		return m_leafCache[node.getNr()][numReds];
 	} // getLeafF
 	
-	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v) throws Exception {
+	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, SiteProbabilityCalculator spc) throws Exception {
 		while (nCacheID >= m_TopOfBranche.size()) {
 			m_TopOfBranche.add(null);
 		}
 		CacheObject o = m_TopOfBranche.elementAt(nCacheID);//m_TopOfBrancheMap.get(nCacheID);
 		if (o == null) {
 			// it's not in the cache yet, so create the object
-			SiteProbabilityCalculator.doTopOfBranchLikelihood(node, u, v, false);
+			spc.doTopOfBranchLikelihood(node, u, v, false);
 			//FMatrix Ft = node.cloneFt(); 
 			FMatrix Ft = node.getFt(); 
 			o = new CacheObject(Ft, nextID());
@@ -143,14 +143,14 @@ public class FCache {
 			m_TopOfBranche.set(nCacheID, o);
 		} else if (o.m_F == null) {
 			// it's removed from the cache, so recalculate the F matrix
-			SiteProbabilityCalculator.doTopOfBranchLikelihood(node, u, v, false);
+			spc.doTopOfBranchLikelihood(node, u, v, false);
 			o.m_F = node.getFt();
 		}
 		return o;
 	} // getTopOfBrancheF
 
 
-	CacheObject getBottomOfBrancheF(int nCacheID1, int nCacheID2, NodeData u1, NodeData u2, NodeData parent) {
+	CacheObject getBottomOfBrancheF(int nCacheID1, int nCacheID2, NodeData u1, NodeData u2, NodeData parent, SiteProbabilityCalculator spc) {
 //		if (false) {
 //			SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
 //			return new CacheObject(parent.getFb(), -1);
@@ -166,7 +166,7 @@ public class FCache {
 			// not in cache, try to fetch from cache with IDs swapped
 			// TODO: this does not get any hits as long as branch lengths (=t*gamma) are not part of the Key.
 			// TODO: Fix this!
-				SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
+				spc.doInternalLikelihood(u1, u2, parent, false);
 				//FMatrix Fb = parent.cloneFb();
 				FMatrix Fb = parent.getFb();
 				CacheObject2 o = new CacheObject2(Fb, nextID(), nCacheID2);
@@ -179,14 +179,14 @@ public class FCache {
 			if (o.m_nCacheID2 == nCacheID2) {
 				if (o.m_F == null) {
 					// it was removed from the cache, so recalculate it
-					SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
+					spc.doInternalLikelihood(u1, u2, parent, false);
 					o.m_F = parent.getFb();
 				}
 				return o;
 			}
 		}
 		// it's not in the cache yet, so create the object
-		SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
+		spc.doInternalLikelihood(u1, u2, parent, false);
 		//FMatrix Fb = parent.cloneFb();
 		FMatrix Fb = parent.getFb();
 		CacheObject2 o = new CacheObject2(Fb, nextID(), nCacheID2);

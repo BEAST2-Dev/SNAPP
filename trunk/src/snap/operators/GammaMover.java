@@ -44,16 +44,13 @@ public class GammaMover extends Operator {
 		m_fScale = m_pScaleGamma.get();
 	}
 	
-	
 	@Override
-	public double proposal() { // throws Exception {
+	public double proposal() {
 		GammaParameter gamma = m_pGamma.get(this);
 		int whichNode = Randomizer.nextInt(gamma.getDimension());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
-//		state.mulValue(whichNode, (1.0/scale), gamma);
 		gamma.setValue(whichNode, gamma.getValue(whichNode)/scale);
-		//gamma.mulValue(whichNode, (1.0/scale));
 		return Math.log(scale);
 	}
 
@@ -64,4 +61,5 @@ public class GammaMover extends Operator {
 		fDelta += Math.log(m_fScale);
 		m_fScale = Math.exp(fDelta);
     }
-}
+	
+} // class GammaMover 

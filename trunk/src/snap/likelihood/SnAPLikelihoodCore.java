@@ -41,9 +41,13 @@ import snap.NodeData;
 
 public class SnAPLikelihoodCore  {
 	boolean m_bReuseCache = false;
+	LineageCountCalculator m_lineageCountCalculator;
+	SiteProbabilityCalculator m_siteProbabilityCalculator;
 	
 	public SnAPLikelihoodCore(Node root, Alignment data) {
-		SiteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
+		m_lineageCountCalculator = new LineageCountCalculator();
+		m_siteProbabilityCalculator = new SiteProbabilityCalculator();
+		m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
 	}
 
 
@@ -65,22 +69,15 @@ public class SnAPLikelihoodCore  {
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
-		LineageCountCalculator.computeCountProbabilities(root,sampleSizes,dprint);
-		//dprint = true;
+		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,dprint);
 			
 			//TODO: Partial subtree updates over all sites.
-			
-			
 			double forwardLogL = 0.0;
 			int numPatterns = data.getPatternCount();
 
 			//Temporarily store pattern probabilities... used for numerical checks.
 			double [] patternProb = new double[numPatterns];
-//			if (m_bReuseCache) {
-//				traverse(root);
-//			} else {
-				SiteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
-//			}
+			m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
 
 			for(int id = 0; id < numPatterns - 2; id++) {
 			//for(int id=0;id<60;id++) {
@@ -91,7 +88,7 @@ public class SnAPLikelihoodCore  {
 				double freq = data.getPatternWeight(id);
 				double siteL=0.0;
 				try {
-					siteL = SiteProbabilityCalculator.computeSiteLikelihood(root, u, v, thisSite, bUseCache, dprint);
+					siteL = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, thisSite, bUseCache, dprint);
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
@@ -106,9 +103,9 @@ public class SnAPLikelihoodCore  {
 			}
 			// correction for constant sites
 			int [] thisSite = data.getPattern(numPatterns - 2);
-			double P0 =  SiteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
+			double P0 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
 			thisSite = data.getPattern(numPatterns - 1);
-			double P1 =  SiteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
+			double P1 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
 			forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
 			//System.err.println(numPatterns + " " + forwardLogL);
 

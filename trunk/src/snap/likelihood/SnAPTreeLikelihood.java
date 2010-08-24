@@ -49,32 +49,28 @@ import snap.likelihood.SnAPLikelihoodCore;
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
 @Citation("David Bryant, Remco Bouckaert, Noah Rosenberg. Inferring species trees directly from SNP and AFLP data: full coalescent analysis without those pesky gene trees. arXiv:0910.4193v1. http://arxiv.org/abs/0910.4193")
 public class SnAPTreeLikelihood extends Distribution {
-
-	Alignment m_data;
-	int[] m_nSampleSizes;
-	SnAPLikelihoodCore m_core;
-	
 	public Input<Alignment> m_pData = new Input<Alignment>("data", "set of alignments");
 	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 	public Input<RealParameter> m_pU = new Input<RealParameter>("mutationRateU", "mutation rate from red to green?");
 	public Input<RealParameter> m_pV = new Input<RealParameter>("mutationRateV", "mutation rate from green to red?");
 	public Input<GammaParameter> m_pGamma = new Input<GammaParameter>("gamma", "population size parameter with one value for each node in the tree");
+
+	/** shadow variable of m_pData input */
+	Alignment m_data;
+	/** SampleSizes = #lineages per taxon **/
+	int [] m_nSampleSizes;
+	/** likelihood core, doing the actual hard work of calculating the likelihood **/
+	SnAPLikelihoodCore m_core;
 	
-	
-    /**
-     * Constructor.
-     */
-	public SnAPTreeLikelihood() {
-    }
     
-    
-    //public SSSTreeLikelihood(Data patternList, State state) {
     @Override
     public void initAndValidate() {
     	m_data = m_pData.get();
     	if ( BeastMCMC.m_nThreads == 1) {
+    		// single threaded likelihood core
     		m_core = new SnAPLikelihoodCore(m_pTree.get().getRoot(), m_pData.get());
     	} else {
+    		// multi-threaded likelihood core
     		m_core = new SnAPLikelihoodCoreT(m_pTree.get().getRoot(), m_pData.get());
     	}
     	Integer [] nSampleSizes = m_data.m_nStateCounts.toArray(new Integer[0]);
@@ -82,16 +78,8 @@ public class SnAPTreeLikelihood extends Distribution {
     	for (int i = 0; i < nSampleSizes.length; i++) {
     		m_nSampleSizes[i] = nSampleSizes[i];
     	}
-    	
-//    	try {
-//    		m_nU = state.getParameterIndex("u");
-//    		m_nV = state.getParameterIndex("v");
-//    	} catch (Exception e) {
-//			e.printStackTrace();
-//		}
     }
 
-   int m_nTreeID = -1;
     /**
      * Calculate the log likelihood of the current state.
      *
@@ -100,10 +88,13 @@ public class SnAPTreeLikelihood extends Distribution {
     @Override
     public double calculateLogP() {
     	try {
-    		// get tree, make a copy in the state, just to be sure
+    		// get current tree
 	    	NodeData root = (NodeData) m_pTree.get(null).getRoot();
 	    	// assing gamma values to tree
-	    	m_pGamma.get().prepare();
+	    	if (m_pGamma.get().somethingIsDirty()) {
+	    		// sync gammas in parameter with gammas in tree, if necessary
+	    		m_pGamma.get().prepare();
+	    	}
 	    	
 	    	double u = m_pU.get().getValue();
 	    	double v  = m_pV.get().getValue();
@@ -133,26 +124,9 @@ public class SnAPTreeLikelihood extends Distribution {
     	m_core.m_bReuseCache = false;
     }
 
-
 	
-	@Override
-	public List<String> getArguments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public List<String> getConditions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public void sample(State state, Random random) {
-		// TODO Auto-generated method stub
-	}    
-
+	@Override public List<String> getArguments() {return null;}
+	@Override public List<String> getConditions() {return null;}
+	@Override public void sample(State state, Random random) {};
 
 } // class SSSTreeLikelihood
