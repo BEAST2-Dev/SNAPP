@@ -31,17 +31,18 @@ import java.util.Vector;
 import snap.FMatrix;
 import snap.NodeData;
 
-/** cache for storing F matrices used for Site Probability calculation **/
+/** cache for storing F matrices used for Site Probability calculation,
+ * multi-threaded version **/
 public class FCacheT extends FCache {
 
 	public FCacheT(int nNodeNrMax, int nRedsMax) {
 		super(nNodeNrMax, nRedsMax);
 	} //c'tor
 
-	CacheObject getLeafF(NodeData node, int numReds) {
+	CacheObject getLeafF(NodeData node, int numReds, SiteProbabilityCalculatorT spc) {
 		if (m_leafCache[node.getNr()][numReds] == null) {
 			// it's not in the cache yet, so create the object
-			SiteProbabilityCalculator.doLeafLikelihood(node, numReds, false);
+			spc.doLeafLikelihood(node, numReds, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			synchronized(this) {
@@ -55,14 +56,14 @@ public class FCacheT extends FCache {
 		return m_leafCache[node.getNr()][numReds];
 	} // getLeafF
 	
-	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v) throws Exception {
+	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, SiteProbabilityCalculatorT spc) throws Exception {
 		while (nCacheID >= m_TopOfBranche.size()) {
 			m_TopOfBranche.add(null);
 		}
 		CacheObject o = m_TopOfBranche.elementAt(nCacheID);//m_TopOfBrancheMap.get(nCacheID);
 		if (o == null) {
 			// it's not in the cache yet, so create the object
-			SiteProbabilityCalculator.doTopOfBranchLikelihood(node, u, v, false);
+			spc.doTopOfBranchLikelihood(node, u, v, false);
 			//FMatrix Ft = node.cloneFt(); 
 			synchronized (this) {
 				if (m_TopOfBranche.elementAt(nCacheID) == null) {
@@ -89,7 +90,7 @@ public class FCacheT extends FCache {
 	} // getTopOfBrancheF
 
 
-	CacheObject getBottomOfBrancheF(int nCacheID1, int nCacheID2, NodeData u1, NodeData u2, NodeData parent) {
+	CacheObject getBottomOfBrancheF(int nCacheID1, int nCacheID2, NodeData u1, NodeData u2, NodeData parent, SiteProbabilityCalculatorT spc) {
 //		if (false) {
 //			SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
 //			return new CacheObject(parent.getFb(), -1);
@@ -104,7 +105,7 @@ public class FCacheT extends FCache {
 			synchronized (this) {
 				if (m_BottomOfBranche.elementAt(nCacheID1) != null) {
 					// in case antoher thread got here first
-					return getBottomOfBrancheF(nCacheID1, nCacheID2, u1, u2, parent);
+					return getBottomOfBrancheF(nCacheID1, nCacheID2, u1, u2, parent, spc);
 				}
 				nodeCache2 = new Vector<CacheObject2>(1024,128);
 			}
@@ -112,14 +113,14 @@ public class FCacheT extends FCache {
 			// not in cache, try to fetch from cache with IDs swapped
 			// TODO: this does not get any hits as long as branch lengths (=t*gamma) are not part of the Key.
 			// TODO: Fix this!
-			SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
+			spc.doInternalLikelihood(u1, u2, parent, false);
 			//FMatrix Fb = parent.cloneFb();
 			FMatrix Fb = parent.getFb();
 			synchronized (this) {
 				nodeCache2 = m_BottomOfBranche.elementAt(nCacheID1);
 				if (nodeCache2.size() > 0) {
 					// some other thread was here before the current one
-					return getBottomOfBrancheF(nCacheID1, nCacheID2, u1, u2, parent);
+					return getBottomOfBrancheF(nCacheID1, nCacheID2, u1, u2, parent, spc);
 				}
 				CacheObject2 o = new CacheObject2(Fb, nextID(), nCacheID2);
 				m_BottomOfBrancheID[parent.getNr()].add(o);
@@ -139,7 +140,7 @@ public class FCacheT extends FCache {
 			}
 		}
 		// it's not in the cache yet, so create the object
-		SiteProbabilityCalculator.doInternalLikelihood(u1, u2, parent, false);
+		spc.doInternalLikelihood(u1, u2, parent, false);
 		//FMatrix Fb = parent.cloneFb();
 		FMatrix Fb = parent.getFb();
 		synchronized(this) {

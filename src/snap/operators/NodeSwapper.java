@@ -47,19 +47,11 @@ public class NodeSwapper extends Operator {
 		m_nNodeCount = m_pTree.get().getNodeCount();
 	}
 
-	void registerNodes(Node [] nodes, Node node) {
-		nodes[node.getNr()] = node;
-		if (!node.isLeaf()) {
-			registerNodes(nodes, node.m_left);
-			registerNodes(nodes, node.m_right);
-		}
-	}
 	@Override
 	public double proposal() { // throws Exception {
 		double hastingsRatio = 1.0;
-		Node [] nodes = new Node[m_nNodeCount];
 		Tree tree = m_pTree.get(this);
-		registerNodes(nodes, tree.getRoot());
+		Node [] nodes = tree.getNodesAsArray();
 
 		//First select a triple (x,y,m) where x and y are a random pair of leaves and m is the mrca of x and y.
 
@@ -170,4 +162,4 @@ public class NodeSwapper extends Operator {
 		x.setParent(nodes[iyp]);
 	}
 
-}
+} // class NodeSwapper

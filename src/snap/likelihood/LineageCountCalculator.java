@@ -38,7 +38,7 @@ public class LineageCountCalculator {
 	 @param phylo<NodeData>& tree  The species tree
 	 @param const vector<uint>& sampleSizes Array of sample sizes (n_0) for each taxon id. 
 	 */
-	public static void computeCountProbabilities(NodeData tree, int [] sampleSizes, boolean dprint /*= false*/) throws Exception {
+	public void computeCountProbabilities(NodeData tree, int [] sampleSizes, boolean dprint /*= false*/) throws Exception {
 		
 		//Post-order traversal
 		if (tree.isLeaf()) {
@@ -57,7 +57,7 @@ public class LineageCountCalculator {
 	/**
 	 Compute probabilities for the numbers of lineages at a leaf.
 	 **/
-	static void doCountProbabilitiesForLeaf(NodeData node, int nSamples, boolean dprint)
+	void doCountProbabilitiesForLeaf(NodeData node, int nSamples, boolean dprint)
 	{
 		/*
 		int nTaxonID = node.m_tree.getTaxonIndex(node.m_tree.getNodeTaxon(node.m_nodeRef));
@@ -83,7 +83,7 @@ public class LineageCountCalculator {
 	/**
 	 Compute probabilities for the numbers of lineages at a node with a single child.
 	 **/
-	static void doCountProbabilitiesForInternal(NodeData v, NodeData child, boolean dprint) throws Exception {
+	void doCountProbabilitiesForInternal(NodeData v, NodeData child, boolean dprint) throws Exception {
 		v.resize(child.m_n);
 		double g1 = child.gamma();
 		double t1 = child.t();
@@ -102,7 +102,7 @@ public class LineageCountCalculator {
 	/**
 	 Compute probabilities for the numbers of lineages at a node with two children.
 	 **/
-	static void doCountProbabilitiesForInternal(NodeData node, NodeData u1, NodeData u2, boolean dprint)throws Exception {
+	void doCountProbabilitiesForInternal(NodeData node, NodeData u1, NodeData u2, boolean dprint)throws Exception {
 		int n1 = u1.m_n;
 		int n2 = u2.m_n;
 		int n = n1+n2;
@@ -152,7 +152,7 @@ public class LineageCountCalculator {
 	 y(i) = \sum_j P(i lineages at top of branch | j lineages at bottom) x(j)
 
 	 **/
-	static double[] computeTavareProbs(double t,double[] x) throws Exception {
+	double[] computeTavareProbs(double t,double[] x) throws Exception {
 
 		double[] y = new double [x.length];
 		//int cutoff = 10;
@@ -207,7 +207,8 @@ public class LineageCountCalculator {
 			}
 			System.out.println("sum x = " + sum);
 	
-			double [] y = computeTavareProbs(g*t, x);
+			LineageCountCalculator lineageCountCalculator = new LineageCountCalculator();
+			double [] y = lineageCountCalculator.computeTavareProbs(g*t, x);
 			sum = 0.0;
 			for(int i = 0; i < 36; i++) {
 				sum += y[i];
@@ -219,4 +220,4 @@ public class LineageCountCalculator {
 		}
 	} // main
 
-} // class CountProbabilitiesCalculator
+} // class LineageCountCalculator

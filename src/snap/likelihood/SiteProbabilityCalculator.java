@@ -33,7 +33,7 @@ import snap.matrix.QMatrix;
 
 public class SiteProbabilityCalculator {
 
-	static void convolution2Dfft( double[][]A,  double[][]B, double[][] result) {
+	void convolution2Dfft( double[][]A,  double[][]B, double[][] result) {
 
 		//int ma,mb,na,nb;
 		//getSize(A,ma,na);
@@ -82,7 +82,7 @@ public class SiteProbabilityCalculator {
 
 	 //TODO: incorporate into code for abstract matrix
 	 */
-	static double [][]  findRootProbabilities(int N, double u, double v, double gamma, boolean dprint) throws Exception {
+	double [][]  findRootProbabilities(int N, double u, double v, double gamma, boolean dprint) throws Exception {
 		double [][] x;
 		QMatrix Qt = new QMatrix(N,u,v,gamma);
 		double [] xcol;
@@ -108,7 +108,7 @@ public class SiteProbabilityCalculator {
 		return x;
 	} // findRootProbabilities
 	
-	static double doRootLikelihood(NodeData rootData, double u, double v, boolean dprint) throws Exception 
+	double doRootLikelihood(NodeData rootData, double u, double v, boolean dprint) throws Exception 
 	{
 		int N=rootData.m_n;
 		double[][] conditional = findRootProbabilities(N, u, v, rootData.gamma(), dprint);
@@ -145,33 +145,33 @@ public class SiteProbabilityCalculator {
 	static 
 	FCache m_cache; 
 
-	public static void clearCache(int nNodeNrMax, int nRedsMax) {
+	public void clearCache(int nNodeNrMax, int nRedsMax) {
 		//m_cache = new FCache(nNodeNrMax, nRedsMax + 1);
 		m_cache = new FCacheT(nNodeNrMax, nRedsMax + 1);
 	}
 	
-	static void doCachedInternalLikelihood(NodeData u1, NodeData u2, NodeData parent) {
-		FCache.CacheObject o = m_cache.getBottomOfBrancheF(u1.getCacheIDT(), u2.getCacheIDT(), u1, u2, parent);
+	void doCachedInternalLikelihood(NodeData u1, NodeData u2, NodeData parent) {
+		FCache.CacheObject o = m_cache.getBottomOfBrancheF(u1.getCacheIDT(), u2.getCacheIDT(), u1, u2, parent, this);
 		parent.setCacheIDB(o.m_nCacheID);
 		//parent.assignFb(o.getF());
 		parent.initFb(o.getF());
 	}
 	
-	static void doCachedLeafLikelihood(NodeData node, int numReds) {
-		FCache.CacheObject o = m_cache.getLeafF(node, numReds);
+	void doCachedLeafLikelihood(NodeData node, int numReds) {
+		FCache.CacheObject o = m_cache.getLeafF(node, numReds, this);
 		node.setCacheIDB(o.m_nCacheID);
 		//node.assignFb(o.getF());
 		node.initFb(o.getF());
 	}
 
-	static void doCachedTopOfBranchLikelihood(NodeData node, double u, double v) throws Exception {
-		FCache.CacheObject o = m_cache.getTopOfBrancheF(node.getCacheIDB(), node, u, v);
+	void doCachedTopOfBranchLikelihood(NodeData node, double u, double v) throws Exception {
+		FCache.CacheObject o = m_cache.getTopOfBrancheF(node.getCacheIDB(), node, u, v, this);
 		node.setCacheIDT(o.m_nCacheID);
 		//node.assignFt(o.getF());
 		node.initFt(o.getF());
 	}
 
-	static double [] getFt(int N, NodeData u) {
+	double [] getFt(int N, NodeData u) {
 		double [] uFt = u.getFt().asVectorCopy(); 
 		for(int n=1; n<=N; n++) {
 			double b_nr = 1.0;
@@ -183,7 +183,7 @@ public class SiteProbabilityCalculator {
 		return uFt;
 	}
 
-	static double [] getConvolution(int N1, int N2, double [] u1Ft, double [] u2Ft) {
+	double [] getConvolution(int N1, int N2, double [] u1Ft, double [] u2Ft) {
 		int N = N1 + N2;
 		double [] parentFb = new double [(N+1)*(N+2)/2-1];
 			for(int n1=1;n1<=N1;n1++) {
@@ -203,7 +203,7 @@ public class SiteProbabilityCalculator {
 		return parentFb;
 	}
 
-	static void doInternalLikelihood(NodeData u1, NodeData u2, NodeData parent, boolean dprint) {
+	void doInternalLikelihood(NodeData u1, NodeData u2, NodeData parent, boolean dprint) {
 		/**
 		 Let Y and Z be the F tables for u1 and u2.
 
@@ -306,7 +306,7 @@ public class SiteProbabilityCalculator {
 
 
 
-	static void doInternalLikelihood(NodeData u1, NodeData parent, boolean dprint)
+	void doInternalLikelihood(NodeData u1, NodeData parent, boolean dprint)
 	{
 		/**
 		 This node has a single child. We simply copy the likelihood table from the
@@ -327,7 +327,7 @@ public class SiteProbabilityCalculator {
 	/**
 	 Computes likelihood at a leaf. That is, one for the correct number of lineages and zero otherwise.
 	 **/
-	static void doLeafLikelihood(NodeData node, int nReds, boolean dprint)
+	void doLeafLikelihood(NodeData node, int nReds, boolean dprint)
 	{
 		node.initFb(node.m_n, nReds);
 		//node.resizeF(node.n);
@@ -341,7 +341,7 @@ public class SiteProbabilityCalculator {
 	 * @throws Exception 
 
 	 **/
-	static void doTopOfBranchLikelihood(NodeData node, double u, double v, boolean dprint) throws Exception {
+	void doTopOfBranchLikelihood(NodeData node, double u, double v, boolean dprint) throws Exception {
 
 		//int N = node.m_n;
 
@@ -376,7 +376,7 @@ public class SiteProbabilityCalculator {
 	 * @throws Exception 
 	 @bool updateAll Update the partial likelihoods for all nodes.
 	 */
-	static void computeSiteLikelihood2(NodeData tree, double u, double v, int [] redCount, boolean dprint/*=false*/) throws Exception {
+	void computeSiteLikelihood2(NodeData tree, double u, double v, int [] redCount, boolean dprint/*=false*/) throws Exception {
 		//Post-order traversal
 		if (tree.isLeaf()) {
 			doLeafLikelihood(tree, redCount[tree.getNr()], dprint);
@@ -396,7 +396,7 @@ public class SiteProbabilityCalculator {
 		}
 	} // computeSiteLikelihood2
 
-	static void computeCachedSiteLikelihood2(NodeData tree, double u, double v, int [] redCount, boolean dprint/*=false*/) throws Exception {
+	void computeCachedSiteLikelihood2(NodeData tree, double u, double v, int [] redCount, boolean dprint/*=false*/) throws Exception {
 		//Post-order traversal
 		if (tree.isLeaf()) {
 			doCachedLeafLikelihood(tree, redCount[tree.getNr()]);
@@ -416,7 +416,7 @@ public class SiteProbabilityCalculator {
 		}
 	} // computeSiteLikelihood2
 	
-	public static double computeSiteLikelihood(NodeData tree, double u, double v, int [] redCount, boolean useCache, boolean dprint/*=false*/) throws Exception {
+	public double computeSiteLikelihood(NodeData tree, double u, double v, int [] redCount, boolean useCache, boolean dprint/*=false*/) throws Exception {
 		if (useCache) {
 			computeCachedSiteLikelihood2(tree, u, v, redCount, dprint/*=false*/);
 		} else {

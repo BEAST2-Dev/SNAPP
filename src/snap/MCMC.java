@@ -26,20 +26,14 @@
 package snap;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import beast.core.*;
 import beast.util.*;
 
 @Description("Allow sampling from the prior.")
 public class MCMC extends beast.core.MCMC {
-	
 	public Input<Integer> m_oStateBurnIn = new Input<Integer>("stateBurnin", "Number of burn in samples taken on the prior only to determine initial state", 0);
 	public Input<Distribution> m_stateDistribution = new Input<Distribution>("stateDistribution", "Uncertainty from which the initial state is sampled for 'stateBurnin' of samples. Must be specified if stateBurnin is larger than zero.");
 	public Input<Integer> m_killAfterXSeconds = new Input<Integer>("killAfter", "Number of seconds after which the job is killed. When negative (default) this is ignored", -1);
-	
-	List<Integer> m_gammas;
 	
 	@Override
 	public void initAndValidate() throws Exception {
@@ -49,16 +43,10 @@ public class MCMC extends beast.core.MCMC {
 				throw new Exception("stateBurnin is larger than zero, but stateUncertainty not specified");
 			}
 		}
-		
-		m_gammas = new ArrayList<Integer>();
-		for (StateNode stateNode: state.stateNode) {
-			if (stateNode instanceof GammaParameter) {
-				m_gammas.add(stateNode.index);
-			}
-		}
 	} // init
 
 
+	@Override
 	public void run() throws Exception {
     	// set up state (again). Other plugins may have manipulated the
     	// StateNodes, e.g. set up bounds or dimensions
@@ -67,7 +55,7 @@ public class MCMC extends beast.core.MCMC {
     	state.setStateFileName(m_sStateFile);
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
-        	prepare();
+        	//prepare();
         }
 		long tStart = System.currentTimeMillis();
 		state.setEverythingDirty(true);
@@ -91,7 +79,7 @@ public class MCMC extends beast.core.MCMC {
 		// taken from the 'prior', and the stateUncertainty must contain the 'prior'.
 		if (!m_bRestoreFromFile && nStateBurnin > 0) {
 			System.err.println("Sampling state from prior for " + nStateBurnin + " samples...");
-			prepare();
+			//prepare();
 			double fOldLogLikelihood = m_stateDistribution.get().calculateLogP();
 			for (int iSample = -nBurnIn - nStateBurnin; iSample <= -nBurnIn; iSample++) {
 				
@@ -104,7 +92,7 @@ public class MCMC extends beast.core.MCMC {
 					state.storeCalculationNodes();
 					m_stateDistribution.get().store();
 					
-					prepare();
+					//prepare();
 					double fNewLogLikelihood = m_stateDistribution.get().calculateLogP();
 					logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 		            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
@@ -130,7 +118,8 @@ public class MCMC extends beast.core.MCMC {
 		// Go into the main loop
 		boolean bDebug = true;
 		state.setEverythingDirty(true);
-		double fOldLogLikelihood = calc();
+		Distribution posterior = posteriorInput.get();
+		double fOldLogLikelihood = posterior.calculateLogP();
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		boolean bStayAlive = true;
 		for (int iSample = -nBurnIn; iSample <= nChainLength && bStayAlive; iSample++) {
@@ -145,20 +134,9 @@ public class MCMC extends beast.core.MCMC {
 			}
 			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
-				//System.out.print("store ");
 				state.storeCalculationNodes();
-//				proposedState.makeDirty(State.IS_GORED);
-				//System.out.print(operator.getName()+ "\n");
-				//System.err.println(proposedState.toString());
-				//if (bDebug) {
-					//System.out.print(operator.getName()+ "\n");
-					//System.err.println(proposedState.toString());
-					//state.validate();
-				//}			
 				
-				
-				
-				double fNewLogLikelihood = calc();
+				double fNewLogLikelihood = posterior.calculateLogP();
 				logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 	            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 					// accept
@@ -190,7 +168,7 @@ public class MCMC extends beast.core.MCMC {
 				//state.validate();
 				state.setEverythingDirty(true);
 				//System.err.println(m_state.toString());
-				double fLogLikelihood = calc();
+				double fLogLikelihood = posterior.calculateLogP();
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
 					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}
@@ -215,28 +193,10 @@ public class MCMC extends beast.core.MCMC {
 
 	
 		state.setEverythingDirty(true);
-		//System.err.println(m_state.toString());
-		double fLogLikelihood = calc();
-        System.err.println("End likelihood: " + fOldLogLikelihood + " " + fLogLikelihood);
+        System.err.println("End likelihood: " + fOldLogLikelihood);
         System.err.println("End state:");
 		System.err.println(state.toString());
 		state.storeToFile();
 	} // run;
 
-	/** calculate log likelihood for posterior **/
-	protected double calc() throws Exception {
-		prepare();
-		// recalculates all likelihoods from scratch
-		double fLogP = 0;
-		fLogP = posteriorInput.get().calculateLogP();
-		return fLogP;
-	} // calc
-
-	/** synchronise gamma values in tree with parameter **/
-	void prepare() {
-		for (Integer iGamma : m_gammas) {
-			GammaParameter gamma = (GammaParameter) state.getStateNode(iGamma);
-			gamma.prepare();
-		}
-	} // prepare
 } // class MCMC
