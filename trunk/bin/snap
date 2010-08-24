@@ -1,0 +1,6 @@
+#!/bin/sh
+# Either runs snap from the trunk directory, or
+# otherwise the SNAP environment veriable should point there.
+SNAP=$SNAP./dist
+java -Xms64m -Xmx256m -jar $SNAP/snap.jar $*
+
