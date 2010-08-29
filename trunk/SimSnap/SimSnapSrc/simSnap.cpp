@@ -7,6 +7,9 @@
  *
  */
 
+
+//TODO: extend tree parser so that [theta=xxx] is allowed.
+
 #include "sortingSimulation.h"
 #include "characterData.h"
 //#include "posteriorCheck.h"
@@ -82,7 +85,7 @@ public:
 	}
 };
 		
-void output_xml(ostream& os, const vector<string>& taxa, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts) {
+void output_xml(ostream& os, const vector<string>& taxa, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, const string fileroot="test") {
 	os<<"<snap version='2.0' namespace='snap:beast.util'>\n";
 	os<<"\n";
 	os<<"<map name='snapprior'>snap.likelihood.SnAPPrior</map>\n";
@@ -107,7 +110,7 @@ double lambda=10;
 
 
 os <<"\n";
-os <<"<run id='mcmc' spec='snap.MCMC' chainLength='100000' preBurnin='0' stateBurnin='100000'>\n";
+os <<"<run id='mcmc' spec='snap.MCMC' chainLength='100000' preBurnin='0' stateBurnin='10000'>\n";
 os <<"        <state>\n";
 os <<"          <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10'>\n";
 os <<"            <tree idref='tree'/>\n";
@@ -160,8 +163,24 @@ os <<"	        <tree name='tree' idref='tree'/>\n";
 os <<"	        <parameter name='gamma' idref='gamma'/>\n";
 os <<"        </operator>\n";
 os <<"\n";
+	//Settings for output of MCMC chain
 os <<"        <log logEvery='100'>\n";
-os <<"	    <model idref='posterior'/>\n";
+os <<"			  <model idref='posterior'/>\n";
+os <<"            <parameter name='log' idref='u'/>\n";
+os <<"            <parameter name='log' idref='v'/>\n";
+os <<"            <distribution name='log' idref='prior'/>\n";
+os <<"            <distribution name='log' idref='treeLikelihood'/>\n";
+os <<"            <distribution name='log' idref='posterior'/>\n";
+os <<"	          <parameter name='log' idref='gamma'/>\n";
+os <<"	          <log spec='snap.ThetaLogger'>\n";
+os <<"		          <gamma idref='gamma'/>\n";
+os <<"	          </log>\n";
+os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger'>\n";
+os <<"		         <tree idref='tree'/>\n";
+os <<"	          </log>\n";
+os <<"        </log>\n";
+os <<"        <log logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
+os <<"	          <model idref='posterior'/>\n";
 os <<"            <parameter name='log' idref='u'/>\n";
 os <<"            <parameter name='log' idref='v'/>\n";
 os <<"            <distribution name='log' idref='prior'/>\n";
@@ -175,22 +194,7 @@ os <<"	    <log spec='beast.evolution.tree.TreeHeightLogger'>\n";
 os <<"		<tree idref='tree'/>\n";
 os <<"	    </log>\n";
 os <<"        </log>\n";
-os <<"        <log logEvery='100' fileName='test.$(seed).log'>\n";
-os <<"	    <model idref='posterior'/>\n";
-os <<"            <parameter name='log' idref='u'/>\n";
-os <<"            <parameter name='log' idref='v'/>\n";
-os <<"            <distribution name='log' idref='prior'/>\n";
-os <<"            <distribution name='log' idref='treeLikelihood'/>\n";
-os <<"            <distribution name='log' idref='posterior'/>\n";
-os <<"	    <parameter name='log' idref='gamma'/>\n";
-os <<"	    <log spec='snap.ThetaLogger'>\n";
-os <<"		<gamma idref='gamma'/>\n";
-os <<"	    </log>\n";
-os <<"	    <log spec='beast.evolution.tree.TreeHeightLogger'>\n";
-os <<"		<tree idref='tree'/>\n";
-os <<"	    </log>\n";
-os <<"        </log>\n";
-os <<"        <log logEvery='100' fileName='test.$(seed).trees'>\n";
+os <<"        <log logEvery='100' fileName='"<<fileroot<<".$(seed).trees'>\n";
 os <<"            <tree name='log' idref='tree'/>\n";
 os <<"        </log>\n";
 os <<"</run>\n";
@@ -372,7 +376,7 @@ int main(int argc, char* argv[]) {
             (*os) << "<!-- input tree: ";
             print_newick(*os,tree,true,true);
             (*os) << "-->\n";
-			output_xml(*os,species,sampleSizes,u,v,alleleCounts);
+			output_xml(*os,species,sampleSizes,u,v,alleleCounts,fileroot);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
