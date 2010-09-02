@@ -59,13 +59,14 @@ public class RateMixer extends Operator {
 		}
 		//gamma.mulValues(scale);
 		Tree tree = m_pTree.get(this);
+		int nInternalNodes = 0;
 		try {
-			tree.getRoot().scale(1/scale);
+			nInternalNodes = tree.scale(1/scale);
 		} catch (Exception e) {
 			return Double.NEGATIVE_INFINITY;
 		}
 
-		return -Math.log(scale) * (gamma.getDimension() + (tree.getNodeCount()-1)/2 - 1);
+		return Math.log(scale) * (-2 * gamma.getDimension());// - nInternalNodes - 0);
 	}
 
 	/** automatic parameter tuning **/
