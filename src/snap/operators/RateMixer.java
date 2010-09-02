@@ -65,8 +65,8 @@ public class RateMixer extends Operator {
 		} catch (Exception e) {
 			return Double.NEGATIVE_INFINITY;
 		}
-
-		return Math.log(scale) * (-2 * gamma.getDimension());// - nInternalNodes - 0);
+		// # gamma values changed + 1 for the root height + 2 from the Jacobian
+		return Math.log(scale) * (-gamma.getDimension() - 1 - 2);
 	}
 
 	/** automatic parameter tuning **/
