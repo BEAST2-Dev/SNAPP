@@ -2,7 +2,7 @@
 u=v=1.0 alpha=2, beta=0.2 lambda=10
 --> 
 
-<snap version='2.0' namespace='snap:beast.util'>
+<snap version='2.0' namespace='snap:beast.util:beast.core.util:beast.evolution'>
 
 <map name='snapprior'>snap.likelihood.SnAPPrior</map>
 <map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
@@ -41,9 +41,9 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
-<run id="mcmc" spec='snap.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='100000' killAfter='5'>
+<run id="mcmc" spec='snap.MCMC' chainLength="100000" preBurnin="0" stateBurnin='100000' killAfter='0'>
         <state>
-          <stateNode spec='GammaParameter' id='gamma' initFromTree='true' pattern='gamma' value='10'>
+          <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10'>
             <tree idref="tree"/>
           </stateNode>
 
@@ -63,7 +63,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 -->
         </state>
 
-        <distribution id="posterior" spec='beast.core.util.CompoundDistribution'>
+        <distribution id="posterior" spec='CompoundDistribution'>
      	    <snapprior name='distribution' id='prior'>
     	        <alpha idref='alpha'/>
         		<beta idref='beta'/>
@@ -83,55 +83,57 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
         <stateDistribution idref='prior'/>
 
     	<operator spec='operators.NodeSwapper' weight="0.5">
-	    <tree name='tree' idref="tree"/>
-	</operator>
+    	    <tree name='tree' idref="tree"/>
+    	</operator>
         <operator spec='operators.NodeBudger' weight="0.5" size="0.5">
             <tree name='tree' idref="tree"/>
         </operator>
-	<operator spec='beast.evolution.operators.ScaleOperator' scaleFactor="0.25" weight="0.5">
-	    <tree name='tree' idref="tree"/>
-	</operator>
+    	<operator spec='operators.ScaleOperator' scaleFactor="0.25" weight="0.5">
+    	    <tree name='tree' idref="tree"/>
+    	</operator>
         <operator spec='operators.GammaMover' pGammaMove="0.5" weight="8">
-	    <parameter name='gamma' idref="gamma"/>
+    	    <parameter name='gamma' idref="gamma"/>
         </operator>
         <operator spec='operators.RateMixer' scaleFactors="0.25" weight="1">
-	    <tree name='tree' idref="tree"/>
-	    <parameter name='gamma' idref="gamma"/>
+    	    <tree name='tree' idref="tree"/>
+    	    <parameter name='gamma' idref="gamma"/>
         </operator>
 
-        <log logEvery="100">
-	    <model idref='posterior'/>
+        <logger logEvery="1000">
+    	    <model idref='posterior'/>
             <parameter name='log' idref="u"/>
             <parameter name='log' idref="v"/>
             <distribution name='log' idref="prior"/>
             <distribution name='log' idref="treeLikelihood"/>
             <distribution name='log' idref="posterior"/>
-	    <parameter name='log' idref='gamma'/>
-	    <log spec='snap.ThetaLogger'>
-		<gamma idref='gamma'/>
-	    </log>
-	    <log spec='beast.evolution.tree.TreeHeightLogger'>
-		<tree idref='tree'/>
-	    </log>
-        </log>
-        <log logEvery="100" fileName="test.$(seed).log">
-	    <model idref='posterior'/>
+    	    <log spec='snap.ThetaLogger'>
+	        	<gamma idref='gamma'/>
+    	    </log>
+	        <log spec='beast.evolution.tree.TreeHeightLogger'>
+	        	<tree idref='tree'/>
+    	    </log>
+        </logger>
+        <logger logEvery="1000" fileName="test.$(seed).log">
+	        <model idref='posterior'/>
             <parameter name='log' idref="u"/>
             <parameter name='log' idref="v"/>
             <distribution name='log' idref="prior"/>
             <distribution name='log' idref="treeLikelihood"/>
             <distribution name='log' idref="posterior"/>
-	    <parameter name='log' idref='gamma'/>
-	    <log spec='snap.ThetaLogger'>
-		<gamma idref='gamma'/>
-	    </log>
-	    <log spec='beast.evolution.tree.TreeHeightLogger'>
-		<tree idref='tree'/>
-	    </log>
-        </log>
-        <log logEvery="100" fileName="test.$(seed).trees">
+    	    <parameter name='log' idref='gamma'/>
+    	    <log spec='snap.ThetaLogger'>
+        		<gamma idref='gamma'/>
+    	    </log>
+    	    <log spec='beast.evolution.tree.TreeHeightLogger'>
+        		<tree idref='tree'/>
+    	    </log>
+    	    <log spec='TreeLengthLogger'>
+	        	<tree idref='tree'/>
+    	    </log>
+        </logger>
+        <logger logEvery="1000" fileName="test.$(seed).trees">
             <tree name='log' idref="tree"/>
-        </log>
+        </logger>
 </run>
 
 </snap>

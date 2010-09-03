@@ -75,7 +75,7 @@
         <operator spec='operators.NodeBudger' weight="0.5" size="0.5">
             <tree name='tree' idref="tree"/>
         </operator>
-	    <operator spec='beast.evolution.operators.ScaleOperator' scaleFactor="0.25" weight="0.5">
+	    <operator spec='operators.ScaleOperator' scaleFactor="0.25" weight="0.5">
 		    <tree name='tree' idref="tree"/>
 	    </operator>
         <operator spec='operators.GammaMover' pGammaMove="0.5" weight="8">
@@ -86,23 +86,23 @@
 		    <parameter name='gamma' idref="gamma"/>
         </operator>
 
-        <log logEvery="1">
-            <parameter name='log' idref="u"/>
-            <parameter name='log' idref="v"/>
-         	<uncertainty name='log' idref="prior"/>
-	        <uncertainty name='log' idref="treeLikelihood"/>
-            <uncertainty name='log' idref="posterior"/>
-        </log>
-        <log logEvery="100" fileName="test.$(seed).log">
-            <parameter name='log' idref="u"/>
-            <parameter name='log' idref="v"/>
-         	<uncertainty name='log' idref="prior"/>
-	        <uncertainty name='log' idref="treeLikelihood"/>
-            <uncertainty name='log' idref="posterior"/>
-        </log>
-        <log logEvery="100" fileName="test.$(seed).trees">
-            <tree name='log' idref="tree"/>
-        </log>
+        <logger logEvery="1">
+            <log idref="u"/>
+            <log idref="v"/>
+         	<log idref="prior"/>
+	        <log idref="treeLikelihood"/>
+            <log idref="posterior"/>
+        </logger>
+        <logger logEvery="100" fileName="test.$(seed).log">
+            <log idref="u"/>
+            <log idref="v"/>
+         	<log idref="prior"/>
+	        <log idref="treeLikelihood"/>
+            <log idref="posterior"/>
+        </logger>
+        <logger logEvery="100" fileName="test.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
 </run>
 
 </snap>
