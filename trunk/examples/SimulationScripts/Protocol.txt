@@ -1,0 +1,110 @@
+Simulation README
+
+
+
+--------------------------------------------------------------
+PROTOCOL
+______________________________________________________________
+PARAMETERS:
+
+s: Number of species
+n: Number of individuals per species
+\lambda: Lambda parameter for Yule distribution
+l: Number of sites
+\alpha, \beta: parameters of gamma prior distribution
+
+
+RANGES (are these feasible?)
+
+s = 4 or 8.
+n = 2 or 5.
+\lambda =  10
+alpha = 2
+beta = 200.0  [hence mean = 0.1]
+l = 1000, 100000
+
+That means 8 different parameter combinations. My suggestion is that we run these once, and as many replications of the 8 as we can manage.
+
+
+PROTOCOL:"
+
+
+For each combination of parameters:
+
+1. Generate species tree using Yule prior [I can write this.... very easy]
+	<store: heights of nodes, topology>
+2. Generate initial theta/gamma values from the gamma distribution (parameters alpha, beta)
+
+[This is the 'true' tree and 'true' pop sizes']
+
+3. Generate l non-constant characters using existing simsnap software.
+
+4. Run snap, using the true prior values, but starting from a random tree (from the prior) with random gamma
+values (from the prior).
+
+5. Assess burnin by eye after 10^6 iterations. Continue for longer as necessary???
+
+6. Rank trees in chain by posterior probability. Determine whether or not true tree within 95% cred. set.
+
+7. Restricting only to 'true' tree, compute the node heights for each sampled entry. Output these, and gamma values, and posterior probs, for each sample, to a file. 
+
+
+REPORT:
+
+Proportion of times true tree was in credible set.
+Size of credible (topology) set.
+
+True tree: 
+True Node Heights. True Gamma values.
+
+Parameter files:
+Likelihood & Prior & Node Heights & Gamma values.
+
+
+Compute simple residual for vector of node heights and vector of pop sizes. Check credibility sets (R-analysis). Nice plots.
+
+
+-------------------------------------------------------------
+EXECUTION NOTES
+
+
+
+Script file: 
+FourSpeciesPriorOnly.xml
+EightSpeciesPriorOnly.xml
+
+Both create output (with snap) containing exactly 10 trees:
+fourSpeciesPrior.trees
+eightSpeciesPrior.trees	
+and associated files with the theta and height values:
+fourSpeciesPrior.log
+eightSpeciesPrior.log	
+
+The trees were cut-and-pasted into eight simsnap files:
+
+4Species2SamplesSimSnap1000.txt
+4Species5SamplesSimSnap1000.txt
+8Species2SamplesSimSnap1000.txt
+8Species5SamplesSimSnap1000.txt
+
+4Species2SamplesSimSnap100000.txt
+4Species5SamplesSimSnap100000.txt
+8Species2SamplesSimSnap100000.txt
+8Species5SamplesSimSnap100000.txt
+
+which were moved into the directory SimSnapInput
+
+We then used SimSnap to create the input files for Snap. These are named:
+	4Species2SamplesSimSnap100000_tree_1.xml
+to
+	8Species5SamplesSimSnap100000_tree_10.xml
+
+and were copied to SnapInput
+
+Copied the snap jar to SnapInput. Ran code using 
+
+java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_1.xml 
+
+
+
+
