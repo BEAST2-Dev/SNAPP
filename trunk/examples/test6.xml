@@ -74,56 +74,58 @@
 
         <stateDistribution idref='prior'/>
 
-    	<operator spec='operators.NodeSwapper' weight='0.5'>
-	        <tree name='tree' idref='tree'/>
+    	<operator spec='operators.NodeSwapper' weight="0.5">
+    	    <tree name='tree' idref="tree"/>
     	</operator>
-        <operator spec='operators.NodeBudger' weight='0.5' size='0.5'>
-            <tree name='tree' idref='tree'/>
+        <operator spec='operators.NodeBudger' weight="0.5" size="0.5">
+            <tree name='tree' idref="tree"/>
         </operator>
-	    <operator spec='beast.evolution.operators.ScaleOperator' scaleFactor='0.25' weight='0.5'>
-	        <tree name='tree' idref='tree'/>
+    	<operator spec='operators.ScaleOperator' scaleFactor="0.25" weight="0.5">
+    	    <tree name='tree' idref="tree"/>
     	</operator>
-        <operator spec='operators.GammaMover' pGammaMove='0.5' weight='8'>
-	        <parameter name='gamma' idref='gamma'/>
+        <operator spec='operators.GammaMover' pGammaMove="0.5" weight="8">
+    	    <parameter name='gamma' idref="gamma"/>
         </operator>
-        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>
-	        <tree name='tree' idref='tree'/>
-	        <parameter name='gamma' idref='gamma'/>
+        <operator spec='operators.RateMixer' scaleFactors="0.25" weight="1">
+    	    <tree name='tree' idref="tree"/>
+    	    <parameter name='gamma' idref="gamma"/>
         </operator>
 
-        <log logEvery='100'>
-	    <model idref='posterior'/>
-            <parameter name='log' idref='u'/>
-            <parameter name='log' idref='v'/>
-            <distribution name='log' idref='prior'/>
-            <distribution name='log' idref='treeLikelihood'/>
-            <distribution name='log' idref='posterior'/>
-	    <parameter name='log' idref='gamma'/>
-	    <log spec='snap.ThetaLogger'>
-		<gamma idref='gamma'/>
-	    </log>
-	    <log spec='beast.evolution.tree.TreeHeightLogger'>
-		<tree idref='tree'/>
-	    </log>
-        </log>
-        <log logEvery='100' fileName='test.$(seed).log'>
-	    <model idref='posterior'/>
-            <parameter name='log' idref='u'/>
-            <parameter name='log' idref='v'/>
-            <distribution name='log' idref='prior'/>
-            <distribution name='log' idref='treeLikelihood'/>
-            <distribution name='log' idref='posterior'/>
-	    <parameter name='log' idref='gamma'/>
-	    <log spec='snap.ThetaLogger'>
-		<gamma idref='gamma'/>
-	    </log>
-	    <log spec='beast.evolution.tree.TreeHeightLogger'>
-		<tree idref='tree'/>
-	    </log>
-        </log>
-        <log logEvery='100' fileName='test.$(seed).trees'>
-            <tree name='log' idref='tree'/>
-        </log>
+        <logger logEvery="100">
+    	    <model idref='posterior'/>
+            <parameter name='log' idref="u"/>
+            <parameter name='log' idref="v"/>
+            <distribution name='log' idref="prior"/>
+            <distribution name='log' idref="treeLikelihood"/>
+            <distribution name='log' idref="posterior"/>
+    	    <log spec='snap.ThetaLogger'>
+	        	<gamma idref='gamma'/>
+    	    </log>
+	        <log spec='beast.evolution.tree.TreeHeightLogger'>
+	        	<tree idref='tree'/>
+    	    </log>
+        </logger>
+        <logger logEvery="100" fileName="test.$(seed).log">
+	        <model idref='posterior'/>
+            <parameter name='log' idref="u"/>
+            <parameter name='log' idref="v"/>
+            <distribution name='log' idref="prior"/>
+            <distribution name='log' idref="treeLikelihood"/>
+            <distribution name='log' idref="posterior"/>
+    	    <parameter name='log' idref='gamma'/>
+    	    <log spec='snap.ThetaLogger'>
+        		<gamma idref='gamma'/>
+    	    </log>
+    	    <log spec='beast.evolution.tree.TreeHeightLogger'>
+        		<tree idref='tree'/>
+    	    </log>
+    	    <log spec='TreeLengthLogger'>
+	        	<tree idref='tree'/>
+    	    </log>
+        </logger>
+        <logger logEvery="100" fileName="test.$(seed).trees">
+            <tree name='log' idref="tree"/>
+        </logger>
 </run>
 
 
