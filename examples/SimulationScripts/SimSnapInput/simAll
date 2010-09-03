@@ -1,0 +1,8 @@
+simsnap 1000 4Species2SamplesSimSnap1000.txt > blah1 &	
+simsnap 1000 8Species2SamplesSimSnap1000.txt > blah2 &
+simsnap 100000 4Species2SamplesSimSnap100000.txt > blah3 &	
+simsnap 100000 8Species2SamplesSimSnap100000.txt > blah4 &
+simsnap 1000 4Species5SamplesSimSnap1000.txt > blah5 &			
+simsnap 1000 8Species5SamplesSimSnap1000.txt > blah6 &
+simsnap 100000 4Species5SamplesSimSnap100000.txt > blah7 &		
+simsnap 100000 8Species5SamplesSimSnap100000.txt > blah8 &
