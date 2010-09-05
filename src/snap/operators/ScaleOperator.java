@@ -92,7 +92,8 @@ public class ScaleOperator extends Operator {
 
                 double scaleOne = (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
                 double value = scaleOne * param.getValue(i);
-
+				
+				
                 hastingsRatio -= Math.log(scaleOne);
 
                 if (value < param.getLower() || value > param.getUpper()) {
@@ -105,6 +106,26 @@ public class ScaleOperator extends Operator {
             // update all dimensions
             // hasting ratio is dim-2 times of 1dim case. would be nice to have a reference here
             // for the proof. It is supposed to be somewhere in an Alexei/Nicholes article.
+			/*
+			 Here is a proof (DB). 
+			 Using Green's formalism, we start with a vector (lets call it x) of dimension dim and a random variable u \in [s,1/s],
+			 where s is the scale factor. The scale move takes (x,u) to (y,v) where
+				y_i = x_i * u
+				v = 1/u.
+			 Note that if we apply the same move to (y,v) we get back to (x,u). 
+			 The Jacobian matrix looks like
+			 
+			 u*I   x
+			 0     -1/u^2
+			 
+			 where I is the dim*dim identity matrix. Conveniently, this matrix is upper diagonal, so the determinant
+			 is just the product of the diagonal elements: dim copies of u and -u^{-2}. So the absolute
+			 value of the determinant is u^{dim-2}.
+			 
+			 Note that when dim=1 we get a Hastings ratio of u^{-1} (case above).
+			 */
+			 
+			 
             if (nDegreesOfFreedom > 0)
                 // For parameters with non-uniform prior on only one dimension
                 hastingsRatio = -nDegreesOfFreedom * Math.log(scale);
