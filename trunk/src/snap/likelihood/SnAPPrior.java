@@ -91,9 +91,16 @@ public class SnAPPrior extends Distribution {
         //double [] gamma = state.getParameter(m_pGamma).getValues();
         //	We assume that theta has a gamma (alpha,beta) distribution, so that
         //the gamma parameter has 2/gamma(alpha,beta) distribution
+		//Because of the transform of variables, we need to include the appropriate
+		//Jacobian.... that is, if f(theta) is the GAMMA distribution, we want
+		// f(2/gamma) / (gamma^2). This has been independently tested in mathlab.
+		
         for (int iNode = 0; iNode < gamma.getDimension(); iNode++) {
-            double x = 2.0/gamma.getValue(iNode);
-            logP += (alpha - 1.0)*Math.log(x) - (beta * x);
+			double g = gamma.getValue(iNode);
+			logP += -(alpha+1.0)*Math.log(g) - beta*(2.0/g);
+			
+            //double x = 2.0/gamma.getValue(iNode);
+            //logP += (alpha - 1.0)*Math.log(x) - (beta * x);
         }
         return logP;
     } // calculateLogLikelihood
