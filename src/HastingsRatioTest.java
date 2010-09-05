@@ -1,10 +1,11 @@
-package test;
+
+
 
 import java.util.Random;
 
 /** clean room test for Hastings ratio for tree scaler **/
 public class HastingsRatioTest {
-	
+
 	class Node {
 		Node(double fHeight) {m_fHeight = fHeight;}
 		Node m_left;
