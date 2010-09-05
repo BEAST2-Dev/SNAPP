@@ -82,8 +82,8 @@ public class SnAPLikelihoodCore  {
 			for(int id = 0; id < numPatterns - 2; id++) {
 			//for(int id=0;id<60;id++) {
 				//System.err.print('.');
-				if (id>0 && id%100 == 0)
-					System.err.print(id + " ");
+				//if (id>0 && id%100 == 0)
+				//	System.err.print(id + " ");
 				int [] thisSite = data.getPattern(id);
 				double freq = data.getPatternWeight(id);
 				double siteL=0.0;

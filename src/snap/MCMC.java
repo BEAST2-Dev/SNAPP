@@ -135,6 +135,7 @@ public class MCMC extends beast.core.MCMC {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);
+
 			Operator operator = operatorSet.selectOperator();
 			if (iSample == 24) {
 				int h = 3;
@@ -172,7 +173,8 @@ public class MCMC extends beast.core.MCMC {
 					operator.reject();
 				}
 			}
-			log(iSample);
+            log(iSample);
+            
 			
 			if (bDebug) {
 				state.store(iSample);
