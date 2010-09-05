@@ -123,7 +123,7 @@ public class MCMC extends beast.core.MCMC {
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		
 		int iGammaParameter = -1;
-		for (int i = 0; i < state.getNrStateNodes(); i++) {
+		for (int i = 0; i < state.getNrOfStateNodes(); i++) {
 			if (state.getStateNode(i) instanceof GammaParameter) {
 				iGammaParameter = i; 
 			}
