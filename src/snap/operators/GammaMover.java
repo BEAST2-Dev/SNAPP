@@ -50,7 +50,7 @@ public class GammaMover extends Operator {
 		int whichNode = Randomizer.nextInt(gamma.getDimension());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
-		gamma.setValue(whichNode, gamma.getValue(whichNode)/scale);
+		gamma.setValue(whichNode, gamma.getValue(whichNode)*scale);
 		return Math.log(scale);
 	}
 
