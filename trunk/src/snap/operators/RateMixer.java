@@ -54,6 +54,7 @@ public class RateMixer extends Operator {
 		//double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
         double scale = (m_fMixGamma + (Randomizer.nextDouble() * ((1.0 / m_fMixGamma) - m_fMixGamma)));
 		//state.mulValues(scale, gamma);
+		
 		for (int i = 0; i < gamma.getDimension(); i++) {
 			gamma.setValue(i, gamma.getValue(i) * scale);
 		}
@@ -65,12 +66,15 @@ public class RateMixer extends Operator {
 		} catch (Exception e) {
 			return Double.NEGATIVE_INFINITY;
 		}
-		// # gamma values changed + 1 for the root height + 2 from the Jacobian
+		
+		
+		
 		//For the Hastings ratio. If there are n leaves, then there are n-1 heights and 2n-1 branches (including one above root).
 		// Hastings ratio is therefore (1/u)^(n-1) * u^(2n-1) * u^{-2} = u^(-n+1+2n-1-2} = u^{n-2}, which is not the same as below! 
+		//Here n = nInternalNodes+1;
 		
 		
-		return Math.log(scale) * (-gamma.getDimension() - 1 - 2);
+		return Math.log(scale) * (nInternalNodes-1);
 	}
 
 	/** automatic parameter tuning **/
