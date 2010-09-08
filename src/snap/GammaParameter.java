@@ -47,8 +47,18 @@ public class GammaParameter extends RealParameter {
 	
 	@Override
 	public void initAndValidate() throws Exception {
-		super.initAndValidate();
-		m_tree = m_pTree.get();
+    	if (lowerValueInput.get() != null) {
+    		m_fLower = lowerValueInput.get();
+    	} else {
+    		m_fLower = Double.NEGATIVE_INFINITY;
+    	}
+    	if (upperValueInput.get() != null) {
+    		m_fUpper = upperValueInput.get();
+    	} else {
+    		m_fUpper = Double.POSITIVE_INFINITY;
+    	}
+
+    	m_tree = m_pTree.get();
 		
 		if (m_bInitFromTree.get() == true) {
 			values = new Double[m_tree.getNodeCount()];
@@ -57,9 +67,16 @@ public class GammaParameter extends RealParameter {
 		} else {
 			values = new Double[m_tree.getNodeCount()];
 			m_nDimension.setValue(new Integer(values.length), this);
-			for (int i = 0; i < values.length; i++) {
-				values[i] = (Double) m_pValues.get();
-			}
+
+	    	String sValue = m_pValues.get();
+	    	// remove start and end spaces
+	    	sValue = sValue.replaceAll("^\\s+", "");
+	    	sValue = sValue.replaceAll("\\s+$", "");
+	    	// split into space-separated bits
+	    	String [] sValues = sValue.split("\\s+");
+	        for (int i = 0; i < values.length; i++) {
+	            values[i] = new Double(sValues[i % sValues.length]);
+	        }
 			m_tree.setMetaData(m_tree.getRoot(), values, m_pPattern.get());
 		}
     	m_bIsDirty = new boolean[m_nDimension.get()];
