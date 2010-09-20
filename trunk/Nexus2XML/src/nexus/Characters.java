@@ -4,13 +4,13 @@
 
 package nexus;
 
+import core.GenericException;
 import jloda.util.Alert;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.SparseArray;
 import jloda.util.parse.NexusStreamParser;
 import jloda.util.parse.NexusStreamTokenizer;
-import core.SplitsException;
 import core.TaxaSet;
 
 import java.io.*;
@@ -288,9 +288,9 @@ public class Characters extends NexusBlock {
          * Set the value of labels.
          *
          * @param labels the value of labels
-         * @throws SplitsException Don't know why this is here. //TODO: remove this?
+         * @throws core.GenericException Don't know why this is here. //TODO: remove this?
          */
-        public void setLabels(boolean labels) throws SplitsException {
+        public void setLabels(boolean labels) throws GenericException {
             this.labels = labels;
         }
 
@@ -345,12 +345,12 @@ public class Characters extends NexusBlock {
          * Set the value of the matchchar
          *
          * @param matchChar char used to indicate a match (usually '.')
-         * @throws SplitsException if the character is punctuation or a space.
+         * @throws core.GenericException if the character is punctuation or a space.
          */
-        public void setMatchchar(char matchChar) throws SplitsException {
+        public void setMatchchar(char matchChar) throws GenericException {
             if (NexusStreamTokenizer.isLabelPunctuation(matchChar)
                     || NexusStreamTokenizer.isSpace(matchChar))
-                throw new SplitsException("illegal match-character: " + matchChar);
+                throw new GenericException("illegal match-character: " + matchChar);
             this.matchChar = matchChar;
         }
 
@@ -367,12 +367,12 @@ public class Characters extends NexusBlock {
          * Set the value of gap
          *
          * @param gap char character used to indicate a gap.
-         * @throws SplitsException if the character is punctuation or a space.
+         * @throws core.GenericException if the character is punctuation or a space.
          */
-        public void setGap(char gap) throws SplitsException {
+        public void setGap(char gap) throws GenericException {
             if (NexusStreamTokenizer.isLabelPunctuation(gap)
                     || NexusStreamTokenizer.isSpace(gap))
-                throw new SplitsException("illegal gap-character:" + gap);
+                throw new GenericException("illegal gap-character:" + gap);
             this.gap = gap;
 
         }
@@ -390,12 +390,12 @@ public class Characters extends NexusBlock {
          * Set the value of missing
          *
          * @param missing sets character used to indicate a missing state
-         * @throws SplitsException if character is illegal
+         * @throws core.GenericException if character is illegal
          */
-        public void setMissing(char missing) throws SplitsException {
+        public void setMissing(char missing) throws GenericException {
             if (NexusStreamTokenizer.isLabelPunctuation(missing)
                     || NexusStreamTokenizer.isSpace(missing))
-                throw new SplitsException("illegal missing-character:" + missing);
+                throw new GenericException("illegal missing-character:" + missing);
             this.missing = missing;
 
         }
@@ -689,9 +689,9 @@ public class Characters extends NexusBlock {
      *
      * @param ntax  int NUmber of taxa
      * @param nchar int Number of characters (sites)
-     * @throws SplitsException if the ntax or nchars parameters are not valid.
+     * @throws core.GenericException if the ntax or nchars parameters are not valid.
      */
-    public Characters(int ntax, int nchar) throws SplitsException {
+    public Characters(int ntax, int nchar) throws GenericException {
         this();
         this.ntax = ntax;
         this.nchar = nchar;
@@ -706,9 +706,9 @@ public class Characters extends NexusBlock {
      * @param ntax   int NUmber of taxa
      * @param nchar  int Number of characters (sites)
      * @param format Format block
-     * @throws SplitsException if the ntax or nchars parameters are not valid.
+     * @throws core.GenericException if the ntax or nchars parameters are not valid.
      */
-    public Characters(int ntax, int nchar, Format format) throws SplitsException {
+    public Characters(int ntax, int nchar, Format format) throws GenericException {
         this(ntax, nchar);
         fmt = (Format) format.clone();
     }
@@ -1261,12 +1261,12 @@ public class Characters extends NexusBlock {
      * @param np   the nexus streamparser
      * @param taxa the taxa block
      * @param doc  needed for progress bar   //ToDO: Replace with progress bar reference
-     * @throws SplitsException   if there are syntax errors
+     * @throws core.GenericException   if there are syntax errors
      * @throws IOException       if there are file errors
      * @throws CanceledException if user presses cancel during the read
      */
     public void read(NexusStreamParser np, Taxa taxa)
-            throws SplitsException, IOException, CanceledException {
+            throws GenericException, IOException, CanceledException {
         unknownStates = new BitSet();
         hasAmbigStates = false;
 
@@ -1533,9 +1533,9 @@ public class Characters extends NexusBlock {
     /**
      * @param np the nexus parser
      * @throws IOException     when there are input format errors
-     * @throws SplitsException if there are too many states at a site.
+     * @throws core.GenericException if there are too many states at a site.
      */
-    private void readCharStateLabels(NexusStreamParser np, Hashtable charLabeler, StateLabeler stateLabeler) throws IOException, SplitsException {
+    private void readCharStateLabels(NexusStreamParser np, Hashtable charLabeler, StateLabeler stateLabeler) throws IOException, GenericException {
         System.out.println("In readCharStateLabels");
 
         while (np.peekNextToken() != (int) ';') {
@@ -1570,12 +1570,12 @@ public class Characters extends NexusBlock {
      * @param np   the nexus parser
      * @param taxa the taxa
      * @param doc  document used for monitoring progress
-     * @throws SplitsException   if there are syntax errors
+     * @throws core.GenericException   if there are syntax errors
      * @throws IOException       if there are file errors
      * @throws CanceledException if user presses cancel during the read
      */
     private void readMatrix(NexusStreamParser np, Taxa taxa)
-            throws IOException, SplitsException, CanceledException {
+            throws IOException, GenericException, CanceledException {
         matrix = new char[getNtax() + 1][getNchar() + 1];
 
         for (int t = 1; t <= getNtax(); t++) {
@@ -1651,12 +1651,12 @@ public class Characters extends NexusBlock {
      * @param np   the nexus streamparser
      * @param taxa the taxa
      * @param doc  document used for monitoring progress
-     * @throws SplitsException   if there are syntax errors
+     * @throws core.GenericException   if there are syntax errors
      * @throws IOException       if there are file errors
      * @throws CanceledException if user presses cancel during the read
      */
     private void readMatrixTransposed(NexusStreamParser np, Taxa taxa)
-            throws java.io.IOException, SplitsException, CanceledException {
+            throws java.io.IOException, GenericException, CanceledException {
         if (getFormat().getLabels()) {
             for (int t = 1; t <= getNtax(); t++) {
                 if (taxa.getMustDetectLabels()) {
@@ -1731,12 +1731,12 @@ public class Characters extends NexusBlock {
      * @param np   the nexus streamparser
      * @param taxa the taxa
      * @param doc  document used for monitoring progress
-     * @throws SplitsException   if there are syntax errors
+     * @throws core.GenericException   if there are syntax errors
      * @throws IOException       if there are file errors
      * @throws CanceledException if user presses cancel during the read
      */
     private void readMatrixInterleaved(NexusStreamParser np, Taxa taxa)
-            throws java.io.IOException, CanceledException, SplitsException {
+            throws java.io.IOException, CanceledException, GenericException {
         matrix = new char[getNtax() + 1][getNchar() + 1];
         try {
             int c = 0;
@@ -1921,7 +1921,7 @@ public class Characters extends NexusBlock {
                     writeMatrixInterleaved(w, taxa);
                 else
                     writeMatrix(w, taxa);
-            } catch (SplitsException ex) {
+            } catch (GenericException ex) {
             } // simply can't happen
         w.write(";\nEND; [" + Characters.NAME + "]\n");
     }
@@ -1931,11 +1931,11 @@ public class Characters extends NexusBlock {
      *
      * @param w    the writer
      * @param taxa the taxa
-     * @throws SplitsException if there are syntax errors
+     * @throws core.GenericException if there are syntax errors
      * @throws IOException     if there are file errors
      */
     private void writeMatrix(Writer w, Taxa taxa) throws
-            IOException, SplitsException {
+            IOException, GenericException {
 
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
         int columnWidth = 0;
@@ -1978,11 +1978,11 @@ public class Characters extends NexusBlock {
      *
      * @param w    the writer
      * @param taxa the taxa
-     * @throws SplitsException if there are syntax errors
+     * @throws core.GenericException if there are syntax errors
      * @throws IOException     if there are file errors
      */
     private void writeMatrixTranposed(Writer w, Taxa taxa)
-            throws java.io.IOException, SplitsException {
+            throws java.io.IOException, GenericException {
 
         //Get the max width of a column, given taxa and token labels
 
@@ -2036,11 +2036,11 @@ public class Characters extends NexusBlock {
      *
      * @param w    the writer
      * @param taxa the taxa
-     * @throws SplitsException if there are syntax errors
+     * @throws core.GenericException if there are syntax errors
      * @throws IOException     if there are file errors
      */
     private void writeMatrixInterleaved(Writer w, Taxa taxa)
-            throws IOException, SplitsException {
+            throws IOException, GenericException {
         int c = 0;
 
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
@@ -2162,7 +2162,7 @@ public class Characters extends NexusBlock {
         boolean oldLabelFormat = getFormat().getLabels();
         try {
             getFormat().setLabels(true);
-        } catch (SplitsException ex) {
+        } catch (GenericException ex) {
         }
 
         w.write("MATRIX\n");
@@ -2172,12 +2172,12 @@ public class Characters extends NexusBlock {
                     writeMatrixInterleaved(w, taxa);
                 else
                     writeMatrix(w, taxa);
-            } catch (SplitsException ex) {
+            } catch (GenericException ex) {
             } // simply can't happen
         w.write(";\nEND; [" + Characters.NAME + "]\n");
         try {
             getFormat().setLabels(oldLabelFormat);
-        } catch (SplitsException ex) {
+        } catch (GenericException ex) {
         }
     }
 
@@ -2428,14 +2428,14 @@ class StateLabeler {
      * @param site  site in the characters block
      * @param token name os token
      * @return char used to encode that token
-     * @throws SplitsException if there are too many allels at a site.
+     * @throws core.GenericException if there are too many allels at a site.
      */
-    protected char token2char(int site, String token) throws SplitsException {
+    protected char token2char(int site, String token) throws GenericException {
         if (proteins) {
             if (token2charMaps[0].containsKey(token))
                 return ((Character) token2charMaps[site].get(token)).charValue();
             else
-                throw new SplitsException("Unidentified amino acid: " + token);
+                throw new GenericException("Unidentified amino acid: " + token);
         } else if (microsat) {
             int val = Integer.parseInt(token);
             char ch = (char) (val + OFFSET);
@@ -2446,7 +2446,7 @@ class StateLabeler {
         } else {
             int id = token2charMaps[site].size() + 1;
             if (id >= availableChars.length())
-                throw new SplitsException("Too many alleles per site: please contact authors");
+                throw new GenericException("Too many alleles per site: please contact authors");
             Character ch = new Character(availableChars.charAt(id - 1));
             maxState = Math.max(maxState, id - 1);
             token2charMaps[site].put(token, ch);
@@ -2480,9 +2480,9 @@ class StateLabeler {
      * @param firstSite  site that first token is read for.
      * @param transposed true if the tokens all come from the same character/site
      * @return String of encoded chars.
-     * @throws SplitsException if there are too many allels at a site.
+     * @throws core.GenericException if there are too many allels at a site.
      */
-    protected String parseSequence(List tokens, int firstSite, boolean transposed) throws SplitsException {
+    protected String parseSequence(List tokens, int firstSite, boolean transposed) throws GenericException {
         char[] chars = new char[tokens.size()]; //FOr efficiency, allocate this as an array, then convert to string.
         int site = firstSite;
         int index = 0;

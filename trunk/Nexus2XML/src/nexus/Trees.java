@@ -10,13 +10,10 @@
 
 package nexus;
 
-import jloda.graph.Node;
-import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.NotOwnerException;
 import jloda.util.parse.NexusStreamParser;
-import core.SplitsException;
-import core.TaxaSet;
+import core.GenericException;
 
 import java.io.*;
 import java.util.*;
@@ -158,7 +155,7 @@ public class Trees extends NexusBlock {
      * @param taxa the taxa block
      */
     public void addTree(String name, boolean treeIsRooted, String tree)
-            throws SplitsException, NotOwnerException {
+            throws GenericException, NotOwnerException {
 
 
         ntrees++;
@@ -221,7 +218,7 @@ public class Trees extends NexusBlock {
      * @param np   nexus stream parser
      * @param taxa the taxa block
      */
-    public void read(NexusStreamParser np, Taxa taxa) throws SplitsException, IOException {
+    public void read(NexusStreamParser np, Taxa taxa) throws GenericException, IOException {
         np.matchBeginBlock(NAME);
         clear();
 
@@ -262,7 +259,7 @@ public class Trees extends NexusBlock {
             }
             np.matchIgnoreCase(";");           
         } else if (taxa.getMustDetectLabels()) {
-            throw new SplitsException("line " + np.lineno() +
+            throw new GenericException("line " + np.lineno() +
                     ": Taxon labels not given in taxa block, thus TRANSLATE-statement required");
         } else {
             // set the translation table from the taxa:

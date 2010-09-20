@@ -7,7 +7,7 @@
 
 package nexus;
 
-import core.SplitsException;
+import core.GenericException;
 import core.TaxaSet;
 
 import jloda.util.Basic;
@@ -142,14 +142,14 @@ public class Taxa extends NexusBlock {
      * @param i   the index of the taxon
      * @param lab the label
      */
-    public void setLabel(int i, String lab) throws SplitsException {
+    public void setLabel(int i, String lab) throws GenericException {
         if (i <= 0 || i > ntax)
-            throw new SplitsException("index out of range: " + i);
+            throw new GenericException("index out of range: " + i);
         if (lab != null) {
             String illegal = ";():\\";
             for (int pos = 0; pos < illegal.length(); pos++)
                 if (lab.indexOf("" + illegal.charAt(pos)) != -1)
-                    throw new SplitsException("Illegal character '" + illegal.charAt(pos) + "' in taxon label ("
+                    throw new GenericException("Illegal character '" + illegal.charAt(pos) + "' in taxon label ("
                             + i + "): '" + lab + "'");
         }
         taxLabels.set(i, lab);
@@ -183,9 +183,9 @@ public class Taxa extends NexusBlock {
      * @param i    the index of the taxon
      * @param info the label
      */
-    public void setInfo(int i, String info) throws SplitsException {
+    public void setInfo(int i, String info) throws GenericException {
         if (i <= 0 || i > ntax)
-            throw new SplitsException("index out of range: " + i);
+            throw new GenericException("index out of range: " + i);
         taxInfos.set(i, info);
     }
 
@@ -254,7 +254,7 @@ public class Taxa extends NexusBlock {
      *
      * @param np nexus stream parser
      */
-    public void read(NexusStreamParser np) throws IOException, SplitsException {
+    public void read(NexusStreamParser np) throws IOException, GenericException {
         np.matchBeginBlock(NAME);
 
         np.matchIgnoreCase("DIMENSIONS ntax=");
@@ -372,7 +372,7 @@ public class Taxa extends NexusBlock {
                     taxa.setInfo(count, origTaxa.getInfo(t));
                 }
             }
-        } catch (SplitsException ex) {
+        } catch (GenericException ex) {
             Basic.caught(ex);
         }
         return taxa;
@@ -403,7 +403,7 @@ public class Taxa extends NexusBlock {
                     setLabel(t, inducedTaxa.getLabel(t));
                     setInfo(t, inducedTaxa.getInfo(t));
                 }
-            } catch (SplitsException ex) {
+            } catch (GenericException ex) {
                 Basic.caught(ex);
             }
     }
@@ -442,7 +442,7 @@ public class Taxa extends NexusBlock {
      *
      * @param additionalHidden
      */
-    public void hideAdditionalTaxa(TaxaSet additionalHidden) throws SplitsException {
+    public void hideAdditionalTaxa(TaxaSet additionalHidden) throws GenericException {
         if (originalTaxa == null)
             originalTaxa = (Taxa) this.clone(); // make a copy
 
@@ -459,7 +459,7 @@ public class Taxa extends NexusBlock {
         }
         if (hiddenTaxa != null && additionalO != null &&
                 hiddenTaxa.intersects(additionalO))
-            throw new SplitsException("hidden <" + hiddenTaxa + "> and additional <"
+            throw new GenericException("hidden <" + hiddenTaxa + "> and additional <"
                     + additionalO + "> intersect");
 
         int count = 0;
@@ -534,7 +534,7 @@ public class Taxa extends NexusBlock {
             }
             setLabel(getNtax(), taxonLabel);
             setInfo(getNtax(), info);
-        } catch (SplitsException ex) {
+        } catch (GenericException ex) {
             Basic.caught(ex);
         }
     }
@@ -561,7 +561,7 @@ public class Taxa extends NexusBlock {
      * @param taxa
      * @return longer the max length.
      */
-    public int getMaxLabelLength() throws SplitsException {
+    public int getMaxLabelLength() throws GenericException {
         int len = 0;
         int longer = 0;
 
