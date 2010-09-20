@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AntConfiguration">
+    <defaultAnt bundledAnt="true" />
+  </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
@@ -262,6 +265,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Nexus2XML.iml" filepath="$PROJECT_DIR$/Nexus2XML.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../../jloda/jloda.iml" filepath="$PROJECT_DIR$/../../../jloda/jloda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/src.iml" filepath="$PROJECT_DIR$/src/src.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">

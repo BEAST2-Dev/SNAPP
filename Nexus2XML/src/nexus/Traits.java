@@ -1,8 +1,8 @@
 package nexus;
 
+import core.GenericException;
 import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
-import core.SplitsException;
 import core.TaxaSet;
 
 import java.io.*;
@@ -210,14 +210,14 @@ public class Traits extends NexusBlock {
     }
 
 
-    public void setTraitName(int i, String lab) throws SplitsException {
+    public void setTraitName(int i, String lab) throws GenericException {
         if (i <= 0 || i > ntax)
-            throw new SplitsException("index out of range: " + i);
+            throw new GenericException("index out of range: " + i);
         if (lab != null) {
             String illegal = ";():\\";
             for (int pos = 0; pos < illegal.length(); pos++)
                 if (lab.indexOf("" + illegal.charAt(pos)) != -1)
-                    throw new SplitsException("Illegal character '" + illegal.charAt(pos) + "' in taxon label ("
+                    throw new GenericException("Illegal character '" + illegal.charAt(pos) + "' in taxon label ("
                             + i + "): '" + lab + "'");
         }
         matrix[0][i] = lab;
@@ -296,7 +296,7 @@ public class Traits extends NexusBlock {
 
 
     public void read(NexusStreamParser np, Taxa taxa)
-            throws SplitsException, IOException, jloda.util.CanceledException {
+            throws GenericException, IOException, jloda.util.CanceledException {
 
         ntax = taxa.getNtax();
 
