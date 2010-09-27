@@ -478,7 +478,7 @@ public class MatrixExponentiator {
 	 * @throws Exception 
 	 **/
 	//static double [] g_mem = new double[100000];
-	static FMatrix expQTtx(int N, double u, double v,
+	public static FMatrix expQTtx(int N, double u, double v,
 			double gamma, double t,
 			FMatrix x) throws Exception {
 		//if (false && N>400) {
