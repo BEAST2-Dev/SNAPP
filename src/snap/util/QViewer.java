@@ -2,6 +2,7 @@ package snap.util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -100,7 +101,7 @@ public class QViewer extends JPanel implements ChangeListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				m_fScale = Double.parseDouble(m_entryScale.getText());
-				recalc();
+				repaint();
 			}
 		});		
 		
@@ -149,8 +150,9 @@ public class QViewer extends JPanel implements ChangeListener {
 
 	
 	double [][][]m_fP; // # bottom lineages x # top lineages x # time stamps
-	static int NR_TIMES = 50;
+	static int NR_TIMES = 100;
 	void recalc() {
+		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		m_fP = new double[m_nBottom+1][NR_TIMES][m_nTop+1];
 		for (int nReds = 0; nReds <= m_nBottom; nReds++) {
 			FMatrix bottomDistribution = new FMatrix(m_nBottom, nReds);
@@ -166,6 +168,7 @@ public class QViewer extends JPanel implements ChangeListener {
 			}
 		}
 		repaint();
+		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
 
