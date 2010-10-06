@@ -11,6 +11,20 @@ import snap.util.TreeFileParser;
 
 public class TreeSetAnalyser {
 
+	String m_sFileName;
+	boolean m_bFirstTopologyOnly = false;
+	Vector<String> m_sLabels = new Vector<String>();
+	Node [] m_trees;
+	int m_nTopologies;
+	int [] m_nTopology;
+	float [] m_fTreeWeight;
+	Node [] m_cTrees;
+
+	List<Double>[] m_heights;
+	List<Double>[] m_thetas;
+
+	double m_fBurnIn = 10;
+
 	/**
 	 * move divide y-position of a tree with factor f. Useful to calculate
 	 * consensus trees.
@@ -65,7 +79,7 @@ public class TreeSetAnalyser {
 	String getTreeData(Node node) {
 		if (node.isLeaf()) {
 			String sMetaData = getTheta(node.m_sMetaData);
-			double fHeight = (getHeight(node) - node.m_fLength);
+			double fHeight = (getHeight(node));
 			m_thetas[node.getNr()].add(Double.parseDouble(sMetaData));
 			m_heights[node.getNr()].add(fHeight);
 			return sMetaData + "\t" +fHeight; 
@@ -78,8 +92,6 @@ public class TreeSetAnalyser {
 		}
 	}
 	
-	List<Double>[] m_heights;
-	List<Double>[] m_thetas;
 	@SuppressWarnings("unchecked")
 	void initLists(int nNodes) {
 		m_heights = new List[nNodes];
@@ -190,20 +202,15 @@ public class TreeSetAnalyser {
 		}
 	} // parseArgs
 	
-	String m_sFileName;
-	boolean m_bFirstTopologyOnly = false;
-	Vector<String> sLabels = new Vector<String>();
-	Node [] m_trees;
-	int m_nTopologies;
-	int [] m_nTopology;
-	float [] m_fTreeWeight;
-	Node [] m_cTrees;
 
 	public void analyse(String [] args) {
 		parseArgs(args);
 		try {
-			TreeFileParser parser = new TreeFileParser(sLabels, null, null, 0);
-			m_trees = parser.parseFile(m_sFileName);
+			TreeFileParser parser = new TreeFileParser(m_sLabels, null, null, 0);
+			Node [] trees = parser.parseFile(m_sFileName);
+			int nBase = (int) (trees.length * m_fBurnIn / 100.0);
+			m_trees = new Node[trees.length - nBase];
+			System.arraycopy(trees, nBase, m_trees, 0, m_trees.length);
 		
 			// count tree topologies
 			// first step is find how many different topologies are present
@@ -288,12 +295,12 @@ public class TreeSetAnalyser {
 		
 	}
 	
-	void produceOutput() {
-		int nNodes = sLabels.size() * 2 -1;
+	void produceOutput() throws Exception {
+		int nNodes = m_sLabels.size() * 2 -1;
 		System.out.println("#nr coverage tree");
 		int j = 0;
 		for (int i = 0; i < m_nTopologies; i++) {
-			System.out.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + getTopology(m_cTrees[i], sLabels));//m_cTrees[i].toString(sLabels));
+			System.out.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + getTopology(m_cTrees[i], m_sLabels));//m_cTrees[i].toString(sLabels));
 			System.out.println("nr\t" + getHeader(m_cTrees[i]));
 			initLists(nNodes);
 			boolean bSameTree = true;
@@ -303,7 +310,7 @@ public class TreeSetAnalyser {
 				bSameTree = (j < m_trees.length) && (m_nTopology[j] == m_nTopology[j-1]);
 			}
 			calcMean(m_cTrees[i]);
-			System.err.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + toString(m_cTrees[i], sLabels));
+			System.err.println("#Tree " + i + ". " + m_fTreeWeight[i]*100 + "% " + toString(m_cTrees[i], m_sLabels));
 			if (m_bFirstTopologyOnly) {
 				return;
 			}
