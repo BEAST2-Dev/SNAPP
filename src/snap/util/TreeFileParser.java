@@ -356,7 +356,7 @@ public class TreeFileParser {
 			} catch (Exception e) {
 			}
 		}
-			for (int i = 0; i < m_nNrOfLabels; i++) {
+			for (int i = 0; i < m_sLabels.size(); i++) {
 				if (sStr.equals(m_sLabels.elementAt(i))) {
 					return i;
 				}
