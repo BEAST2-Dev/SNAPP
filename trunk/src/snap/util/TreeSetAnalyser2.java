@@ -70,6 +70,8 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 		}
 	}
 
+		
+		
 	@Override
 	void produceOutput() throws Exception {
 			// find #topologies with 95% coverage
@@ -80,6 +82,9 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 			}
 			System.out.println("95% HPD contains " + k +" topologies, out of a total of " + m_nTopologies + " topologies");
 			
+			//Standard error is condensed info only.
+			System.err.print(m_sFileName+"\t"+k+"\t"+m_nTopologies);
+		
 			// print top 20, or top 95% coverage tree topologies, whichever is smaller
 			System.out.println("#nr coverage tree");
 			for (int i = 0; i < Math.min(k, 20); i++) {
@@ -106,6 +111,7 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 					}
 				}
 				System.out.println("Original tree " + sTopology + "is " + (bContained?"part of":"not in") + " the 95% HPD");
+				System.err.print("\t"+(bContained?"Y":"N"));
 			}
 			
 			// collect theta and height information of trees with same topology as 'original tree' 
@@ -141,6 +147,42 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 				// Taxa are numbered 0,...,n and internal nodes n+1,...,2n-1 with node 2n-1 the root. 
 				// TODO: do something useful with this...
 				
+				//Compute posterior bias and variance of root height and root population size.
+				
+				List<Double> root_heights = m_heights[m_heights.length-1];
+				List<Double> root_thetas = m_thetas[m_thetas.length-1];
+
+				
+				int ntrees = root_heights.size(); 
+				
+				Double sum = 0.0;
+				Double sumSquared = 0.0;
+				for(int i=1;i<ntrees;i++) {
+					Double r = root_heights.get(i);
+					sum+=r;
+					sumSquared+=r*r;
+				}
+				System.out.println("Root Height | Root Height Bias | Root Height StdDev\n");
+				Double mean = sum/(ntrees-1.0);
+				Double bias = mean - root_heights.get(0);
+				Double var = sumSquared/(ntrees-1.0) - mean*mean;
+				System.out.println(""+root_heights.get(0)+"\t"+bias+"\t"+Math.sqrt(var));
+				System.err.print("\t"+root_heights.get(0)+"\t"+bias+"\t"+Math.sqrt(var));
+
+				sum = 0.0;
+				sumSquared = 0.0;
+				for(int i=1;i<ntrees;i++) {
+					Double r = root_thetas.get(i);
+					sum+=r;
+					sumSquared+=r*r;
+				}
+				System.out.println("Root Theta|Root Theta Bias | Root Theta StdDev\n");
+				mean = sum/(ntrees-1.0);
+				bias = mean - root_thetas.get(0);
+				var = sumSquared/(ntrees-1.0) - (mean*mean);
+				System.out.println(""+root_thetas.get(0) + "\t"+bias+"\t"+Math.sqrt(var));
+				System.err.println("\t"+root_thetas.get(0) + "\t"+bias+"\t"+Math.sqrt(var));
+
 			}
 			
 			

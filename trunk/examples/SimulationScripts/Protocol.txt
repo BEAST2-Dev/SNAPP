@@ -107,4 +107,27 @@ java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_1.xml
 
 
 
+===============================================================
+Analysis:
+
+Input:
+File of 'true trees'. Specify which tree.
+.trees file from SNAP
+
+(1) Identifies whether  'true tree' is in the 95% cred interval of  chain
+(2) Extracts theta values from  chain for states equal to true tree
+saves as an array. Likewise for node heights.
+(3) For each chain, computes means of theta values and node heights, computes
+	least squared differences from each state.
+(4) Determines whether true theta values and node heights are in cred set, also 
+outputs cred set sizes.
+
+
+
+
+
+
+
+
+
 
