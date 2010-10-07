@@ -1,80 +1,80 @@
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_1.xml        &>4Species2SamplesSimSnap100000_tree_1.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_10.xml       &>4Species2SamplesSimSnap100000_tree_10.xml.output &
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_2.xml        &>4Species2SamplesSimSnap100000_tree_2.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_3.xml        &>4Species2SamplesSimSnap100000_tree_3.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_4.xml        &>4Species2SamplesSimSnap100000_tree_4.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_5.xml        &>4Species2SamplesSimSnap100000_tree_5.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_6.xml        &>4Species2SamplesSimSnap100000_tree_6.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_7.xml        &>4Species2SamplesSimSnap100000_tree_7.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_8.xml        &>4Species2SamplesSimSnap100000_tree_8.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap100000_tree_9.xml        &>4Species2SamplesSimSnap100000_tree_9.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_1.xml       	&>4Species2SamplesSimSnap1000_tree_1.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_10.xml        	&>4Species2SamplesSimSnap1000_tree_10.xml.output &   
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_2.xml        	&>4Species2SamplesSimSnap1000_tree_2.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_3.xml        	&>4Species2SamplesSimSnap1000_tree_3.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_4.xml        	&>4Species2SamplesSimSnap1000_tree_4.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_5.xml        	&>4Species2SamplesSimSnap1000_tree_5.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_6.xml        	&>4Species2SamplesSimSnap1000_tree_6.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_7.xml        	&>4Species2SamplesSimSnap1000_tree_7.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_8.xml        	&>4Species2SamplesSimSnap1000_tree_8.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_9.xml        	&>4Species2SamplesSimSnap1000_tree_9.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_1.xml        &>4Species5SamplesSimSnap100000_tree_1.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_10.xml       &>4Species5SamplesSimSnap100000_tree_10.xml.output &
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_2.xml        &>4Species5SamplesSimSnap100000_tree_2.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_3.xml        &>4Species5SamplesSimSnap100000_tree_3.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_4.xml        &>4Species5SamplesSimSnap100000_tree_4.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_5.xml        &>4Species5SamplesSimSnap100000_tree_5.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_6.xml        &>4Species5SamplesSimSnap100000_tree_6.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_7.xml        &>4Species5SamplesSimSnap100000_tree_7.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_8.xml        &>4Species5SamplesSimSnap100000_tree_8.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap100000_tree_9.xml        &>4Species5SamplesSimSnap100000_tree_9.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_1.xml        	&>4Species5SamplesSimSnap1000_tree_1.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_10.xml        	&>4Species5SamplesSimSnap1000_tree_10.xml.output &   
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_2.xml        	&>4Species5SamplesSimSnap1000_tree_2.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_3.xml        	&>4Species5SamplesSimSnap1000_tree_3.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_4.xml        	&>4Species5SamplesSimSnap1000_tree_4.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_5.xml        	&>4Species5SamplesSimSnap1000_tree_5.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_6.xml        	&>4Species5SamplesSimSnap1000_tree_6.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_7.xml        	&>4Species5SamplesSimSnap1000_tree_7.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_8.xml        	&>4Species5SamplesSimSnap1000_tree_8.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 4Species5SamplesSimSnap1000_tree_9.xml        	&>4Species5SamplesSimSnap1000_tree_9.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_1.xml        &>8Species2SamplesSimSnap100000_tree_1.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_10.xml       &>8Species2SamplesSimSnap100000_tree_10.xml.output &
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_2.xml        &>8Species2SamplesSimSnap100000_tree_2.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_3.xml        &>8Species2SamplesSimSnap100000_tree_3.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_4.xml        &>8Species2SamplesSimSnap100000_tree_4.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_5.xml        &>8Species2SamplesSimSnap100000_tree_5.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_6.xml        &>8Species2SamplesSimSnap100000_tree_6.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_7.xml        &>8Species2SamplesSimSnap100000_tree_7.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_8.xml        &>8Species2SamplesSimSnap100000_tree_8.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap100000_tree_9.xml        &>8Species2SamplesSimSnap100000_tree_9.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_1.xml        	&>8Species2SamplesSimSnap1000_tree_1.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_10.xml        	&>8Species2SamplesSimSnap1000_tree_10.xml.output &   
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_2.xml        	&>8Species2SamplesSimSnap1000_tree_2.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_3.xml        	&>8Species2SamplesSimSnap1000_tree_3.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_4.xml        	&>8Species2SamplesSimSnap1000_tree_4.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_5.xml        	&>8Species2SamplesSimSnap1000_tree_5.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_6.xml        	&>8Species2SamplesSimSnap1000_tree_6.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_7.xml        	&>8Species2SamplesSimSnap1000_tree_7.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_8.xml        	&>8Species2SamplesSimSnap1000_tree_8.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species2SamplesSimSnap1000_tree_9.xml        	&>8Species2SamplesSimSnap1000_tree_9.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_1.xml        &>8Species5SamplesSimSnap100000_tree_1.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_10.xml       &>8Species5SamplesSimSnap100000_tree_10.xml.output &
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_2.xml        &>8Species5SamplesSimSnap100000_tree_2.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_3.xml        &>8Species5SamplesSimSnap100000_tree_3.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_4.xml        &>8Species5SamplesSimSnap100000_tree_4.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_5.xml        &>8Species5SamplesSimSnap100000_tree_5.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_6.xml        &>8Species5SamplesSimSnap100000_tree_6.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_7.xml        &>8Species5SamplesSimSnap100000_tree_7.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_8.xml        &>8Species5SamplesSimSnap100000_tree_8.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap100000_tree_9.xml        &>8Species5SamplesSimSnap100000_tree_9.xml.output &  
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_1.xml        	&>8Species5SamplesSimSnap1000_tree_1.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_10.xml        	&>8Species5SamplesSimSnap1000_tree_10.xml.output &   
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_2.xml        	&>8Species5SamplesSimSnap1000_tree_2.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_3.xml        	&>8Species5SamplesSimSnap1000_tree_3.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_4.xml        	&>8Species5SamplesSimSnap1000_tree_4.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_5.xml        	&>8Species5SamplesSimSnap1000_tree_5.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_6.xml        	&>8Species5SamplesSimSnap1000_tree_6.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_7.xml        	&>8Species5SamplesSimSnap1000_tree_7.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_8.xml        	&>8Species5SamplesSimSnap1000_tree_8.xml.output &    
-java -Xms64m -Xmx256m -jar snap.jar 8Species5SamplesSimSnap1000_tree_9.xml        	&>8Species5SamplesSimSnap1000_tree_9.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 4Species2SamplesSimSnap100000_tree_1.xml        &>4Species2SamplesSimSnap100000_tree_1.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 4Species2SamplesSimSnap100000_tree_10.xml       &>4Species2SamplesSimSnap100000_tree_10.xml.output &
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 4Species2SamplesSimSnap100000_tree_2.xml        &>4Species2SamplesSimSnap100000_tree_2.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 4Species2SamplesSimSnap100000_tree_3.xml        &>4Species2SamplesSimSnap100000_tree_3.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 4Species2SamplesSimSnap100000_tree_4.xml        &>4Species2SamplesSimSnap100000_tree_4.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 4Species2SamplesSimSnap100000_tree_5.xml        &>4Species2SamplesSimSnap100000_tree_5.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 4Species2SamplesSimSnap100000_tree_6.xml        &>4Species2SamplesSimSnap100000_tree_6.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 4Species2SamplesSimSnap100000_tree_7.xml        &>4Species2SamplesSimSnap100000_tree_7.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 4Species2SamplesSimSnap100000_tree_8.xml        &>4Species2SamplesSimSnap100000_tree_8.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 4Species2SamplesSimSnap100000_tree_9.xml        &>4Species2SamplesSimSnap100000_tree_9.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 4Species2SamplesSimSnap1000_tree_1.xml       	&>4Species2SamplesSimSnap1000_tree_1.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 4Species2SamplesSimSnap1000_tree_10.xml        	&>4Species2SamplesSimSnap1000_tree_10.xml.output &   
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 4Species2SamplesSimSnap1000_tree_2.xml        	&>4Species2SamplesSimSnap1000_tree_2.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 4Species2SamplesSimSnap1000_tree_3.xml        	&>4Species2SamplesSimSnap1000_tree_3.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 4Species2SamplesSimSnap1000_tree_4.xml        	&>4Species2SamplesSimSnap1000_tree_4.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 4Species2SamplesSimSnap1000_tree_5.xml        	&>4Species2SamplesSimSnap1000_tree_5.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 4Species2SamplesSimSnap1000_tree_6.xml        	&>4Species2SamplesSimSnap1000_tree_6.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 4Species2SamplesSimSnap1000_tree_7.xml        	&>4Species2SamplesSimSnap1000_tree_7.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 4Species2SamplesSimSnap1000_tree_8.xml        	&>4Species2SamplesSimSnap1000_tree_8.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 4Species2SamplesSimSnap1000_tree_9.xml        	&>4Species2SamplesSimSnap1000_tree_9.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 4Species5SamplesSimSnap100000_tree_1.xml        &>4Species5SamplesSimSnap100000_tree_1.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 4Species5SamplesSimSnap100000_tree_10.xml       &>4Species5SamplesSimSnap100000_tree_10.xml.output &
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 4Species5SamplesSimSnap100000_tree_2.xml        &>4Species5SamplesSimSnap100000_tree_2.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 4Species5SamplesSimSnap100000_tree_3.xml        &>4Species5SamplesSimSnap100000_tree_3.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 4Species5SamplesSimSnap100000_tree_4.xml        &>4Species5SamplesSimSnap100000_tree_4.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 4Species5SamplesSimSnap100000_tree_5.xml        &>4Species5SamplesSimSnap100000_tree_5.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 4Species5SamplesSimSnap100000_tree_6.xml        &>4Species5SamplesSimSnap100000_tree_6.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 4Species5SamplesSimSnap100000_tree_7.xml        &>4Species5SamplesSimSnap100000_tree_7.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 4Species5SamplesSimSnap100000_tree_8.xml        &>4Species5SamplesSimSnap100000_tree_8.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 4Species5SamplesSimSnap100000_tree_9.xml        &>4Species5SamplesSimSnap100000_tree_9.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 4Species5SamplesSimSnap1000_tree_1.xml        	&>4Species5SamplesSimSnap1000_tree_1.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 4Species5SamplesSimSnap1000_tree_10.xml        	&>4Species5SamplesSimSnap1000_tree_10.xml.output &   
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 4Species5SamplesSimSnap1000_tree_2.xml        	&>4Species5SamplesSimSnap1000_tree_2.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 4Species5SamplesSimSnap1000_tree_3.xml        	&>4Species5SamplesSimSnap1000_tree_3.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 4Species5SamplesSimSnap1000_tree_4.xml        	&>4Species5SamplesSimSnap1000_tree_4.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 4Species5SamplesSimSnap1000_tree_5.xml        	&>4Species5SamplesSimSnap1000_tree_5.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 4Species5SamplesSimSnap1000_tree_6.xml        	&>4Species5SamplesSimSnap1000_tree_6.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 4Species5SamplesSimSnap1000_tree_7.xml        	&>4Species5SamplesSimSnap1000_tree_7.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 4Species5SamplesSimSnap1000_tree_8.xml        	&>4Species5SamplesSimSnap1000_tree_8.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 4Species5SamplesSimSnap1000_tree_9.xml        	&>4Species5SamplesSimSnap1000_tree_9.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 8Species2SamplesSimSnap100000_tree_1.xml        &>8Species2SamplesSimSnap100000_tree_1.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 8Species2SamplesSimSnap100000_tree_10.xml       &>8Species2SamplesSimSnap100000_tree_10.xml.output &
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 8Species2SamplesSimSnap100000_tree_2.xml        &>8Species2SamplesSimSnap100000_tree_2.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 8Species2SamplesSimSnap100000_tree_3.xml        &>8Species2SamplesSimSnap100000_tree_3.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 8Species2SamplesSimSnap100000_tree_4.xml        &>8Species2SamplesSimSnap100000_tree_4.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 8Species2SamplesSimSnap100000_tree_5.xml        &>8Species2SamplesSimSnap100000_tree_5.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 8Species2SamplesSimSnap100000_tree_6.xml        &>8Species2SamplesSimSnap100000_tree_6.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 8Species2SamplesSimSnap100000_tree_7.xml        &>8Species2SamplesSimSnap100000_tree_7.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 8Species2SamplesSimSnap100000_tree_8.xml        &>8Species2SamplesSimSnap100000_tree_8.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 8Species2SamplesSimSnap100000_tree_9.xml        &>8Species2SamplesSimSnap100000_tree_9.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 8Species2SamplesSimSnap1000_tree_1.xml        	&>8Species2SamplesSimSnap1000_tree_1.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 8Species2SamplesSimSnap1000_tree_10.xml        	&>8Species2SamplesSimSnap1000_tree_10.xml.output &   
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 8Species2SamplesSimSnap1000_tree_2.xml        	&>8Species2SamplesSimSnap1000_tree_2.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 8Species2SamplesSimSnap1000_tree_3.xml        	&>8Species2SamplesSimSnap1000_tree_3.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 8Species2SamplesSimSnap1000_tree_4.xml        	&>8Species2SamplesSimSnap1000_tree_4.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 8Species2SamplesSimSnap1000_tree_5.xml        	&>8Species2SamplesSimSnap1000_tree_5.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 8Species2SamplesSimSnap1000_tree_6.xml        	&>8Species2SamplesSimSnap1000_tree_6.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 8Species2SamplesSimSnap1000_tree_7.xml        	&>8Species2SamplesSimSnap1000_tree_7.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 8Species2SamplesSimSnap1000_tree_8.xml        	&>8Species2SamplesSimSnap1000_tree_8.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 8Species2SamplesSimSnap1000_tree_9.xml        	&>8Species2SamplesSimSnap1000_tree_9.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 8Species5SamplesSimSnap100000_tree_1.xml        &>8Species5SamplesSimSnap100000_tree_1.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 8Species5SamplesSimSnap100000_tree_10.xml       &>8Species5SamplesSimSnap100000_tree_10.xml.output &
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 8Species5SamplesSimSnap100000_tree_2.xml        &>8Species5SamplesSimSnap100000_tree_2.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 8Species5SamplesSimSnap100000_tree_3.xml        &>8Species5SamplesSimSnap100000_tree_3.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 8Species5SamplesSimSnap100000_tree_4.xml        &>8Species5SamplesSimSnap100000_tree_4.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 8Species5SamplesSimSnap100000_tree_5.xml        &>8Species5SamplesSimSnap100000_tree_5.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 8Species5SamplesSimSnap100000_tree_6.xml        &>8Species5SamplesSimSnap100000_tree_6.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 8Species5SamplesSimSnap100000_tree_7.xml        &>8Species5SamplesSimSnap100000_tree_7.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 8Species5SamplesSimSnap100000_tree_8.xml        &>8Species5SamplesSimSnap100000_tree_8.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 8Species5SamplesSimSnap100000_tree_9.xml        &>8Species5SamplesSimSnap100000_tree_9.xml.output &  
+java -Xms64m -Xmx256m -jar snap.jar -seed 101 8Species5SamplesSimSnap1000_tree_1.xml        	&>8Species5SamplesSimSnap1000_tree_1.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 100 8Species5SamplesSimSnap1000_tree_10.xml        	&>8Species5SamplesSimSnap1000_tree_10.xml.output &   
+java -Xms64m -Xmx256m -jar snap.jar -seed 102 8Species5SamplesSimSnap1000_tree_2.xml        	&>8Species5SamplesSimSnap1000_tree_2.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 103 8Species5SamplesSimSnap1000_tree_3.xml        	&>8Species5SamplesSimSnap1000_tree_3.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 104 8Species5SamplesSimSnap1000_tree_4.xml        	&>8Species5SamplesSimSnap1000_tree_4.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 105 8Species5SamplesSimSnap1000_tree_5.xml        	&>8Species5SamplesSimSnap1000_tree_5.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 106 8Species5SamplesSimSnap1000_tree_6.xml        	&>8Species5SamplesSimSnap1000_tree_6.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 107 8Species5SamplesSimSnap1000_tree_7.xml        	&>8Species5SamplesSimSnap1000_tree_7.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 108 8Species5SamplesSimSnap1000_tree_8.xml        	&>8Species5SamplesSimSnap1000_tree_8.xml.output &    
+java -Xms64m -Xmx256m -jar snap.jar -seed 109 8Species5SamplesSimSnap1000_tree_9.xml        	&>8Species5SamplesSimSnap1000_tree_9.xml.output &    

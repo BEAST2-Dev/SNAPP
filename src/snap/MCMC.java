@@ -116,7 +116,7 @@ public class MCMC extends beast.core.MCMC {
 
 		
 		// Go into the main loop
-		boolean bDebug = true;
+		boolean bDebug = false;
 		state.setEverythingDirty(true);
 		Distribution posterior = posteriorInput.get();
 		double fOldLogLikelihood = posterior.calculateLogP();
