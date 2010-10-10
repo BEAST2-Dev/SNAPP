@@ -149,8 +149,8 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 				
 				//Compute posterior bias and variance of root height and root population size.
 				
-				List<Double> root_heights = m_heights[m_heights.length-1];
-				List<Double> root_thetas = m_thetas[m_thetas.length-1];
+				List<Double> root_heights = m_heights[m_cTrees[iTopology].getNr()];
+				List<Double> root_thetas = m_thetas[m_cTrees[iTopology].getNr()];
 
 				
 				int ntrees = root_heights.size(); 
