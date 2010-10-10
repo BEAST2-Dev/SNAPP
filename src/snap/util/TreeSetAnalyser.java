@@ -79,7 +79,7 @@ public class TreeSetAnalyser {
 	String getTreeData(Node node) {
 		if (node.isLeaf()) {
 			String sMetaData = getTheta(node.m_sMetaData);
-			double fHeight = (getHeight(node));
+			double fHeight = (getHeight(node) - node.m_fLength);
 			m_thetas[node.getNr()].add(Double.parseDouble(sMetaData));
 			m_heights[node.getNr()].add(fHeight);
 			return sMetaData + "\t" +fHeight; 
