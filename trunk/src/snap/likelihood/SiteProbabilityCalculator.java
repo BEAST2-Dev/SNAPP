@@ -114,16 +114,15 @@ public class SiteProbabilityCalculator {
         double[][] conditional = findRootProbabilities(N, u, v, rootData.gamma(), dprint);
 
 
-        if (dprint) {
-            for(int n=1;n<=N;n++) {
-                if (rootData.m_Nb[n]<0.0)
-                    System.out.println("Nb["+n+"] = "+rootData.m_Nb[n]);
-                for(int r=0;r<=n;r++) {
-                    if (conditional[n][r]<0.0)
-                        System.out.println("conditional["+n+", "+r+"] = "+conditional[n][r]);;
-                    if (rootData.getFb().get(n,r)<0.0)
-                        System.out.println("Fb["+n+", "+r+"] = "+rootData.getFb().get(n,r));;
-
+		if (dprint) {
+			for(int n=1;n<=N;n++) {
+//				if (rootData.m_Nb[n]<0.0)
+//					System.out.println("Nb["+n+"] = "+rootData.m_Nb[n]);
+				for(int r=0;r<=n;r++) {
+					if (conditional[n][r]<0.0)
+						System.out.println("conditional["+n+", "+r+"] = "+conditional[n][r]);;
+					if (rootData.getFb().get(n,r)<0.0)
+						System.out.println("Fb["+n+", "+r+"] = "+rootData.getFb().get(n,r));;
                 }
                 //cout+endl;
             }
@@ -279,28 +278,28 @@ public class SiteProbabilityCalculator {
 
 
 //		parent.getF().setZero();
-        for(int n=1;n<=N1+N2;n++) {
-            if (parent.m_Nb[n]==0) {
-                //parent.getFb().setZero(n);
-                Arrays.fill(parentFb, n*(n+1)/2-1, (n+1)*(n+2)/2-1, 0.0);
-//				//Likelihood is zero if there can't be n lineages (e.g. n=1 when there are two children)
-            } else {
-                double b_nr = 1.0;
-                for(int r=0;r<=n;r++) {
-                    //double Fnr = parent.getFb().get(n,r);
-                    //Fnr /=  b_nr;
-                    //Fnr = Math.max(Fnr,0.0); //TODO: Fix this dodgy fix!!!!!!!
-                    //parent.getFb().set(n,r, Fnr);
-                    double Fnr = parentFb[n*(n+1)/2-1+r];
-                    Fnr /=  b_nr;
-                    Fnr = Math.max(Fnr,0.0); //TODO: Fix this dodgy fix!!!!!!!
-                    parentFb[n*(n+1)/2-1+r] = Fnr;
-                    b_nr *= ((double)n - r)/(r+1);
-                }
-            }
-        }
-        parent.initFb(N1+N2, parentFb);
-    }
+		for(int n=1;n<=N1+N2;n++) {
+//			if (false && parent.m_Nb[n]==0) {
+//				//parent.getFb().setZero(n);
+//				Arrays.fill(parentFb, n*(n+1)/2-1, (n+1)*(n+2)/2-1, 0.0);
+////				//Likelihood is zero if there can't be n lineages (e.g. n=1 when there are two children)
+//			} else {
+				double b_nr = 1.0;
+				for(int r=0;r<=n;r++) {
+					//double Fnr = parent.getFb().get(n,r);
+					//Fnr /=  b_nr;
+					//Fnr = Math.max(Fnr,0.0); //TODO: Fix this dodgy fix!!!!!!!
+					//parent.getFb().set(n,r, Fnr);
+					double Fnr = parentFb[n*(n+1)/2-1+r];
+					Fnr /=  b_nr;
+					Fnr = Math.max(Fnr,0.0); //TODO: Fix this dodgy fix!!!!!!!
+					parentFb[n*(n+1)/2-1+r] = Fnr;
+					b_nr *= ((double)n - r)/(r+1);
+				}
+			}
+//		}
+		parent.initFb(N1+N2, parentFb);
+	}
 
 
 

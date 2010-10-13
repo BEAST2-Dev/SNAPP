@@ -74,10 +74,10 @@ public class LineageCountCalculator {
 		*/
 		node.m_n = nSamples;
 		node.resize(nSamples);
-		node.m_Nb[nSamples] = 1.0;
-		if( dprint ) {
-			System.out.println(node.getNr() + " n=" + node.m_n + " u1.Nb " + Arrays.toString(node.m_Nb));
-		}
+//		node.m_Nb[nSamples] = 1.0;
+//		if( dprint ) {
+//			System.out.println(node.getNr() + " n=" + node.m_n + " u1.Nb " + Arrays.toString(node.m_Nb));
+//		}
 	}
 	
 	/**
@@ -91,11 +91,11 @@ public class LineageCountCalculator {
 		if( dprint ) {
 			System.out.println("g1,t1 " + g1 + " " + t1 );
 		}
-		child.m_Nt = computeTavareProbs(g1*t1, child.m_Nb);
-		if( dprint ) {
-			System.out.println("u1.Nt " + Arrays.toString(child.m_Nt));
-		}
-		System.arraycopy(child.m_Nt, 0, v.m_Nb, 0, child.m_Nt.length);
+		//child.m_Nt = computeTavareProbs(g1*t1, child.m_Nb);
+//		if( dprint ) {
+//			System.out.println("u1.Nt " + Arrays.toString(child.m_Nt));
+//		}
+		//System.arraycopy(child.m_Nt, 0, v.m_Nb, 0, child.m_Nt.length);
 	} // doCountProbabilitiesForInternal
 
 
@@ -115,33 +115,33 @@ public class LineageCountCalculator {
 		double t2 = u2.t();
 
 
-		u1.m_Nt = computeTavareProbs(g1*t1, u1.m_Nb);
-		u2.m_Nt = computeTavareProbs(g2*t2, u2.m_Nb);
+//		u1.m_Nt = computeTavareProbs(g1*t1, u1.m_Nb);
+//		u2.m_Nt = computeTavareProbs(g2*t2, u2.m_Nb);
 
-		if( dprint ) {
-			double sum = 0.0;
-			System.out.println("g1,t1 " + g1 + " " + t1 + " g2,t2 " + g2 + " " + t2);
-			sum = 0.0;	for (int i = 0; i < u1.m_Nb.length; i++) {sum += u1.m_Nb[i];}
-			System.out.println(u1.getNr() + " u1.Nb " + u1.m_Nb.length + " sum="+sum + " " + Arrays.toString(u1.m_Nb)); 
-			sum = 0.0;	for (int i = 0; i < u1.m_Nt.length; i++) {sum += u1.m_Nt[i];}
-			System.out.println(u1.getNr() + " u1.Nt " + u1.m_Nt.length + " sum="+sum + " " + Arrays.toString(u1.m_Nt));
-			sum = 0.0;	for (int i = 0; i < u2.m_Nb.length; i++) {sum += u2.m_Nb[i];}
-			System.out.println(u2.getNr() + " u2.Nb " + u2.m_Nb.length + " sum="+sum + " " + Arrays.toString(u2.m_Nb));
-			sum = 0.0;	for (int i = 0; i < u2.m_Nt.length; i++) {sum += u2.m_Nt[i];}
-			System.out.println(u2.getNr() + " u2.Nt " + u2.m_Nt.length + " sum="+sum + " " + Arrays.toString(u2.m_Nt)); 
-		}
+//		if( dprint ) {
+//			double sum = 0.0;
+//			System.out.println("g1,t1 " + g1 + " " + t1 + " g2,t2 " + g2 + " " + t2);
+//			sum = 0.0;	for (int i = 0; i < u1.m_Nb.length; i++) {sum += u1.m_Nb[i];}
+//			System.out.println(u1.getNr() + " u1.Nb " + u1.m_Nb.length + " sum="+sum + " " + Arrays.toString(u1.m_Nb)); 
+//			sum = 0.0;	for (int i = 0; i < u1.m_Nt.length; i++) {sum += u1.m_Nt[i];}
+//			System.out.println(u1.getNr() + " u1.Nt " + u1.m_Nt.length + " sum="+sum + " " + Arrays.toString(u1.m_Nt));
+//			sum = 0.0;	for (int i = 0; i < u2.m_Nb.length; i++) {sum += u2.m_Nb[i];}
+//			System.out.println(u2.getNr() + " u2.Nb " + u2.m_Nb.length + " sum="+sum + " " + Arrays.toString(u2.m_Nb));
+//			sum = 0.0;	for (int i = 0; i < u2.m_Nt.length; i++) {sum += u2.m_Nt[i];}
+//			System.out.println(u2.getNr() + " u2.Nt " + u2.m_Nt.length + " sum="+sum + " " + Arrays.toString(u2.m_Nt)); 
+//		}
 
 		//std::fill(Nb.begin(), Nb.end(), 0.0);
 		//node.Nb = new double[n1+n2+1];
-		for(int i1 = 1;i1<=n1;i1++) {
-			for(int i2 = 1;i2<=n2;i2++) {
-				node.m_Nb[i1+i2] += u1.m_Nt[i1]*u2.m_Nt[i2];
-			}
-		}
-		if( dprint ) {
-			double sum = 0.0;for (int i = 0; i < node.m_Nb.length; i++) {sum += node.m_Nb[i];}
-			System.out.println(node.getNr() + " node.Nb " + node.m_Nb.length + " sum="+sum + " " +  Arrays.toString(node.m_Nb));
-		}
+//		for(int i1 = 1;i1<=n1;i1++) {
+//			for(int i2 = 1;i2<=n2;i2++) {
+//				node.m_Nb[i1+i2] += u1.m_Nt[i1]*u2.m_Nt[i2];
+//			}
+//		}
+//		if( dprint ) {
+//			double sum = 0.0;for (int i = 0; i < node.m_Nb.length; i++) {sum += node.m_Nb[i];}
+//			System.out.println(node.getNr() + " node.Nb " + node.m_Nb.length + " sum="+sum + " " +  Arrays.toString(node.m_Nb));
+//		}
 	} // doCountProbabilitiesForInternal
 
 	/**
