@@ -50,8 +50,8 @@ public class NodeData extends Node implements Serializable  {
 	//public int nspecies;
 	//public int mintaxa; //Minimum id taxa below this node.
 	//Vector of probabilities for the number of ancestral lineages at this node.
-	public double [] m_Nt;
-	public double [] m_Nb;
+//	public double [] m_Nt;
+//	public double [] m_Nb;
 	//This is the likelihood multiplied by the lineage probabilities Pr(Ry | n,r ) x Pr(n)  in the paper.
 	FMatrix m_Fb;
 	public FMatrix getFb() {return m_Fb;}
@@ -120,8 +120,8 @@ public class NodeData extends Node implements Serializable  {
 	public void resize(int nmax) {
 			m_n = nmax;
 			if (nmax>=1) {
-				m_Nt = new double[m_n+1];
-				m_Nb = new double[m_n+1];
+				//m_Nt = new double[m_n+1];
+				//m_Nb = new double[m_n+1];
 				m_Ft.resize(m_n);
 				m_Fb.resize(m_n);
 			}
@@ -156,12 +156,12 @@ public class NodeData extends Node implements Serializable  {
 
 		node.set_gamma(m_fGamma);
 		node.m_n = m_n;
-		if (m_Nt != null) {
-			node.m_Nt = new double[m_Nt.length];
-			System.arraycopy(m_Nt, 0, node.m_Nt, 0, m_Nt.length);
-			node.m_Nb = new double[m_Nb.length];
-			System.arraycopy(m_Nb, 0, node.m_Nb, 0, m_Nb.length);
-		}
+		//if (m_Nt != null) {
+			//node.m_Nt = new double[m_Nt.length];
+			//System.arraycopy(m_Nt, 0, node.m_Nt, 0, m_Nt.length);
+			//node.m_Nb = new double[m_Nb.length];
+			//System.arraycopy(m_Nb, 0, node.m_Nb, 0, m_Nb.length);
+		//}
 //		node.Ft = new FMatrix(Ft);
 //		node.Fb = new FMatrix(Fb);
 
