@@ -27,8 +27,11 @@ package snap.operators;
 
 
 
+import snap.GammaParameter;
+import snap.NodeData;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -36,26 +39,25 @@ import beast.util.Randomizer;
 @Description("Moves internal node height without changing the tree topology. " +
 		"So the range is limited by the height of the parent node and the height " +
 		"of the highest child. The gamma value is also scaled so that gamma*height is constant for all three branches")
-public class NodeBudger extends NodeSwapper {
-	public Input<Double> m_pWindowSize = new Input<Double>("size", "Relative size of the window in which to move the node");
-	double m_fWindowSize;
+public class BudgerAndScaler extends NodeSwapper {
+	public Input<GammaParameter> m_gamma = new Input<GammaParameter>("gamma","array representation of gamma parameter", Validate.REQUIRED);
 	int m_nNodeCount = -1;
 
 	@Override
 	public void initAndValidate() {
 		m_nNodeCount = m_pTree.get().getNodeCount();
-		m_fWindowSize = m_pWindowSize.get();
 	}
 	
 	@Override
 	public double proposal() {
 		double hastingsRatio = 1.0;
 		Tree tree = m_pTree.get(this);
+		GammaParameter gamma = m_gamma.get(this);
 		Node [] nodes = tree.getNodesAsArray();
 
 		//Choose a random node internal node 
 		int whichNode = m_nNodeCount/2 + 1 + Randomizer.nextInt(m_nNodeCount/2 - 1);
-		Node p = nodes[whichNode];
+		NodeData p = (NodeData) nodes[whichNode];
 
 		if (p.isRoot()){
 			// RRB: budging the root node leads to very long calculation times
@@ -96,19 +98,25 @@ public class NodeBudger extends NodeSwapper {
 		 */
 		
 		double h = p.getHeight();
-		double g1 = p.m_left.getTheta();
-		double h1 = p.m_left.getHeight();
-		double g2 = p.m_right.getTheta();
-		double h2 = p.m_right.getHeight();
+		int iNode = p.getNr();
+		int iLeft = p.m_left.getNr();
+		int iRight = p.m_right.getNr();
+		NodeData left = (NodeData)p.m_left; 
+		NodeData right = (NodeData)p.m_right;
+		
+		double g1 = gamma.getValue(iLeft);
+		double h1 = left.getHeight();
+		double g2 = gamma.getValue(iRight);
+		double h2 = right.getHeight();
 
-		double g3 = p.getTheta();
+		double g3 = gamma.getValue(iNode);
 		double h3 = p.getParent().getHeight();
 
 		double u = Randomizer.nextDouble()*range;
-		
-		p.m_left().setTheta((h-h1)/(h+u-h1) * g1);
-		p.m_right().setTheta((h-h2)/(h+u-h2) * g2);
-		p.setTheta((h3-h)/(h3-h-u) * g3);
+				
+		gamma.setValue(iNode, ((h3-h)/(h3-h-u) * g3));
+		gamma.setValue(iLeft, ((h-h1)/(h+u-h1) * g1));
+		gamma.setValue(iRight, ((h-h2)/(h+u-h2) * g2));
 		
 		p.setHeight(h+u);
 		
@@ -116,16 +124,5 @@ public class NodeBudger extends NodeSwapper {
 		
 		return Math.log(hastingsRatio);
 	}
-
-	/** automatic parameter tuning **/
-	@Override
-	public void optimize(double logAlpha) {
-		Double fDelta = calcDelta(logAlpha);
-		fDelta += Math.log(m_fWindowSize);
-		m_fWindowSize = Math.exp(fDelta);
-		if (m_fWindowSize > 1) {
-			m_fWindowSize = 1;
-		}
-    }
 	
-} // class NodeBudger
+} // class BudgerAndScaler
