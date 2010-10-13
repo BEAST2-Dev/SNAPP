@@ -44,7 +44,7 @@ public class NodeBudger extends NodeSwapper {
 	@Override
 	public void initAndValidate() {
 		m_nNodeCount = m_pTree.get().getNodeCount();
-		m_fWindowSize = m_pWindowSize.get();
+		m_fWindowSize = 1;//m_pWindowSize.get();
 	}
 	
 	@Override
