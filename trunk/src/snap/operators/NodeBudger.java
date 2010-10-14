@@ -58,10 +58,46 @@ public class NodeBudger extends NodeSwapper {
 		Node p = nodes[whichNode];
 
 		if (p.isRoot()){
+			System.err.println("*********************Root budger********************");
+			
+			System.exit(0);			
 			// RRB: budging the root node leads to very long calculation times
 			// so we reject its move. The root time can still be changed through
 			// the scale operator, so the root time is not necessarily fixed.
-			return Double.NEGATIVE_INFINITY;
+			
+			//DJB Given the problems with mixing heights, and the bugs fixed since RRB's comments, have decided
+			// to implement a root move, using the description in Drummond et al, 2002.
+			double beta = 1.0/m_fWindowSize;
+			if (beta < 1.0)
+				beta = 1.0;
+			
+			
+			if (beta==1.0) //No move possible, return a reject. 
+				return Double.NEGATIVE_INFINITY;
+			
+			double maxc = Math.max(p.m_left.getHeight(), p.m_right.getHeight());
+			
+			/**
+			 Let h be the height, and maxc be the height of the nearest child. This move moves h to 
+				h' = maxc + u * (h - maxc)
+			 where u is uniform [1/beta, beta].
+			 
+			   Note that the reverse move is h = maxc + u'(h' - maxc) = maxc + u'(maxc + u*(h - maxc) - maxc) = maxc + u'*u*(h-maxc)
+			 so that u' = 1/u. Hastings ration is therefore the Jacobian of
+			 
+			 u	h
+			 0  1/u  
+			 
+			 which is one.
+			 
+			 
+			 **/
+			
+			double u = Randomizer.nextDouble()*(beta - 1.0/beta)+1.0/beta;
+			p.setHeight(maxc + u*(p.getHeight() - maxc));
+			
+			
+			return 0.0;
 		}
 
 		//Find shortest branch to any child.
@@ -83,8 +119,8 @@ public class NodeBudger extends NodeSwapper {
 		Double fDelta = calcDelta(logAlpha);
 		fDelta += Math.log(m_fWindowSize);
 		m_fWindowSize = Math.exp(fDelta);
-		if (m_fWindowSize > 1) {
-			m_fWindowSize = 1;
+		if (m_fWindowSize > 1.0) {
+			m_fWindowSize = 1.0;
 		}
     }
 	
