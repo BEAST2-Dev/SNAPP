@@ -44,7 +44,7 @@ public class NodeBudger extends NodeSwapper {
 	@Override
 	public void initAndValidate() {
 		m_nNodeCount = m_pTree.get().getNodeCount();
-		m_fWindowSize = 1;//m_pWindowSize.get();
+		m_fWindowSize = m_pWindowSize.get();
 	}
 	
 	@Override
@@ -54,13 +54,14 @@ public class NodeBudger extends NodeSwapper {
 		Node [] nodes = tree.getNodesAsArray();
 
 		//Choose a random node internal node 
-		int whichNode = m_nNodeCount/2 + 1 + Randomizer.nextInt(m_nNodeCount/2 - 1);
+		// that is a node with number [m_nNodeCount/2 + 1, .... , m_nNodeCount - 1] 
+		int whichNode = m_nNodeCount/2 + 1 + Randomizer.nextInt(m_nNodeCount/2);
 		Node p = nodes[whichNode];
 
 		if (p.isRoot()){
-			System.err.println("*********************Root budger********************");
-			
-			System.exit(0);			
+//			System.err.println("*********************Root budger********************");
+//			
+//			System.exit(0);			
 			// RRB: budging the root node leads to very long calculation times
 			// so we reject its move. The root time can still be changed through
 			// the scale operator, so the root time is not necessarily fixed.
@@ -95,7 +96,6 @@ public class NodeBudger extends NodeSwapper {
 			
 			double u = Randomizer.nextDouble()*(beta - 1.0/beta)+1.0/beta;
 			p.setHeight(maxc + u*(p.getHeight() - maxc));
-			
 			
 			return 0.0;
 		}
