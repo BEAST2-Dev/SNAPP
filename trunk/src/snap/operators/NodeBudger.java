@@ -37,7 +37,7 @@ import beast.util.Randomizer;
 		"So the range is limited by the height of the parent node and the height " +
 		"of the highest child.")
 public class NodeBudger extends NodeSwapper {
-	public Input<Double> m_pWindowSize = new Input<Double>("size", "Relative size of the window in which to move the node");
+	public Input<Double> m_pWindowSize = new Input<Double>("size", "Relative size of the window in which to move the root node");
 	double m_fWindowSize;
 	int m_nNodeCount = -1;
 
@@ -106,7 +106,7 @@ public class NodeBudger extends NodeSwapper {
 
 		double range = p.getParent().getHeight() - minb;
 
-		double move = minb + m_fWindowSize * Randomizer.nextDouble()*range;
+		double move = minb + Randomizer.nextDouble()*range;
 
 		p.setHeight(move);
 
