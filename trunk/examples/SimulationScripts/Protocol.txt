@@ -68,19 +68,27 @@ Compute simple residual for vector of node heights and vector of pop sizes. Chec
 EXECUTION NOTES
 
 
+In SimSnapInput
 
-Script file: 
+Generate two sets of ten trees from the prior (4 & 8 species):
+
 FourSpeciesPriorOnly.xml
 EightSpeciesPriorOnly.xml
 
-Both create output (with snap) containing exactly 10 trees:
-fourSpeciesPrior.trees
-eightSpeciesPrior.trees	
-and associated files with the theta and height values:
-fourSpeciesPrior.log
-eightSpeciesPrior.log	
 
-The trees were cut-and-pasted into eight simsnap files:
+Using commands:
+
+java -jar snap.jar -overwrite FourSpeciesPriorOnly.xml
+java -jar snap.jar -overwrite EightSpeciesPriorOnly.xml
+
+
+Both create output (with snap) containing exactly 10 trees:
+4SpeciesPrior.trees
+8SpeciesPrior.trees	
+
+
+The trees (ignoring first tree) 
+were cut-and-pasted into eight simsnap files:
 
 4Species2SamplesSimSnap1000.txt
 4Species5SamplesSimSnap1000.txt
@@ -92,16 +100,22 @@ The trees were cut-and-pasted into eight simsnap files:
 8Species2SamplesSimSnap100000.txt
 8Species5SamplesSimSnap100000.txt
 
-which were moved into the directory SimSnapInput
 
-We then used SimSnap to create the input files for Snap. These are named:
+The script ./simAll generates all of the input files for Snap.
+
+These are named:
 	4Species2SamplesSimSnap100000_tree_1.xml
 to
 	8Species5SamplesSimSnap100000_tree_10.xml
 
 and were copied to SnapInput
 
-Copied the snap jar to SnapInput. Ran code using 
+Copied the snap jar to SnapInput. Ran code using the script 
+
+
+
+
+
 
 java -Xms64m -Xmx256m -jar snap.jar 4Species2SamplesSimSnap1000_tree_1.xml 
 
