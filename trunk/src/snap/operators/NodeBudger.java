@@ -69,13 +69,15 @@ public class NodeBudger extends NodeSwapper {
 			//DJB Given the problems with mixing heights, and the bugs fixed since RRB's comments, have decided
 			// to implement a root move, using the description in Drummond et al, 2002.
 			double beta = 1.0/m_fWindowSize;
+			
+			beta = 2.0; //TEMPORARY FIX!!!!
+			
 			if (beta < 1.0)
 				beta = 1.0;
 			
 			
 			if (beta==1.0) //No move possible, return a reject. 
 				return Double.NEGATIVE_INFINITY;
-			
 			double maxc = Math.max(p.m_left.getHeight(), p.m_right.getHeight());
 			
 			/**
@@ -95,8 +97,12 @@ public class NodeBudger extends NodeSwapper {
 			 **/
 			
 			double u = Randomizer.nextDouble()*(beta - 1.0/beta)+1.0/beta;
+			double oldh = p.getHeight();
+			double h2 = maxc + u*(p.getHeight() - maxc);
 			p.setHeight(maxc + u*(p.getHeight() - maxc));
+			//System.out.println("oldh = "+oldh+"\tbeta = "+beta+"\t u = "+u+"\t maxc = "+maxc+" \tp.getHeight = "+p.getHeight()+" proposed new height = "+h2 +"="+p.getHeight());
 			
+
 			return 0.0;
 		}
 
