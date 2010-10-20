@@ -116,7 +116,7 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 			
 			// collect theta and height information of trees with same topology as 'original tree' 
 			if (iTopology < 0) {
-				// cannot do this
+				System.err.println();
 			} else {
 				int nNodes = m_sLabels.size() * 2 -1;
 				initLists(nNodes);
