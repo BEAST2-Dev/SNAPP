@@ -260,6 +260,11 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	double rate = 2.0*u*v/(u+v);
 	
 	phylo<simNodeData> simTree = initialiseSimTree(tree,rate);
+	
+	cout<<"SimTree = ";
+	print_newick(cout,simTree,true,true);
+	cout<<endl;
+	
 	uint numberAttempts, numberAttemptsTotal;
 	numberAttemptsTotal = 0;
 	

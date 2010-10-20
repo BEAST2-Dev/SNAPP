@@ -113,6 +113,8 @@ public class SiteProbabilityCalculator {
         int N=rootData.m_n;
         double[][] conditional = findRootProbabilities(N, u, v, rootData.gamma(), dprint);
 
+	//	System.err.println("Root theta = "+rootData.gamma());
+		
 
 		if (dprint) {
 			for(int n=1;n<=N;n++) {
@@ -349,6 +351,8 @@ public class SiteProbabilityCalculator {
             System.err.println(node.getFt().toString());
         }
 
+	//	System.err.println("node.t = "+node.t()+"\tnode.gamma = "+node.gamma()+"\t2/node.gamma = "+(2.0/node.gamma()));
+		
         FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, node.gamma(), node.t(), node.getFb());
         //TODO: What is the effect of the tolerance?
 
