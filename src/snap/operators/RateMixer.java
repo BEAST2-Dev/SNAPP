@@ -52,7 +52,7 @@ public class RateMixer extends Operator {
 		GammaParameter gamma = m_pGamma.get(this);
 
 		//double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
-        double scale = (m_fMixGamma + (Randomizer.nextDouble() * ((1.0 / m_fMixGamma) - m_fMixGamma)));
+		double scale = (m_fMixGamma + (Randomizer.nextDouble() * ((1.0 / m_fMixGamma) - m_fMixGamma)));
 		//state.mulValues(scale, gamma);
 		
 		for (int i = 0; i < gamma.getDimension(); i++) {

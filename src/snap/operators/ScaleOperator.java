@@ -76,6 +76,11 @@ public class ScaleOperator extends Operator {
         	Tree tree = m_pTree.get(this); 
             // scale the beast.tree
         	int nInternalNodes = tree.scale(scale);
+
+		/** Hastings ratio is Jacobian of matrix with scale on the diagonal except 1/scale^2 on the bottom right.,
+		    so (scale^{numnodes-2))
+		**/
+
             return Math.log(scale) * (nInternalNodes - 2);
         }
         boolean bScaleAll = m_pScaleAll.get();
