@@ -79,6 +79,9 @@ public class SnAPLikelihoodCore  {
 			double [] patternProb = new double[numPatterns];
 			m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
 
+
+		System.err.println("Number of patterns = " + numPatterns);
+		
 			for(int id = 0; id < numPatterns - 2; id++) {
 			//for(int id=0;id<60;id++) {
 				//System.err.print('.');
@@ -89,6 +92,8 @@ public class SnAPLikelihoodCore  {
 				double siteL=0.0;
 				try {
 					siteL = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, thisSite, bUseCache, dprint);
+					System.err.println("SiteL, pattern "+id+" equals "+ siteL);
+					
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
