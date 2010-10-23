@@ -9,7 +9,7 @@
 
 
 	<!-- n = 1 -->
-	<data id='alignment' dataType='integerdata' statecount='11'>
+	<data spec='snap.Data' id='alignment' dataType='integerdata' statecount='11'>
 		<sequence taxon='A' totalcount='10'>
 5,		</sequence>
 		<sequence taxon='B' totalcount='10'>
@@ -18,7 +18,7 @@
 
 
 
-<run id='mcmc' spec='snap.MCMC' chainLength='-1' preBurnin='0' stateBurnin='0' killAfter='0'>
+<run id='mcmc' spec='snap.MCMC' chainLength='1' preBurnin='0' stateBurnin='0' killAfter='0'>
         <state>
           <stateNode spec='GammaParameter' id='gamma' initFromTree='true' pattern='gamma' value='20'>
             <tree idref='tree'/>
