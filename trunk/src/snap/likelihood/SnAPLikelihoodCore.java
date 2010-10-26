@@ -88,6 +88,13 @@ public class SnAPLikelihoodCore  {
 				//if (id>0 && id%100 == 0)
 				//	System.err.print(id + " ");
 				int [] thisSite = data.getPattern(id);
+				
+				System.err.print("This site. ID = "+id+"[");
+				for(int i=0;i<thisSite.length;i++)
+					System.err.print(" "+thisSite[i]);
+				System.err.println("]");
+				
+				
 				double freq = data.getPatternWeight(id);
 				double siteL=0.0;
 				try {
@@ -111,6 +118,11 @@ public class SnAPLikelihoodCore  {
 			double P0 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
 			thisSite = data.getPattern(numPatterns - 1);
 			double P1 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
+		
+			
+			/*****/
+		System.err.println("Constant site probabilities: \n\t\t\tall 0 = "+P0+"\n\t\t\t all 1 = "+P1);
+							   
 			forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
 			//System.err.println(numPatterns + " " + forwardLogL);
 
