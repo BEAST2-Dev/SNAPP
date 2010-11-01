@@ -5,12 +5,17 @@ import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.evolution.alignment.Sequence;
 
 @Description("A SNPSequence holds a collection of binary sequences that are summarized in a new sequence " +
 		"by counting the number of sites with a 1.")
 public class SNPSequence extends Sequence {
 	public Input<List<Sequence>> m_sequences = new Input<List<Sequence>>("sequence","binary sequence", new ArrayList<Sequence>());
+
+	public SNPSequence() {
+		m_sData.setRule(Validate.OPTIONAL);
+	}
 	
 	@Override
 	public void initAndValidate() throws Exception {
