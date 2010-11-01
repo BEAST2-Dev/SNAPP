@@ -41,6 +41,7 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
+import snap.Data;
 import snap.GammaParameter;
 import snap.NodeData;
 import snap.likelihood.SnAPLikelihoodCore;
@@ -49,7 +50,7 @@ import snap.likelihood.SnAPLikelihoodCore;
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
 @Citation("David Bryant, Remco Bouckaert, Noah Rosenberg. Inferring species trees directly from SNP and AFLP data: full coalescent analysis without those pesky gene trees. arXiv:0910.4193v1. http://arxiv.org/abs/0910.4193")
 public class SnAPTreeLikelihood extends Distribution {
-	public Input<Alignment> m_pData = new Input<Alignment>("data", "set of alignments");
+	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
 	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 	public Input<RealParameter> m_pU = new Input<RealParameter>("mutationRateU", "mutation rate from red to green?");
 	public Input<RealParameter> m_pV = new Input<RealParameter>("mutationRateV", "mutation rate from green to red?");
@@ -64,7 +65,7 @@ public class SnAPTreeLikelihood extends Distribution {
 	
     
     @Override
-    public void initAndValidate() {
+    public void initAndValidate() throws Exception {
     	m_data = m_pData.get();
     	if ( BeastMCMC.m_nThreads == 1) {
     		// single threaded likelihood core
@@ -77,6 +78,10 @@ public class SnAPTreeLikelihood extends Distribution {
     	m_nSampleSizes = new int[nSampleSizes.length];
     	for (int i = 0; i < nSampleSizes.length; i++) {
     		m_nSampleSizes[i] = nSampleSizes[i];
+    	}
+    	if (!(m_pTree.get().getRoot() instanceof NodeData)) {
+    		throw new Exception("Tree has no nodes of the wront type. NodeData expected, but found " + 
+    				m_pTree.get().getRoot().getClass().getName());
     	}
     }
 
