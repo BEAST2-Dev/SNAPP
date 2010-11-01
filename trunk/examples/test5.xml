@@ -9,7 +9,7 @@
 
 
 	<!-- n = 100 -->
-	<data id='alignment' dataType='integerdata' statecount='3'>
+	<data id='alignment' dataType='integerdata' statecount='3' spec='snap.Data'>
 		<sequence taxon='A' totalcount='2'>
 2,0,2,2,2,0,2,2,2,0,2,2,2,2,2,0,0,2,0,0,0,0,1,2,2,0,2,0,0,2,2,0,2,0,0,2,2,2,2,0,2,0,0,2,0,2,2,1,2,2,0,2,2,0,0,0,0,2,2,0,2,0,0,0,0,1,0,0,0,2,0,2,0,0,0,0,0,0,2,0,0,2,0,2,0,2,0,2,2,2,0,0,2,0,2,2,0,2,2,0,
 		</sequence>
