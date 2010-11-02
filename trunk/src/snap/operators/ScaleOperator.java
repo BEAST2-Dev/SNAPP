@@ -229,6 +229,7 @@ public class ScaleOperator extends Operator {
         //double fScaleFactor = m_pScaleFactor.get();
         fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
         m_fScaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+        //System.err.println("ScaleOperator " + m_fScaleFactor);
     }
 
 } // class ScaleOperator

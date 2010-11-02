@@ -80,7 +80,7 @@ public class SnAPLikelihoodCore  {
 			m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
 
 
-		System.err.println("Number of patterns = " + numPatterns);
+		//System.err.println("Number of patterns = " + numPatterns);
 		
 			for(int id = 0; id < numPatterns - 2; id++) {
 			//for(int id=0;id<60;id++) {
@@ -89,17 +89,17 @@ public class SnAPLikelihoodCore  {
 				//	System.err.print(id + " ");
 				int [] thisSite = data.getPattern(id);
 				
-				System.err.print("This site. ID = "+id+"[");
-				for(int i=0;i<thisSite.length;i++)
-					System.err.print(" "+thisSite[i]);
-				System.err.println("]");
+				//System.err.print("This site. ID = "+id+"[");
+				//for(int i=0;i<thisSite.length;i++)
+					//System.err.print(" "+thisSite[i]);
+				//System.err.println("]");
 				
 				
 				double freq = data.getPatternWeight(id);
 				double siteL=0.0;
 				try {
 					siteL = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, thisSite, bUseCache, dprint);
-					System.err.println("SiteL, pattern "+id+" equals "+ siteL);
+					//System.err.println("SiteL, pattern "+id+" equals "+ siteL);
 					
 				}
 				catch (Exception ex) {
@@ -121,7 +121,7 @@ public class SnAPLikelihoodCore  {
 		
 			
 			/*****/
-		System.err.println("Constant site probabilities: \n\t\t\tall 0 = "+P0+"\n\t\t\t all 1 = "+P1);
+		//System.err.println("Constant site probabilities: \n\t\t\tall 0 = "+P0+"\n\t\t\t all 1 = "+P1);
 							   
 			forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
 			//System.err.println(numPatterns + " " + forwardLogL);

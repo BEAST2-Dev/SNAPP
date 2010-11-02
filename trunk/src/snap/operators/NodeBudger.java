@@ -39,11 +39,13 @@ import beast.util.Randomizer;
 public class NodeBudger extends NodeSwapper {
 	public Input<Double> m_pWindowSize = new Input<Double>("size", "Relative size of the window in which to move the root node");
 	double m_fWindowSize;
-	int m_nNodeCount = -1;
+	int m_nInternalNodeCount = -1;
+	int m_nLeafNodeCount = -1;
 
 	@Override
 	public void initAndValidate() {
-		m_nNodeCount = m_pTree.get().getNodeCount();
+		m_nInternalNodeCount = m_pTree.get().getInternalNodeCount();
+		m_nLeafNodeCount = m_pTree.get().getLeafNodeCount();
 		m_fWindowSize = m_pWindowSize.get();
 	}
 	
@@ -55,7 +57,7 @@ public class NodeBudger extends NodeSwapper {
 
 		//Choose a random node internal node 
 		// that is a node with number [m_nNodeCount/2 + 1, .... , m_nNodeCount - 1] 
-		int whichNode = m_nNodeCount/2 + 1 + Randomizer.nextInt(m_nNodeCount/2);
+		int whichNode = m_nLeafNodeCount + Randomizer.nextInt(m_nInternalNodeCount);
 		Node p = nodes[whichNode];
 
 		if (p.isRoot()){
@@ -78,7 +80,10 @@ public class NodeBudger extends NodeSwapper {
 			
 			if (beta==1.0) //No move possible, return a reject. 
 				return Double.NEGATIVE_INFINITY;
-			double maxc = Math.max(p.m_left.getHeight(), p.m_right.getHeight());
+			double maxc = p.m_left.getHeight();
+			if (p.m_right != null) {
+				maxc = Math.max(maxc, p.m_right.getHeight());
+			}
 			
 			/**
 			 Let h be the height, and maxc be the height of the nearest child. This move moves h to 
@@ -102,13 +107,15 @@ public class NodeBudger extends NodeSwapper {
 			p.setHeight(maxc + u*(p.getHeight() - maxc));
 			//System.out.println("oldh = "+oldh+"\tbeta = "+beta+"\t u = "+u+"\t maxc = "+maxc+" \tp.getHeight = "+p.getHeight()+" proposed new height = "+h2 +"="+p.getHeight());
 			
-
-			return 0.0;
+			//return Double.NEGATIVE_INFINITY;
+			return 0;
 		}
 
 		//Find shortest branch to any child.
-		double minb = 10e10;
-		minb = Math.max(p.m_left.getHeight(), p.m_right.getHeight());
+		double minb = p.m_left.getHeight();
+		if (p.m_right != null) {
+			minb = Math.max(minb, p.m_right.getHeight());
+		}
 
 		double range = p.getParent().getHeight() - minb;
 
@@ -128,6 +135,7 @@ public class NodeBudger extends NodeSwapper {
 		if (m_fWindowSize > 1.0) {
 			m_fWindowSize = 1.0;
 		}
+		//System.err.println("NodeBudger " + m_fWindowSize);
     }
 	
 } // class NodeBudger
