@@ -110,7 +110,9 @@ public class GammaParameter extends RealParameter {
 		node.setMetaData(sPattern, fValues[Math.abs(node.getNr())]);
 		if (!node.isLeaf()) {
 			syncTree(node.m_left, fValues, sPattern);
-			syncTree(node.m_right, fValues, sPattern);
+			if (node.m_right != null) {
+				syncTree(node.m_right, fValues, sPattern);
+			}
 		}
 	}
 

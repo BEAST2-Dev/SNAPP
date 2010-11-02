@@ -83,5 +83,6 @@ public class RateMixer extends Operator {
 		Double fDelta = calcDelta(logAlpha);
 		fDelta += Math.log(m_fMixGamma);
 		m_fMixGamma = Math.exp(fDelta);
+		//System.err.println("RateMixer " + m_fMixGamma);
     }
-}
+} // class RateMixer

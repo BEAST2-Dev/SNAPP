@@ -60,6 +60,7 @@ public class GammaMover extends Operator {
 		Double fDelta = calcDelta(logAlpha);
 		fDelta += Math.log(m_fScale);
 		m_fScale = Math.exp(fDelta);
+		//System.err.print("GammaMover " + m_fScale);
     }
 	
 } // class GammaMover 

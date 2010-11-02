@@ -168,11 +168,13 @@ public class NodeData extends Node implements Serializable  {
 		node.setParent(null);
 		if (m_left != null) {
 			NodeData left = ((NodeData)m_left).copy(); 
-			NodeData right = ((NodeData)m_right).copy(); 
 			node.m_left = left;
-			node.m_right = right;
 			left.setParent(node);
-			right.setParent(node);
+			if (m_right != null) {
+				NodeData right = ((NodeData)m_right).copy();
+				node.m_right = right;
+				right.setParent(node);
+			}
 		}
 		return node;
 	}

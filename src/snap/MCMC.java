@@ -137,7 +137,7 @@ public class MCMC extends beast.core.MCMC {
         	state.store(iSample);
 
 			Operator operator = operatorSet.selectOperator();
-			if (iSample == 24) {
+			if (iSample == 6) {
 				int h = 3;
 				h++;
 				//proposedState.makeDirty(State.IS_GORED);
@@ -156,6 +156,7 @@ public class MCMC extends beast.core.MCMC {
 					if (iSample>=0) {
 						operator.accept();
 					}
+					//System.err.println("ACCEPT");
 				} else {
 					// reject
 					if (iSample>=0) {
@@ -166,12 +167,14 @@ public class MCMC extends beast.core.MCMC {
                     state.restoreCalculationNodes();
                     // needed for logging tree theta's correctly
                     ((GammaParameter)state.getStateNode(iGammaParameter)).prepare();
+					//System.err.println("REJECT");
 				}
 			} else {
 				// operation failed
 				if (iSample>0) {
 					operator.reject();
 				}
+				state.restore();
 			}
             log(iSample);
             
