@@ -46,9 +46,9 @@ import beast.evolution.tree.Node;
 public class SnAPPrior extends Distribution {
     public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "prior parameter -- see docs for details", Validate.REQUIRED);
     public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "prior parameter -- see docs for details", Validate.REQUIRED);
-    public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process", Validate.REQUIRED);
     public Input<RealParameter> m_pGamma = new Input<RealParameter>("gamma", "Populations sizes for the nodes in the tree", Validate.REQUIRED);
-    public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations", Validate.REQUIRED);
+    public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process");//, Validate.REQUIRED);
+    public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations"); //, Validate.REQUIRED);
 
     @Override
     public void initAndValidate() {
@@ -60,13 +60,14 @@ public class SnAPPrior extends Distribution {
     public double calculateLogP() throws Exception {
         logP = 0.0;
 
+        double alpha = m_pAlpha.get().getValue();
+        double beta = m_pBeta.get().getValue();
+        /*
         Tree tree = m_pTree.get();
         double heightsum = tree.getRoot().getHeight();
         heightsum += heightSum(tree.getRoot());
         int nspecies = (tree.getNodeCount() + 1) / 2;
         double lambda = m_pLambda.get().getValue();
-        double alpha = m_pAlpha.get().getValue();
-        double beta = m_pBeta.get().getValue();
 
         double mu = 0.0; //Death process
 
@@ -84,8 +85,9 @@ public class SnAPPrior extends Distribution {
                 double xn = p.next();
                 logP += Math.log(mu*p1(xn,lambda,mu)/p0n);
             }
-
         }
+        */
+        
         //Gamma values in tree
         RealParameter gamma = m_pGamma.get();
         //double [] gamma = state.getParameter(m_pGamma).getValues();
