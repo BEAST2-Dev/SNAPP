@@ -48,6 +48,10 @@ public class MCMC extends beast.core.MCMC {
 
 	@Override
 	public void run() throws Exception {
+        // initialises log so that log file headers are written, etc.
+        for (Logger log : m_loggers.get()) {
+            log.init();
+        }
     	// set up state (again). Other plugins may have manipulated the
     	// StateNodes, e.g. set up bounds or dimensions
     	state.initAndValidate();
