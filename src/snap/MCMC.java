@@ -183,7 +183,7 @@ public class MCMC extends beast.core.MCMC {
             log(iSample);
             
 			
-			if (bDebug) {
+			if (bDebug || iSample % 10000 == 0) {
 				state.store(iSample);
 				state.setEverythingDirty(true);
 				//System.err.println(m_state.toString());
