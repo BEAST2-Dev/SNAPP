@@ -111,7 +111,7 @@ public class FCache {
 	/** counter to generate unique identifiers for pedigrees in cache **/
 	static int g_nID = 0;
 	/** generate the next pedigree identifier **/
-	static int nextID() {
+	static synchronized int nextID() {
 		return g_nID++;
 	} // nextID
 

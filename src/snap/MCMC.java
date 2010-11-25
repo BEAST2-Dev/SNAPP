@@ -57,16 +57,17 @@ public class MCMC extends beast.core.MCMC {
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile);
+		int nBurnIn = m_oBurnIn.get();
+		int nChainLength = m_oChainLength.get();
+		int nStateBurnin = m_oStateBurnIn.get();
         if (m_bRestoreFromFile) {
         	state.restoreFromFile();
+        	nBurnIn = 0;
         	//prepare();
         }
 		long tStart = System.currentTimeMillis();
 		state.setEverythingDirty(true);
 		
-		int nBurnIn = m_oBurnIn.get();
-		int nChainLength = m_oChainLength.get();
-		int nStateBurnin = m_oStateBurnIn.get();
 		int nKillAfterXSeconds = m_killAfterXSeconds.get();
 
 		System.err.println("Start state:");
