@@ -28,13 +28,14 @@ package snap;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 
 @Description("Represents population size associated with each node in a tree.")
 public class GammaParameter extends RealParameter {
-	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree associated with this (array) parameter");
+	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree associated with this (array) parameter", Validate.REQUIRED);
 	public Input<Boolean> m_bInitFromTree = new Input<Boolean>("initFromTree", "whether to initialize from starting tree values (if true), or vice versa (if false)");
 	public Input<String> m_pPattern = new Input<String>("pattern", "pattern of metadata element associated with this parameter in the tree");
 	

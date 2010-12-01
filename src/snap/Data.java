@@ -25,8 +25,18 @@
  */
 package snap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 
 
 @Description("Represents sequence data for SnAP analysis. "+
@@ -35,6 +45,98 @@ import beast.core.Description;
  "constant sites, but with zero weight. The likelihood calculator "+
  "deals with these different sites.")
 public class Data extends beast.evolution.alignment.Alignment {
+	public Input<beast.evolution.alignment.Alignment> m_rawData = new Input<beast.evolution.alignment.Alignment>("rawdata","raw binary sequences");
+	public Input<List<TaxonSet>> m_taxonsets = new Input<List<TaxonSet>>("taxonset","set of taxons that group a number of SNP sequences into a single sequence", 
+			new ArrayList<TaxonSet>());
+	
+	public Data() {
+		m_pSequences.setRule(Validate.OPTIONAL);
+	}
+	
+	@Override
+	public void initAndValidate() throws Exception {
+		// guess taxon set if no sequences and no taxonsets are known
+		if (m_pSequences.get().size() == 0 && m_taxonsets.get().size() == 0 && m_rawData.get() != null) {
+			// by separator
+			guessTaxonSets("^(.+)[_\\. ](.*)$");
+			if (m_taxonsets.get().size() == 0) {
+				// by sequence of numbers
+				guessTaxonSets("^(.+?)[0-9]++.*$");
+			}
+			if (m_taxonsets.get().size() == 0) {
+				// by first letter
+				guessTaxonSets("^(.).*$");
+			}
+		}
+		
+		// amalgamate binary sequences into count sequences by taxon sets
+		if (m_taxonsets.get().size() > 0) {
+			// sequences are defined through taxon sets, so construct
+			// SNPSequences from binary sequences as defined by the taxon sets
+			List<Sequence> sequences = m_rawData.get().m_pSequences.get();
+			List<Sequence> SNPsequences = m_pSequences.get();
+			for(TaxonSet set : m_taxonsets.get()) {
+				SNPSequence SNPSequence = new SNPSequence();
+				SNPSequence.setID(set.getID());
+				SNPSequence.m_sTaxon.setValue(set.getID(), SNPSequence);
+				for (Taxon taxon : set.m_taxonset.get()) {
+					boolean bFound = false;
+					for (int i = 0; i < sequences.size() && !bFound; i++) {
+						if (sequences.get(i).m_sTaxon.get().equals(taxon.getID())) {
+							SNPSequence.m_sequences.setValue(sequences.get(i), SNPSequence);
+							bFound = true;
+						}
+					}
+					if (!bFound) {
+						throw new Exception("Could not find taxon " + taxon.getID() + " in alignments");
+					}
+				}
+				SNPSequence.initAndValidate();
+				SNPsequences.add(SNPSequence);
+			}
+		}
+		
+		super.initAndValidate();
+	} // initAndValidate
+	
+	/** guesses taxon sets based on pattern in sRegExp based
+	 * on the taxa in m_rawData 
+	 */
+	void guessTaxonSets(String sRegexp) throws Exception {
+		List<Taxon> taxa = new ArrayList<Taxon>();
+		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {
+			Taxon taxon = new Taxon();
+			taxon.setID(sequence.m_sTaxon.get());
+			taxa.add(taxon);
+		}
+		HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
+    	Pattern m_pattern = Pattern.compile(sRegexp);
+    	for (Taxon taxon : taxa) {
+    		Matcher matcher = m_pattern.matcher(taxon.getID());
+			if (matcher.find()) {
+				String sMatch = matcher.group(1);
+				try {
+					if (map.containsKey(sMatch)) {
+						TaxonSet set = map.get(sMatch);
+						set.m_taxonset.setValue(taxon, set);
+					} else {
+						TaxonSet set = new TaxonSet();
+						set.setID(sMatch);
+						set.m_taxonset.setValue(taxon, set);
+						map.put(sMatch, set);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+    	}
+    	// add taxon sets
+    	for (TaxonSet set : map.values()) {
+    		if (set.m_taxonset.get().size() > 1) {
+                m_taxonsets.setValue(set, this);
+    		}
+    	}
+	}
 	
 	public int getPatternWeight(int id) {
 		if (id < m_nWeight.length) {
@@ -129,6 +231,8 @@ public class Data extends beast.evolution.alignment.Alignment {
 		for (int i = 0; i < m_nStateCounts.size(); i++) {
 			m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCounts.get(i));
 		}
+		// add one for the zero state
+		m_nMaxStateCount++;
 		// report some statistics
 		for (int i = 0; i < m_sTaxaNames.size(); i++) {
 			System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
@@ -138,6 +242,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 			m_nPatterns[nPatterns + 1][i] = 0;
 			m_nPatterns[nPatterns + 1][i] = m_nStateCounts.get(i);
 		}
+		System.err.println(getMaxStateCount() + " states max");
 		System.err.println(getSiteCount() + " sites");
 		System.err.println(getPatternCount() + " patterns (2 dummies)");
 	} // calc
