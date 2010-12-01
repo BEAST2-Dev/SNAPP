@@ -1,0 +1,100 @@
+<beast version='2.0' namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood'>
+
+<map name='snapprior'>snap.likelihood.SnAPPrior</map>
+<map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
+
+    <data id="#alignments"/>
+
+    <plate var='n' range='#alignments'>
+	    <data spec='snap.Data' id='snapalignment' dataType='integerdata'>
+            <rawdata idref='$(n)'/>
+        </data>
+    </plate>
+
+<run id='mcmc' spec='snap.MCMC' chainLength='1000000' preBurnin='0' stateBurnin='0'>
+        <state storeEvery='1000'>
+          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>
+               <input name='taxa' idref='snapalignment'/>
+          </tree>
+          <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10' tree='@tree'/>
+          <parameter name='stateNode' id='v' value='0.588235' lower='0.0'/>
+          <parameter name='stateNode' id='u' value='3.33333' lower='0.0'/>
+          <parameter name='stateNode' id='alpha'  value='11.750' lower='0.0'/>
+          <parameter name='stateNode' id='beta'   value='109.73' lower='0.0'/>
+          <parameter name='stateNode' id='lambda' value='0.00765' lower='0.0'/>
+
+        </state>
+
+        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>
+            <distribution id='prior' spec='beast.core.util.CompoundDistribution'>
+ 	          <distribution spec='SnAPPrior' name='distribution' id='snapprior'>
+	              <input name='alpha' idref='alpha'/>
+    		      <input name='beta' idref='beta'/>
+	    	      <input name='lambda' idref='lambda'/>
+	              <input name='gamma' idref='gamma'/>
+		          <input name='tree' idref='tree'/>
+            </distribution>
+        </distribution>
+        <distribution id='likelihood' spec='beast.core.util.CompoundDistribution'>
+            <distribution spec='SnAPTreeLikelihood' name='distribution' id='treeLikelihood'>
+                <input name='data' idref='snapalignment'/>
+                <input name='tree' idref='tree'/>
+                <input name='mutationRateU' idref='u'/>
+                <input name='mutationRateV' idref='v'/>
+	              <input name='gamma' idref='gamma'/>
+            </distribution>
+        </distribution>
+        </distribution>
+
+        <stateDistribution idref='prior'/>
+
+    	<operator spec='operators.NodeSwapper' weight='0.5'>
+            <tree name='tree' idref='tree'/>
+    	</operator>
+        <operator spec='operators.NodeBudger' weight='0.5' size='0.5'>
+            <tree name='tree' idref='tree'/>
+        </operator>
+        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5'>
+            <tree name='tree' idref='tree'/>
+    	</operator>
+        <operator spec='operators.GammaMover' pGammaMove='0.5' weight='8'>
+            <parameter name='gamma' idref='gamma'/>
+        </operator>
+        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>
+            <tree name='tree' idref='tree'/>
+            <parameter name='gamma' idref='gamma'/>
+        </operator>
+
+        <logger logEvery='100'>
+			  <model idref='posterior'/>
+            <log idref='u'/>
+            <log idref='v'/>
+            <log idref='prior'/>
+            <log idref='treeLikelihood'/>
+            <log idref='posterior'/>
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+	             <tree idref='tree'/>
+            </log>
+        </logger>
+        <logger logEvery='100' fileName='snap.#alignments.$(seed).log'>
+            <model idref='posterior'/>
+            <log idref='u'/>
+            <log idref='v'/>
+            <log idref='prior'/>
+            <log idref='treeLikelihood'/>
+            <log idref='posterior'/>
+			<log idref='gamma'/>
+		    <log spec='snap.ThetaLogger'>
+			     <gamma idref='gamma'/>
+		    </log>
+            <log spec='beast.evolution.tree.TreeHeightLogger'>
+	            <tree idref='tree'/>
+            </log>
+        </logger>
+        <logger logEvery='100' fileName='snap.#alignments.$(seed).trees'>
+            <log idref='tree'/>
+        </logger>
+</run>
+
+</beast>
+
