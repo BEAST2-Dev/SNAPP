@@ -36,12 +36,11 @@ import beast.evolution.alignment.Alignment;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Distribution;
+import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
+import beast.evolution.likelihood.TreeLikelihood;
 
-import snap.Data;
 import snap.GammaParameter;
 import snap.NodeData;
 import snap.likelihood.SnAPLikelihoodCore;
@@ -49,15 +48,20 @@ import snap.likelihood.SnAPLikelihoodCore;
 
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
 @Citation("David Bryant, Remco Bouckaert, Noah Rosenberg. Inferring species trees directly from SNP and AFLP data: full coalescent analysis without those pesky gene trees. arXiv:0910.4193v1. http://arxiv.org/abs/0910.4193")
-public class SnAPTreeLikelihood extends Distribution {
-	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
-	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
+public class SnAPTreeLikelihood extends TreeLikelihood {
+//	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
+//	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 	public Input<RealParameter> m_pU = new Input<RealParameter>("mutationRateU", "mutation rate from red to green?");
 	public Input<RealParameter> m_pV = new Input<RealParameter>("mutationRateV", "mutation rate from green to red?");
 	public Input<GammaParameter> m_pGamma = new Input<GammaParameter>("gamma", "population size parameter with one value for each node in the tree");
 
+	public SnAPTreeLikelihood() {
+		// suppress some validation rules
+		m_pSiteModel.setRule(Validate.OPTIONAL);
+	}
+	
 	/** shadow variable of m_pData input */
-	Alignment m_data;
+	Alignment m_data2;
 	/** SampleSizes = #lineages per taxon **/
 	int [] m_nSampleSizes;
 	/** likelihood core, doing the actual hard work of calculating the likelihood **/
@@ -66,22 +70,22 @@ public class SnAPTreeLikelihood extends Distribution {
     
     @Override
     public void initAndValidate() throws Exception {
-    	m_data = m_pData.get();
+    	m_data2 = m_data.get();
     	if ( BeastMCMC.m_nThreads == 1) {
     		// single threaded likelihood core
-    		m_core = new SnAPLikelihoodCore(m_pTree.get().getRoot(), m_pData.get());
+    		m_core = new SnAPLikelihoodCore(m_tree.get().getRoot(), m_data.get());
     	} else {
     		// multi-threaded likelihood core
-    		m_core = new SnAPLikelihoodCoreT(m_pTree.get().getRoot(), m_pData.get());
+    		m_core = new SnAPLikelihoodCoreT(m_tree.get().getRoot(), m_data.get());
     	}
-    	Integer [] nSampleSizes = m_data.m_nStateCounts.toArray(new Integer[0]);
+    	Integer [] nSampleSizes = m_data2.m_nStateCounts.toArray(new Integer[0]);
     	m_nSampleSizes = new int[nSampleSizes.length];
     	for (int i = 0; i < nSampleSizes.length; i++) {
     		m_nSampleSizes[i] = nSampleSizes[i];
     	}
-    	if (!(m_pTree.get().getRoot() instanceof NodeData)) {
+    	if (!(m_tree.get().getRoot() instanceof NodeData)) {
     		throw new Exception("Tree has no nodes of the wront type. NodeData expected, but found " + 
-    				m_pTree.get().getRoot().getClass().getName());
+    				m_tree.get().getRoot().getClass().getName());
     	}
     }
 
@@ -94,7 +98,7 @@ public class SnAPTreeLikelihood extends Distribution {
     public double calculateLogP() {
     	try {
     		// get current tree
-	    	NodeData root = (NodeData) m_pTree.get(null).getRoot();
+	    	NodeData root = (NodeData) m_tree.get(null).getRoot();
 	    	// assing gamma values to tree
 	    	if (m_pGamma.get().somethingIsDirty()) {
 	    		// sync gammas in parameter with gammas in tree, if necessary
@@ -107,7 +111,7 @@ public class SnAPTreeLikelihood extends Distribution {
 			boolean dprint = false;
 			logP = m_core.computeLogLikelihood(root, u, v, 
 	    			m_nSampleSizes, 
-	    			m_data, 
+	    			m_data2, 
 	    			useCache,
 	    			dprint /*= false*/);
 			return logP;
@@ -119,13 +123,15 @@ public class SnAPTreeLikelihood extends Distribution {
 
 	@Override
 	public void store() {
-    	super.store();
+    	//super.store();
+        storedLogP = logP;
     	m_core.m_bReuseCache = true;
     }
 
 	@Override
     public void restore() {
-    	super.restore();
+    	//super.restore();
+        logP = storedLogP;
     	m_core.m_bReuseCache = false;
     }
 
@@ -133,5 +139,4 @@ public class SnAPTreeLikelihood extends Distribution {
 	@Override public List<String> getArguments() {return null;}
 	@Override public List<String> getConditions() {return null;}
 	@Override public void sample(State state, Random random) {};
-
 } // class SSSTreeLikelihood
