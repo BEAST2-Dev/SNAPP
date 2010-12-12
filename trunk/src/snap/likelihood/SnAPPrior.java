@@ -62,7 +62,7 @@ public class SnAPPrior extends Distribution {
 
         double alpha = m_pAlpha.get().getValue();
         double beta = m_pBeta.get().getValue();
-        /*
+        
         Tree tree = m_pTree.get();
         double heightsum = tree.getRoot().getHeight();
         heightsum += heightSum(tree.getRoot());
@@ -86,7 +86,7 @@ public class SnAPPrior extends Distribution {
                 logP += Math.log(mu*p1(xn,lambda,mu)/p0n);
             }
         }
-        */
+        
         
         //Gamma values in tree
         RealParameter gamma = m_pGamma.get();
@@ -101,8 +101,8 @@ public class SnAPPrior extends Distribution {
 			double g = gamma.getValue(iNode);
 			logP += -(alpha+1.0)*Math.log(g) - beta*(2.0/g);
 			
-            //double x = 2.0/gamma.getValue(iNode);
-            //logP += (alpha - 1.0)*Math.log(x) - (beta * x);
+            double x = 2.0/gamma.getValue(iNode);
+            logP += (alpha - 1.0)*Math.log(x) - (beta * x);
         }
         return logP;
     } // calculateLogLikelihood

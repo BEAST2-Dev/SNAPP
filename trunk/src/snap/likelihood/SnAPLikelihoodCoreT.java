@@ -76,10 +76,12 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			//if (id>0 && id%100 == 0)
 			//	System.err.print(id + " ");
 			double siteL=0.0;
+
 			try {
 				int [] thisSite = m_data.getPattern(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
 				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, 0);
+
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
