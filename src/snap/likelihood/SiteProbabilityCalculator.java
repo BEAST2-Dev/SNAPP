@@ -77,14 +77,14 @@ public class SiteProbabilityCalculator {
     } // convolution2Dfft
 
     /**
-     Determines a non-zero right e-vector for the matrix Q, defined by u,v,gamma and N.
+     Determines a non-zero right e-vector for the matrix Q, defined by u,v,coalescenceRate and N.
      The e-vector is normalised so that the entries for each n sum to 1.0
 
      //TODO: incorporate into code for abstract matrix
      */
-    double [][]  findRootProbabilities(int N, double u, double v, double gamma, boolean dprint) throws Exception {
+    double [][]  findRootProbabilities(int N, double u, double v, double coalescenceRate, boolean dprint) throws Exception {
         double [][] x;
-        QMatrix Qt = new QMatrix(N,u,v,gamma);
+        QMatrix Qt = new QMatrix(N,u,v,coalescenceRate);
         double [] xcol;
         xcol = Qt.findOrthogonalVector(dprint);
         if (dprint) {
@@ -108,10 +108,10 @@ public class SiteProbabilityCalculator {
         return x;
     } // findRootProbabilities
 
-    double doRootLikelihood(NodeData rootData, double u, double v, boolean dprint) throws Exception
+    double doRootLikelihood(NodeData rootData, double u, double v, Double [] coalescenceRate, boolean dprint) throws Exception
     {
         int N=rootData.m_n;
-        double[][] conditional = findRootProbabilities(N, u, v, rootData.gamma(), dprint);
+        double[][] conditional = findRootProbabilities(N, u, v, coalescenceRate[rootData.getNr()], dprint);
 
 	//	System.err.println("Root theta = "+rootData.gamma());
 		
@@ -165,8 +165,8 @@ public class SiteProbabilityCalculator {
         node.initFb(o.getF());
     }
 
-    void doCachedTopOfBranchLikelihood(NodeData node, double u, double v) throws Exception {
-        FCache.CacheObject o = m_cache.getTopOfBrancheF(node.getCacheIDB(), node, u, v, this);
+    void doCachedTopOfBranchLikelihood(NodeData node, double u, double v, Double [] coalescenceRate) throws Exception {
+        FCache.CacheObject o = m_cache.getTopOfBrancheF(node.getCacheIDB(), node, u, v, coalescenceRate, this);
         node.setCacheIDT(o.m_nCacheID);
         //node.assignFt(o.getF());
         node.initFt(o.getF());
@@ -342,7 +342,7 @@ public class SiteProbabilityCalculator {
      * @throws Exception
 
      **/
-    void doTopOfBranchLikelihood(NodeData node, double u, double v, boolean dprint) throws Exception {
+    void doTopOfBranchLikelihood(NodeData node, double u, double v, Double [] coalescenceRate, boolean dprint) throws Exception {
 
         //int N = node.m_n;
 
@@ -353,7 +353,7 @@ public class SiteProbabilityCalculator {
 
 	//	System.err.println("node.t = "+node.t()+"\tnode.gamma = "+node.gamma()+"\t2/node.gamma = "+(2.0/node.gamma()));
 		
-        FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, node.gamma(), node.t(), node.getFb());
+        FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, coalescenceRate[node.getNr()], node.t(), node.getFb());
         //TODO: What is the effect of the tolerance?
 
         node.initFt(tmp);
@@ -379,57 +379,57 @@ public class SiteProbabilityCalculator {
       * @throws Exception
      @bool updateAll Update the partial likelihoods for all nodes.
      */
-    void computeSiteLikelihood2(NodeData tree, double u, double v, int [] redCount, boolean dprint/*=false*/) throws Exception {
+    void computeSiteLikelihood2(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean dprint/*=false*/) throws Exception {
         //Post-order traversal
         if (tree.isLeaf()) {
             doLeafLikelihood(tree, redCount[tree.getNr()], dprint);
         } else if (tree.getNrOfChildren() == 1) {
             NodeData p = tree.getChild(0);
-            computeSiteLikelihood2(p, u, v, redCount, dprint);
-            doTopOfBranchLikelihood(p, u,v,dprint);
+            computeSiteLikelihood2(p, u, v, coalescenceRate, redCount, dprint);
+            doTopOfBranchLikelihood(p, u,v, coalescenceRate, dprint);
             doInternalLikelihood(p, tree, dprint);
         } else { // assume two children
             NodeData leftChild = tree.getChild(0);
             NodeData rightChild = tree.getChild(1);
-            computeSiteLikelihood2(leftChild, u, v, redCount, dprint);
-            computeSiteLikelihood2(rightChild, u, v, redCount, dprint);
-            doTopOfBranchLikelihood(leftChild, u,v,dprint);
-            doTopOfBranchLikelihood(rightChild, u,v,dprint);
+            computeSiteLikelihood2(leftChild, u, v, coalescenceRate, redCount, dprint);
+            computeSiteLikelihood2(rightChild, u, v, coalescenceRate, redCount, dprint);
+            doTopOfBranchLikelihood(leftChild, u,v,coalescenceRate, dprint);
+            doTopOfBranchLikelihood(rightChild, u,v,coalescenceRate, dprint);
             doInternalLikelihood(leftChild, rightChild, tree, dprint);
         }
     } // computeSiteLikelihood2
 
-    void computeCachedSiteLikelihood2(NodeData tree, double u, double v, int [] redCount, boolean dprint/*=false*/) throws Exception {
+    void computeCachedSiteLikelihood2(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean dprint/*=false*/) throws Exception {
         //Post-order traversal
         if (tree.isLeaf()) {
             doCachedLeafLikelihood(tree, redCount[tree.getNr()]);
         } else if (tree.getNrOfChildren() == 1) {
             NodeData p = tree.getChild(0);
-            computeCachedSiteLikelihood2(p, u, v, redCount, dprint);
-            doCachedTopOfBranchLikelihood(p, u,v);
+            computeCachedSiteLikelihood2(p, u, v, coalescenceRate, redCount, dprint);
+            doCachedTopOfBranchLikelihood(p, u,v, coalescenceRate);
             doInternalLikelihood(p, tree, false);
         } else { // assume two children
             NodeData leftChild = tree.getChild(0);
             NodeData rightChild = tree.getChild(1);
-            computeCachedSiteLikelihood2(leftChild, u, v, redCount, dprint);
-            computeCachedSiteLikelihood2(rightChild, u, v, redCount, dprint);
-            doCachedTopOfBranchLikelihood(leftChild, u,v);
-            doCachedTopOfBranchLikelihood(rightChild, u,v);
+            computeCachedSiteLikelihood2(leftChild, u, v, coalescenceRate, redCount, dprint);
+            computeCachedSiteLikelihood2(rightChild, u, v, coalescenceRate, redCount, dprint);
+            doCachedTopOfBranchLikelihood(leftChild, u,v, coalescenceRate);
+            doCachedTopOfBranchLikelihood(rightChild, u,v, coalescenceRate);
             doCachedInternalLikelihood(leftChild, rightChild, tree);
         }
     } // computeSiteLikelihood2
 
-    public double computeSiteLikelihood(NodeData tree, double u, double v, int [] redCount, boolean useCache, boolean dprint/*=false*/) throws Exception {
+    public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean useCache, boolean dprint/*=false*/) throws Exception {
         if (useCache) {
-            computeCachedSiteLikelihood2(tree, u, v, redCount, dprint/*=false*/);
+            computeCachedSiteLikelihood2(tree, u, v, coalescenceRate, redCount, dprint/*=false*/);
         } else {
-            computeSiteLikelihood2(tree, u, v, redCount, dprint/*=false*/);
+            computeSiteLikelihood2(tree, u, v, coalescenceRate, redCount, dprint/*=false*/);
         }
 
         if (dprint)
             System.err.println(tree.getFb().toString());
 
-        return doRootLikelihood(tree, u,v, dprint);
+        return doRootLikelihood(tree, u,v, coalescenceRate, dprint);
     } // computeSiteLikelihood
 
 

@@ -26,31 +26,31 @@
 package snap.operators;
 
 
-import snap.GammaParameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
 
 @Description("Scales single value in gamma parameter.")
 public class GammaMover extends Operator {
-	public Input<GammaParameter> m_pGamma = new Input<GammaParameter>("gamma", "population sizes");
-	public Input<Double> m_pScaleGamma = new Input<Double>("pGammaMove", "scale of move");
+	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate", "population sizes");
+	public Input<Double> m_pScale = new Input<Double>("scale", "scale of move");
 
 	double m_fScale;
 
 	@Override
 	public void initAndValidate() {
-		m_fScale = m_pScaleGamma.get();
+		m_fScale = m_pScale.get();
 	}
 	
 	@Override
 	public double proposal() {
-		GammaParameter gamma = m_pGamma.get(this);
-		int whichNode = Randomizer.nextInt(gamma.getDimension());
+		RealParameter coalescenceRate = m_coalescenceRate.get(this);
+		int whichNode = Randomizer.nextInt(coalescenceRate.getDimension());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
-		gamma.setValue(whichNode, gamma.getValue(whichNode)*scale);
+		coalescenceRate.setValue(whichNode, coalescenceRate.getValue(whichNode)*scale);
 		return Math.log(scale);
 	}
 
@@ -60,7 +60,6 @@ public class GammaMover extends Operator {
 		Double fDelta = calcDelta(logAlpha);
 		fDelta += Math.log(m_fScale);
 		m_fScale = Math.exp(fDelta);
-		//System.err.print("GammaMover " + m_fScale);
     }
 	
 } // class GammaMover 

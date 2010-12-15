@@ -26,39 +26,38 @@
 package snap.operators;
 
 
-import snap.GammaParameter;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
-@Description("Moves length of branch and gamma of branch in the oposite direction.")
+@Description("Moves length of branch and coalescence rate of branch in the oposite direction.")
 public class RateMixer extends Operator {
 
 	public Input<Double> m_pScale = new Input<Double>("scaleFactors", "scaling factor: larger means more bold proposals");
-	public Input<GammaParameter> m_pGamma = new Input<GammaParameter>("gamma", "population sizes");
+	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate", "population sizes");
 	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 	
 	@Override
 	public void initAndValidate() {
-		m_fMixGamma = m_pScale.get();
+		m_fMixScale = m_pScale.get();
 	}
 
-	double m_fMixGamma;
+	double m_fMixScale;
 
 	@Override
 	public double proposal() { // throws Exception {
-		GammaParameter gamma = m_pGamma.get(this);
+		RealParameter coalescenceRate = m_coalescenceRate.get(this);
 
-		//double scale = Math.exp(m_fMixGamma*(2.0*Randomizer.nextDouble() - 1.0));
-		double scale = (m_fMixGamma + (Randomizer.nextDouble() * ((1.0 / m_fMixGamma) - m_fMixGamma)));
-		//state.mulValues(scale, gamma);
+		double scale = (m_fMixScale + (Randomizer.nextDouble() * ((1.0 / m_fMixScale) - m_fMixScale)));
+
 		
-		for (int i = 0; i < gamma.getDimension(); i++) {
-			gamma.setValue(i, gamma.getValue(i) * scale);
+		for (int i = 0; i < coalescenceRate.getDimension(); i++) {
+			coalescenceRate.setValue(i, coalescenceRate.getValue(i) * scale);
 		}
-		//gamma.mulValues(scale);
+
 		Tree tree = m_pTree.get(this);
 		int nInternalNodes = 0;
 		try {
@@ -81,8 +80,7 @@ public class RateMixer extends Operator {
 	@Override
 	public void optimize(double logAlpha) {
 		Double fDelta = calcDelta(logAlpha);
-		fDelta += Math.log(m_fMixGamma);
-		m_fMixGamma = Math.exp(fDelta);
-		//System.err.println("RateMixer " + m_fMixGamma);
+		fDelta += Math.log(m_fMixScale);
+		m_fMixScale = Math.exp(fDelta);
     }
 } // class RateMixer

@@ -38,19 +38,19 @@ public class LineageCountCalculator {
 	 @param phylo<NodeData>& tree  The species tree
 	 @param const vector<uint>& sampleSizes Array of sample sizes (n_0) for each taxon id. 
 	 */
-	public void computeCountProbabilities(NodeData tree, int [] sampleSizes, boolean dprint /*= false*/) throws Exception {
+	public void computeCountProbabilities(NodeData tree, int [] sampleSizes, Double [] coalescenceRate, boolean dprint /*= false*/) throws Exception {
 		
 		//Post-order traversal
 		if (tree.isLeaf()) {
 			doCountProbabilitiesForLeaf(tree, sampleSizes[tree.getNr()], dprint);
 		} else if (tree.getNrOfChildren() == 1) {
 			NodeData p = tree.getChild(0);
-			computeCountProbabilities(p, sampleSizes, dprint);
-			doCountProbabilitiesForInternal(tree, p,dprint);  //Node has a single child.
+			computeCountProbabilities(p, sampleSizes, coalescenceRate, dprint);
+			doCountProbabilitiesForInternal(tree, p, coalescenceRate, dprint);  //Node has a single child.
 		} else { // assume two children
-			computeCountProbabilities(tree.getChild(0), sampleSizes, dprint);
-			computeCountProbabilities(tree.getChild(1), sampleSizes, dprint);
-			doCountProbabilitiesForInternal(tree, tree.getChild(0), tree.getChild(1), dprint);
+			computeCountProbabilities(tree.getChild(0), sampleSizes, coalescenceRate, dprint);
+			computeCountProbabilities(tree.getChild(1), sampleSizes, coalescenceRate, dprint);
+			doCountProbabilitiesForInternal(tree, tree.getChild(0), tree.getChild(1), coalescenceRate, dprint);
 		}
 	} // computeCountProbabilities
 	
@@ -83,9 +83,9 @@ public class LineageCountCalculator {
 	/**
 	 Compute probabilities for the numbers of lineages at a node with a single child.
 	 **/
-	void doCountProbabilitiesForInternal(NodeData v, NodeData child, boolean dprint) throws Exception {
+	void doCountProbabilitiesForInternal(NodeData v, NodeData child, Double [] coalescenceRate, boolean dprint) throws Exception {
 		v.resize(child.m_n);
-		double g1 = child.gamma();
+		double g1 = coalescenceRate[child.getNr()];//child.gamma();
 		double t1 = child.t();
 
 		if( dprint ) {
@@ -102,15 +102,15 @@ public class LineageCountCalculator {
 	/**
 	 Compute probabilities for the numbers of lineages at a node with two children.
 	 **/
-	void doCountProbabilitiesForInternal(NodeData node, NodeData u1, NodeData u2, boolean dprint)throws Exception {
+	void doCountProbabilitiesForInternal(NodeData node, NodeData u1, NodeData u2, Double [] coalescenceRate, boolean dprint)throws Exception {
 		int n1 = u1.m_n;
 		int n2 = u2.m_n;
 		int n = n1+n2;
 		node.resize(n);
 
 
-		double g1 = u1.gamma();
-		double g2 = u2.gamma();
+		double g1 = coalescenceRate[u1.getNr()];//u1.gamma();
+		double g2 = coalescenceRate[u2.getNr()];//u2.gamma();
 		double t1 = u1.t();
 		double t2 = u2.t();
 

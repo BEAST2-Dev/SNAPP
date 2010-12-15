@@ -59,7 +59,7 @@
 	</data>
 
 
-<run id='mcmc' spec='snap.MCMC' chainLength='1000000' preBurnin='0' stateBurnin='100000'>
+<run id='mcmc' spec='snap.MCMC' chainLength='1000000' preBurnin='0' stateBurnin='0'>
         <state storeEvery='1000'>
           <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10'>
                 <tree idref='tree'/>

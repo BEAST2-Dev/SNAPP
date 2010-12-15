@@ -128,14 +128,14 @@ public class FCache {
 		return m_leafCache[node.getNr()][numReds];
 	} // getLeafF
 	
-	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, SiteProbabilityCalculator spc) throws Exception {
+	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, Double [] coalescenceRate, SiteProbabilityCalculator spc) throws Exception {
 		while (nCacheID >= m_TopOfBranche.size()) {
 			m_TopOfBranche.add(null);
 		}
 		CacheObject o = m_TopOfBranche.elementAt(nCacheID);//m_TopOfBrancheMap.get(nCacheID);
 		if (o == null) {
 			// it's not in the cache yet, so create the object
-			spc.doTopOfBranchLikelihood(node, u, v, false);
+			spc.doTopOfBranchLikelihood(node, u, v, coalescenceRate, false);
 			//FMatrix Ft = node.cloneFt(); 
 			FMatrix Ft = node.getFt(); 
 			o = new CacheObject(Ft, nextID());
@@ -143,7 +143,7 @@ public class FCache {
 			m_TopOfBranche.set(nCacheID, o);
 		} else if (o.m_F == null) {
 			// it's removed from the cache, so recalculate the F matrix
-			spc.doTopOfBranchLikelihood(node, u, v, false);
+			spc.doTopOfBranchLikelihood(node, u, v, coalescenceRate, false);
 			o.m_F = node.getFt();
 		}
 		return o;

@@ -54,7 +54,7 @@ public class SnAPLikelihoodCore  {
 	/**
 	 Compute Likelihood of the allele counts
 	 
-	 @param root  The tree. Uses branch lengths and gamma values stored on this tree.
+	 @param root  The tree. Uses branch lengths and coalescenceRate values stored on this tree.
 	 @param u  Mutation rate from red to green
 	 @param v Mutation rate from green to red
 	 @param sampleSize  Number of samples taken at each species (index by id field of the NodeData)
@@ -63,13 +63,15 @@ public class SnAPLikelihoodCore  {
 	 * @throws Exception 
 	 **/
 	
-	public double computeLogLikelihood(NodeData root, double u, double v, 
+	public double [] computeLogLikelihood(NodeData root, double u, double v, 
 			int [] sampleSizes, 
 			Alignment data, 
+			Double [] coalescenceRate,
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
-		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,dprint);
+		
+		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate, dprint);
 			
 			//TODO: Partial subtree updates over all sites.
 			double forwardLogL = 0.0;
@@ -79,10 +81,14 @@ public class SnAPLikelihoodCore  {
 			double [] patternProb = new double[numPatterns];
 			m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
 
-
+			for(int id = 0; id < numPatterns; id++) {
+				int [] thisSite = data.getPattern(id);
+				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bUseCache, dprint);
+			}
+			return patternProb;
+/*
 		//System.err.println("Number of patterns = " + numPatterns);
-		
-			for(int id = 0; id < numPatterns - 2; id++) {
+			for(int id = 0; id < numPatterns - (bUsenNonPolymorphic ? 0 : 2); id++) {
 			//for(int id=0;id<60;id++) {
 				//System.err.print('.');
 				//if (id>0 && id%100 == 0)
@@ -98,7 +104,7 @@ public class SnAPLikelihoodCore  {
 				double freq = data.getPatternWeight(id);
 				double siteL=0.0;
 				try {
-					siteL = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, thisSite, bUseCache, dprint);
+					siteL = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bUseCache, dprint);
 					//System.err.println("SiteL, pattern "+id+" equals "+ siteL);
 					
 				}
@@ -114,20 +120,22 @@ public class SnAPLikelihoodCore  {
 				forwardLogL+=(double)freq * Math.log(siteL);
 			}
 			// correction for constant sites
-			int [] thisSite = data.getPattern(numPatterns - 2);
-			double P0 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
-			thisSite = data.getPattern(numPatterns - 1);
-			double P1 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,thisSite, false, false);
-		
+			if (!bUsenNonPolymorphic) {
+				int [] thisSite = data.getPattern(numPatterns - 2);
+				double P0 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,coalescenceRate, thisSite, false, false);
+				thisSite = data.getPattern(numPatterns - 1);
+				double P1 =  m_siteProbabilityCalculator.computeSiteLikelihood(root,u,v,coalescenceRate, thisSite, false, false);
 			
-			/*****/
-		//System.err.println("Constant site probabilities: \n\t\t\tall 0 = "+P0+"\n\t\t\t all 1 = "+P1);
-							   
-			forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
+				
+			//System.err.println("Constant site probabilities: \n\t\t\tall 0 = "+P0+"\n\t\t\t all 1 = "+P1);
+								   
+				forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
+			}
 			//System.err.println(numPatterns + " " + forwardLogL);
 
 			return forwardLogL;
-
+*/
+			
 //			//Compute site probabilities from pattern probabilities
 //			int nSites =   
 //					data.getSiteCount();

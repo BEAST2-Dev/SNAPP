@@ -94,7 +94,7 @@ public class GammaParameter extends RealParameter {
     	copy.m_fLower = m_fLower;
     	copy.m_fUpper = m_fUpper;
     	//TODO: verify index is set properly
-    	//copy.index = getIndex();
+    	copy.index = index;
     	copy.m_pTree = m_pTree;
     	copy.m_pPattern = m_pPattern;
     	return copy;
