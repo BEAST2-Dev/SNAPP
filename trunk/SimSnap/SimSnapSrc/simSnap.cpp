@@ -94,7 +94,7 @@ void output_xml(ostream& os, const vector<string>& taxa, const vector<uint>& sam
 	os<<"\n\n\n\t<!-- n = "<<alleleCounts.size()<<" -->\n";
 	//Compute largest sample size.
 	int statecount = *max_element(sampleSizes.begin(),sampleSizes.end());
-	os<<"\t<data id='alignment' dataType='integerdata' statecount='"<<statecount + 1<<"'>\n";
+	os<<"\t<data spec='snap.Data' id='alignment' dataType='integerdata' statecount='"<<statecount + 1<<"'>\n";
 	for(uint i=0;i<taxa.size();i++) {
 		os<<"\t\t<sequence taxon='"<<taxa[i]<<"' totalcount='"<<sampleSizes[i]<<"'>\n";
 		for(uint j=0;j<alleleCounts.size()-1;j++)
