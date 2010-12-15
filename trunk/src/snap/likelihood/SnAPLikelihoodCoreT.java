@@ -58,8 +58,9 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 		double m_u;
 		double m_v;
 		boolean m_bUseCache;
+		Double [] m_coalescenceRate;
 		
-	  SSSRunnable(int iStart, int iStep, int iMax, Alignment data, NodeData root, double u, double v, boolean bUseCache) {
+	  SSSRunnable(int iStart, int iStep, int iMax, Alignment data, Double [] coalescenceRate, NodeData root, double u, double v, boolean bUseCache) {
 	    m_iStart = iStart;
 	    m_iStep = iStep;
 	    m_iMax = iMax;
@@ -68,6 +69,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	    m_u = u;
 	    m_v = v;
 	    m_bUseCache = bUseCache;
+	    m_coalescenceRate = coalescenceRate;
 	  }
 	  public void run() {
 		  int iThread = m_iStart;
@@ -80,7 +82,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			try {
 				int [] thisSite = m_data.getPattern(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
-				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, 0);
+				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, m_bUseCache, false, 0);
 
 			}
 			catch (Exception ex) {
@@ -101,7 +103,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	/**
 	 Compute Likelihood of the allele counts
 	 
-	 @param root  The tree. Uses branch lengths and gamma values stored on this tree.
+	 @param root  The tree. Uses branch lengths and coalescenceRate values stored on this tree.
 	 @param u  Mutation rate from red to green
 	 @param v Mutation rate from green to red
 	 @param sampleSize  Number of samples taken at each species (index by id field of the NodeData)
@@ -109,14 +111,15 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	 @param siteProbs  Vector of probabilities (logL) for each site.
 	 * @throws Exception 
 	 **/
-	
-	public double computeLogLikelihood(NodeData root, double u, double v, 
+	@Override
+	public double [] computeLogLikelihood(NodeData root, double u, double v, 
 			int [] sampleSizes, 
 			Alignment data, 
+			Double [] coalescenceRate,
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
-		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,dprint);
+		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate,dprint);
 		//dprint = true;
 			
 			//TODO: Partial subtree updates over all sites.
@@ -134,7 +137,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			m_lock = new ReentrantLock[nThreads];
 			for (int i = 0; i < nThreads; i++) {
 				m_lock[i] = new ReentrantLock();
-				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, root.copy(), u, v, bUseCache));
+				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, bUseCache));
 			}
 
 			// correction for constant sites
@@ -154,15 +157,19 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 				m_lock[i].lock();
 			}
 
-			for(int id = 0; id < numPatterns-2; id++) {
-				forwardLogL+=(double)data.getPatternWeight(id) * Math.log(patternProb[id]);
-			}
-			// correction for constant sites
-			double P0 =  patternProb[numPatterns - 2];
-			double P1 =  patternProb[numPatterns -1 ];
-			forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
-			//System.err.println(numPatterns + " " + forwardLogL);
-			return forwardLogL;
+			return patternProb;
+			
+//			for(int id = 0; id < numPatterns-(bUsenNonPolymorphic ? 0 : 2); id++) {
+//				forwardLogL+=(double)data.getPatternWeight(id) * Math.log(patternProb[id]);
+//			}
+//			if (!bUsenNonPolymorphic) {
+//				// correction for constant sites
+//				double P0 =  patternProb[numPatterns - 2];
+//				double P1 =  patternProb[numPatterns -1 ];
+//				forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
+//			}
+//			//System.err.println(numPatterns + " " + forwardLogL);
+//			return forwardLogL;
 	} // computeLogLikelihood
 	
 

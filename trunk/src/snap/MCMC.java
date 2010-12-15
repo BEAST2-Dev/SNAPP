@@ -121,18 +121,18 @@ public class MCMC extends beast.core.MCMC {
 
 		
 		// Go into the main loop
-		boolean bDebug = false;
+		boolean bDebug = true;
 		state.setEverythingDirty(true);
 		Distribution posterior = posteriorInput.get();
 		double fOldLogLikelihood = posterior.calculateLogP();
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		
-		int iGammaParameter = -1;
-		for (int i = 0; i < state.getNrOfStateNodes(); i++) {
-			if (state.getStateNode(i) instanceof GammaParameter) {
-				iGammaParameter = i; 
-			}
-		}
+//		int iGammaParameter = -1;
+//		for (int i = 0; i < state.getNrOfStateNodes(); i++) {
+//			if (state.getStateNode(i) instanceof GammaParameter) {
+//				iGammaParameter = i; 
+//			}
+//		}
 		
 		
 		boolean bStayAlive = true;
@@ -147,6 +147,7 @@ public class MCMC extends beast.core.MCMC {
 				h++;
 				//proposedState.makeDirty(State.IS_GORED);
 			}
+			//System.err.println(operator.getClass().getName() + " " + operator.getID());
 			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				state.storeCalculationNodes();
@@ -171,7 +172,7 @@ public class MCMC extends beast.core.MCMC {
                     state.setEverythingDirty(false);
                     state.restoreCalculationNodes();
                     // needed for logging tree theta's correctly
-                    ((GammaParameter)state.getStateNode(iGammaParameter)).prepare();
+//                    ((GammaParameter)state.getStateNode(iGammaParameter)).prepare();
 					//System.err.println("REJECT");
 				}
 			} else {

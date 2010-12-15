@@ -29,7 +29,7 @@ import snap.matrix.Array2d;
 
 public class ExpQT {
 
-	native static void expQTtx(int N, double u, double v, double gamma, double t, double [] x);
+	native static void expQTtx(int N, double u, double v, double coalescenceRate, double t, double [] x);
 	native static void expM(double [] x, int n);
 
 	static void expM(Array2d A, Array2d F) {

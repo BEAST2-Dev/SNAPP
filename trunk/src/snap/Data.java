@@ -56,7 +56,10 @@ public class Data extends beast.evolution.alignment.Alignment {
 	@Override
 	public void initAndValidate() throws Exception {
 		// guess taxon set if no sequences and no taxonsets are known
-		if (m_pSequences.get().size() == 0 && m_taxonsets.get().size() == 0 && m_rawData.get() != null) {
+		if (/*m_pSequences.get().size() == 0 && */m_taxonsets.get().size() == 0 && m_rawData.get() != null) {
+			while (m_pSequences.get().size() > 0) {
+				m_pSequences.get().remove(0);
+			}
 			// by separator
 			guessTaxonSets("^(.+)[_\\. ](.*)$");
 			if (m_taxonsets.get().size() == 0) {
@@ -179,8 +182,15 @@ public class Data extends beast.evolution.alignment.Alignment {
 	protected void calcPatterns() {
 		// remove constant sites
 		int nTaxa = m_counts.size();
+		int nZeroSitesCount = 0;
+		int nAllSitesCount = 0;
 		for (int i = 0; i < m_counts.get(0).size(); i++) {
 			if (isConstant(i)) {
+				if (m_counts.get(0).get(i) == 0) {
+					nZeroSitesCount++;
+				} else {
+					nAllSitesCount++;
+				}
 				for (int j = 0; j < nTaxa; j++) {
 					m_counts.get(j).remove(i);
 				}
@@ -207,7 +217,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 				nPatterns++;
 			}
 		}		
-		m_nWeight = new int[nPatterns];
+		m_nWeight = new int[nPatterns+2];
 		m_nPatterns = new int[nPatterns+2][nTaxa];
 //		m_nPatterns = new int[nPatterns][nTaxa];
 		m_nPatternIndex = new int[nSites];
@@ -237,9 +247,14 @@ public class Data extends beast.evolution.alignment.Alignment {
 		for (int i = 0; i < m_sTaxaNames.size(); i++) {
 			System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
 		}
+		
+		
 		// add dummy patterns
+//		TODO: set up weights for dummy patterns
+		m_nWeight[nPatterns] = nZeroSitesCount;
+		m_nWeight[nPatterns+1] =nAllSitesCount;
 		for (int i = 0; i < nTaxa; i++) {
-			m_nPatterns[nPatterns + 1][i] = 0;
+			//m_nPatterns[nPatterns + 1][i] = 0;
 			m_nPatterns[nPatterns + 1][i] = m_nStateCounts.get(i);
 		}
 		System.err.println(getMaxStateCount() + " states max");

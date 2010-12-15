@@ -42,11 +42,11 @@ import beast.evolution.tree.Node;
         "(parameterized by lambda) " +
         "and gamma distribution over the theta values " +
         "(with parameters alpha and beta). " +
-        "Thetas are represented by the gamma parameter where values are theta=2/gamma")
+        "Thetas are represented by the coalescenceRate parameter where values are theta=2/coalescenceRate")
 public class SnAPPrior extends Distribution {
     public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "prior parameter -- see docs for details", Validate.REQUIRED);
     public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "prior parameter -- see docs for details", Validate.REQUIRED);
-    public Input<RealParameter> m_pGamma = new Input<RealParameter>("gamma", "Populations sizes for the nodes in the tree", Validate.REQUIRED);
+    public Input<RealParameter> m_pCoalescenceRate = new Input<RealParameter>("coalescenceRate", "Populations sizes for the nodes in the tree", Validate.REQUIRED);
     public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process");//, Validate.REQUIRED);
     public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations"); //, Validate.REQUIRED);
 
@@ -89,7 +89,7 @@ public class SnAPPrior extends Distribution {
         
         
         //Gamma values in tree
-        RealParameter gamma = m_pGamma.get();
+        RealParameter coalescenceRate = m_pCoalescenceRate.get();
         //double [] gamma = state.getParameter(m_pGamma).getValues();
         //	We assume that theta has a gamma (alpha,beta) distribution, so that
         //the gamma parameter has 2/gamma(alpha,beta) distribution
@@ -97,11 +97,8 @@ public class SnAPPrior extends Distribution {
 		//Jacobian.... that is, if f(theta) is the GAMMA distribution, we want
 		// f(2/gamma) / (gamma^2). This has been independently tested in mathlab.
 		
-        for (int iNode = 0; iNode < gamma.getDimension(); iNode++) {
-			double g = gamma.getValue(iNode);
-			logP += -(alpha+1.0)*Math.log(g) - beta*(2.0/g);
-			
-            double x = 2.0/gamma.getValue(iNode);
+        for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
+            double x = 2.0/coalescenceRate.getValue(iNode);
             logP += (alpha - 1.0)*Math.log(x) - (beta * x);
         }
         return logP;

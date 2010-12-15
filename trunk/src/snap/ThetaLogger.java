@@ -9,7 +9,7 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 
 public class ThetaLogger extends Plugin implements Loggable {
-	public Input<RealParameter> m_pGamma = new Input<RealParameter>("gamma","reports 2 over the value of the parameter.", Validate.REQUIRED);
+	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate","reports 2 over the value of the parameter.", Validate.REQUIRED);
 
 	
 	@Override 
@@ -19,7 +19,7 @@ public class ThetaLogger extends Plugin implements Loggable {
 
 	@Override
 	public void init(PrintStream out) throws Exception {
-		RealParameter param = (RealParameter) m_pGamma.get();
+		RealParameter param = (RealParameter) m_coalescenceRate.get();
         int nValues = param.getDimension();
         if (nValues == 1) {
             out.print(param.getID() + "\t");
@@ -32,7 +32,7 @@ public class ThetaLogger extends Plugin implements Loggable {
 
 	@Override
 	public void log(int nSample, PrintStream out) {
-        RealParameter var = (RealParameter) m_pGamma.get();
+        RealParameter var = (RealParameter) m_coalescenceRate.get();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
             out.print((2.0/var.getValue(iValue)) + "\t");

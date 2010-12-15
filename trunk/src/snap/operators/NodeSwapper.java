@@ -132,7 +132,6 @@ public class NodeSwapper extends Operator {
 		//Swap
 		double xlength = ya.getLength() + (yheight - xheight);
 		double ylength = xa.getLength() + (xheight - yheight);
-		//double xgamma, ygamma;
 
 		swap(nodes, xa, ya);
 		

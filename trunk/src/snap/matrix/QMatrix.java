@@ -60,13 +60,13 @@ import snap.likelihood.COMPLEX;
 
 
 public class QMatrix extends AbstractMatrix {
-		private	double u,v,gamma;
+		private	double u,v,coalescenceRate;
 		private int N;
-		public QMatrix(int _N, double _u, double _v, double _gamma) {
+		public QMatrix(int _N, double _u, double _v, double _coalescenceRate) {
 		 N = _N; 
 		 u = _u;
 		 v = _v;
-		 gamma = _gamma;
+		 coalescenceRate = _coalescenceRate;
 		}
 
 			/*
@@ -86,13 +86,13 @@ public class QMatrix extends AbstractMatrix {
 				//if (u \leq v) take r=0, giving a function that is increasing in n. So max row is (N,0) and norm is max(2v(N-1) + gamma (N-1)^2, 2v(N) + gamma N(N-1)/2)
 				// if u=v then any (N,r) is fine.
 				if (u>v)
-					return Math.max(2.0*u*(N-1) + gamma*(N-1)*(N-1), 2.0*u*(N) + gamma*(N)*(N-1)/2.0);
+					return Math.max(2.0*u*(N-1) + coalescenceRate*(N-1)*(N-1), 2.0*u*(N) + coalescenceRate*(N)*(N-1)/2.0);
 				else
-					return  Math.max(2.0*v*(N-1) + gamma*(N-1)*(N-1), 2.0*v*(N) + gamma*(N)*(N-1)/2.0);
+					return  Math.max(2.0*v*(N-1) + coalescenceRate*(N-1)*(N-1), 2.0*v*(N) + coalescenceRate*(N)*(N-1)/2.0);
 			}			
 			
 		public double trace() {
-				return -gamma*(N-1)*N*(N+1)*(N+2)/8 - N*(N+1)*(N+2)*(u+v)/6;
+				return -coalescenceRate*(N-1)*N*(N+1)*(N+2)/8 - N*(N+1)*(N+2)*(u+v)/6;
 			}
 
 			/*
@@ -118,13 +118,13 @@ public class QMatrix extends AbstractMatrix {
 					// Note that x_(n+1) = x[index + n + 1: index + n + 1 + n+1]
 					
 					double sum = 0.0;
-					sum +=  (- (gamma*(n*(n-1.0)))/2.0 - v*n)*x[index];
+					sum +=  (- (coalescenceRate*(n*(n-1.0)))/2.0 - v*n)*x[index];
 					sum+= n*v*x[index+1];
 					
 					//At this point, sum = (M_n x_n) [r]
 					
 					if (n<N) {
-						sum+= (n*(n+1.0)/2.0)*gamma*x[index+n+1];
+						sum+= (n*(n+1.0)/2.0)*coalescenceRate*x[index+n+1];
 					}
 					Ax[index] = sum;
 					index++;
@@ -137,27 +137,27 @@ public class QMatrix extends AbstractMatrix {
 						//Q(n,r)(n,r) = - n(n-1)/2*gamma -(n-r)*v - ru.
 						
 						sum= r*u*x[index-1];
-						sum +=  (- (gamma*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x[index];
+						sum +=  (- (coalescenceRate*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x[index];
 						if (r<n)
 							sum+= (n-r)*v*x[index+1];
 						
 						//At this point, sum = (M_n x_n) [r]
 						
 						if (n<N) {
-							sum+= ((n-r)*(n+1.0)/2.0)*gamma*x[index+n+1];
-							sum+=(r*(n+1.0)/2.0)*gamma*x[index+n+2];
+							sum+= ((n-r)*(n+1.0)/2.0)*coalescenceRate*x[index+n+1];
+							sum+=(r*(n+1.0)/2.0)*coalescenceRate*x[index+n+2];
 						}
 						Ax[index] = sum;
 						index++;
 					}
 					// r = n
 					sum= n*u*x[index-1];
-					sum +=  (- (gamma*(n*(n-1.0)))/2.0 - u*n)*x[index];
+					sum +=  (- (coalescenceRate*(n*(n-1.0)))/2.0 - u*n)*x[index];
 				
 					//At this point, sum = (M_n x_n) [r]
 					
 					if (n<N) {
-						sum+=(n*(n+1.0)/2.0)*gamma*x[index+n+2];
+						sum+=(n*(n+1.0)/2.0)*coalescenceRate*x[index+n+2];
 					}
 					Ax[index] = sum;
 					index++;
@@ -192,15 +192,15 @@ public class QMatrix extends AbstractMatrix {
 						double sum = 0.0;
 						if (r>0)
 							sum+= r*u*x[index-1];
-						sum +=  (- (gamma*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x[index];
+						sum +=  (- (coalescenceRate*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x[index];
 						if (r<n)
 							sum+= (n-r)*v*x[index+1];
 						
 						//At this point, sum = (M_n x_n) [r]
 						
 						if (n<N) {
-							sum+= ((n-r)*(n+1.0)/2.0)*gamma*x[index+n+1];
-							sum+=(r*(n+1.0)/2.0)*gamma*x[index+n+2];
+							sum+= ((n-r)*(n+1.0)/2.0)*coalescenceRate*x[index+n+1];
+							sum+=(r*(n+1.0)/2.0)*coalescenceRate*x[index+n+2];
 						}
 						Ax[index] = sum;
 						index++;
@@ -238,7 +238,7 @@ public class QMatrix extends AbstractMatrix {
 			 */
 
 			double [] solveCentralBlockTransposed(double [] y, double offset, int n, 
-					double u, double v, double gamma, boolean printdebug /*= false*/) throws Exception  {
+					double u, double v, double coalescenceRate, boolean printdebug /*= false*/) throws Exception  {
 				
 				if (printdebug) {
 					System.out.print("ylocal = [");
@@ -251,7 +251,7 @@ public class QMatrix extends AbstractMatrix {
 				
 				double [] x = new double[n+1];
 				
-				double K = -(gamma*(n*(n-1.0)))/2.0 - n*v + offset;
+				double K = -(coalescenceRate*(n*(n-1.0)))/2.0 - n*v + offset;
 				
 				
 				if (u==0.0) {
@@ -321,7 +321,7 @@ public class QMatrix extends AbstractMatrix {
 						double sum = 0.0;
 						if (r>0)
 							sum+= (n+1.0-r)*v*x[r-1];
-						sum +=  (- (gamma*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x[r];
+						sum +=  (- (coalescenceRate*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x[r];
 						if (r<n)
 							sum+= (r+1.0)*u*x[r+1];
 						
@@ -389,11 +389,11 @@ public class QMatrix extends AbstractMatrix {
 						System.err.println("];");
 					}
 					
-					yn[0] = - ((gamma*(n-1.0)*n)/2.0)*xn[0];  //yn[0] = - R_{n-1}(0,0)xn[0]
+					yn[0] = - ((coalescenceRate*(n-1.0)*n)/2.0)*xn[0];  //yn[0] = - R_{n-1}(0,0)xn[0]
 					for(int r=1;r<n;r++) {
-						yn[r] = - ( (gamma*(r-1.0)*n)/2.0 )*xn[r-1] - ( (gamma*(n-1.0-r)*n)/2.0 )*xn[r];
+						yn[r] = - ( (coalescenceRate*(r-1.0)*n)/2.0 )*xn[r-1] - ( (coalescenceRate*(n-1.0-r)*n)/2.0 )*xn[r];
 					}		
-					yn[n] = - ( (gamma*(n-1.0)*n)/2.0 )*xn[n-1];	
+					yn[n] = - ( (coalescenceRate*(n-1.0)*n)/2.0 )*xn[n-1];	
 					
 					if (printd) {
 						System.err.print("yn = [");
@@ -403,7 +403,7 @@ public class QMatrix extends AbstractMatrix {
 					}
 					
 					
-					xn = solveCentralBlockTransposed(yn,0,n,u,v,gamma,false);
+					xn = solveCentralBlockTransposed(yn,0,n,u,v,coalescenceRate,false);
 					
 					//xptr = copy(xn.begin(),xn.end(),xptr);
 					for (int i = 0; i <  xn.length; i++) {
@@ -467,7 +467,7 @@ public class QMatrix extends AbstractMatrix {
 					yn[i].m_fIm = y[yptr + i].m_fIm;
 				}
 				//cout.precision(20);
-				solveCentralBlock(yn,offset,N,u,v,gamma,xn);
+				solveCentralBlock(yn,offset,N,u,v,coalescenceRate,xn);
 //				if (CHECK_SOLVE) {
 //					vector<COMPLEX> yn2(yn.size());
 //					multiplyCentralBlock(xn, offset, N, u, v, gamma, yn2);
@@ -500,7 +500,7 @@ public class QMatrix extends AbstractMatrix {
 				for(int n=N-1;n>=1;n--) {
 					//advance(xptr,-((int)n+1)); //Point xptr to the beginning of x_n
 					xptr = xptr - (n+1);
-					multiplyUpperBlock(xn,n,gamma,yn); //Compute yn = R_n x_{n+1}
+					multiplyUpperBlock(xn,n,coalescenceRate,yn); //Compute yn = R_n x_{n+1}
 					//advance(yptr,-((int)n+1)); //Backwind to beginning of y_n.
 					yptr = yptr - (n+1);
 					for(int r=0;r<=n;r++) {
@@ -510,7 +510,7 @@ public class QMatrix extends AbstractMatrix {
 					}
 					//advance(yptr,-((int)n+1)); //Backwind to beginning of y_n.
 					
-					solveCentralBlock(yn,offset,n,u,v,gamma,xn);
+					solveCentralBlock(yn,offset,n,u,v,coalescenceRate,xn);
 					
 //					if (CHECK_SOLVE) {
 //						vector<COMPLEX> yn2(yn.size());
@@ -541,24 +541,24 @@ public class QMatrix extends AbstractMatrix {
 				}
 			}
 
-			void multiplyUpperBlock(COMPLEX [] x, int n, double gamma, COMPLEX [] y) throws Exception  {
+			void multiplyUpperBlock(COMPLEX [] x, int n, double coalescenceRate, COMPLEX [] y) throws Exception  {
 				//y.resize(n+1);
 				if (y.length < n+1) {
 					throw new Exception("Expected y to be of length at least " + (n+1) + " instead of " + y.length);
 				}
 				for(int r=0;r<=n;r++) { 
 				  //y[r] = (gamma*(double)(n-r)*(n+1.0)/2.0) * x[r] + (gamma*(double)r*(n+1.0)/2.0)*x[r+1];
-				  y[r].muladd((gamma*(double)(n-r)*(n+1.0)/2.0), x[r], (gamma*(double)r*(n+1.0)/2.0),x[r+1]);
+				  y[r].muladd((coalescenceRate*(double)(n-r)*(n+1.0)/2.0), x[r], (coalescenceRate*(double)r*(n+1.0)/2.0),x[r+1]);
 				}
 			}
 			void checkMrr(COMPLEX Mrr)  throws Exception {
 				  if (Math.abs(Mrr.m_fRe) < 1e-20 && Math.abs(Mrr.m_fIm) < 1e-20 )
 				       throw new Exception("Error in matrix solve");
 			}
-			void solveCentralBlock(COMPLEX[] y, COMPLEX offset, int n, double u, double v, double gamma, COMPLEX[] x) throws Exception  {
+			void solveCentralBlock(COMPLEX[] y, COMPLEX offset, int n, double u, double v, double coalescenceRate, COMPLEX[] x) throws Exception  {
 				//boolean printdebug = false;
 				
-				  COMPLEX K = new COMPLEX((double)(-gamma*(double)n*(n-1.0)/2.0 - n*v) + offset.m_fRe, offset.m_fIm);
+				  COMPLEX K = new COMPLEX((double)(-coalescenceRate*(double)n*(n-1.0)/2.0 - n*v) + offset.m_fRe, offset.m_fIm);
 				  COMPLEX tmp = new COMPLEX();
 //					if (printdebug) {
 //						cout<<"ylocal = [";
@@ -701,7 +701,7 @@ public class QMatrix extends AbstractMatrix {
 		  if (Math.abs(Mrr_r) < 1e-20 && Math.abs(Mrr_i) < 1e-20 )
 		       throw new Exception("Error in matrix solve");
 	}
-	void multiplyUpperBlock(double [] x_r, double [] x_i, int n, double gamma, double [] y_r, double [] y_i) throws Exception  {
+	void multiplyUpperBlock(double [] x_r, double [] x_i, int n, double coalescenceRate, double [] y_r, double [] y_i) throws Exception  {
 		//y.resize(n+1);
 		if (y_r.length < n+1 || y_i.length < n+1) {
 			throw new Exception("Expected y to be of length at least " + (n+1) + " instead of " + Math.min(y_r.length, y_i.length));
@@ -709,14 +709,14 @@ public class QMatrix extends AbstractMatrix {
 		for(int r=0;r<=n;r++) { 
 		  //y[r] = (gamma*(double)(n-r)*(n+1.0)/2.0) * x[r] + (gamma*(double)r*(n+1.0)/2.0)*x[r+1];
 		  //y[r].muladd((gamma*(double)(n-r)*(n+1.0)/2.0), x[r], (gamma*(double)r*(n+1.0)/2.0),x[r+1]);
-		  y_r[r] = gamma*(double)(n-r)*(n+1.0)/2.0 * x_r[r] + (gamma*(double)r*(n+1.0)/2.0)*x_r[r+1];
-		  y_i[r] = gamma*(double)(n-r)*(n+1.0)/2.0 * x_i[r] + (gamma*(double)r*(n+1.0)/2.0)*x_i[r+1];
+		  y_r[r] = coalescenceRate*(double)(n-r)*(n+1.0)/2.0 * x_r[r] + (coalescenceRate*(double)r*(n+1.0)/2.0)*x_r[r+1];
+		  y_i[r] = coalescenceRate*(double)(n-r)*(n+1.0)/2.0 * x_i[r] + (coalescenceRate*(double)r*(n+1.0)/2.0)*x_i[r+1];
 		}
 	}
-	void solveCentralBlock(double[] y_r, double[]y_i, double offset_r, double offset_i, int n, double u, double v, double gamma, double[] x_r, double [] x_i) throws Exception  {
+	void solveCentralBlock(double[] y_r, double[]y_i, double offset_r, double offset_i, int n, double u, double v, double coalescenceRate, double[] x_r, double [] x_i) throws Exception  {
 		//boolean printdebug = false;
 		
-		  double K_r = (double)(-gamma*(double)n*(n-1.0)/2.0 - n*v) + offset_r;
+		  double K_r = (double)(-coalescenceRate*(double)n*(n-1.0)/2.0 - n*v) + offset_r;
 		  double K_i = offset_i;
 		  double tmp_r;
 		  double tmp_i;
@@ -871,7 +871,7 @@ public class QMatrix extends AbstractMatrix {
 				yn_i[i] = y_i[yptr + i];
 			}
 			//cout.precision(20);
-			solveCentralBlock(yn_r, yn_i, offset_r, offset_i ,N,u,v,gamma, xn_r, xn_i);
+			solveCentralBlock(yn_r, yn_i, offset_r, offset_i ,N,u,v,coalescenceRate, xn_r, xn_i);
 			
 			
 			//advance(xptr,-((int)N+1));
@@ -885,7 +885,7 @@ public class QMatrix extends AbstractMatrix {
 			for(int n=N-1;n>=1;n--) {
 				//advance(xptr,-((int)n+1)); //Point xptr to the beginning of x_n
 				xptr = xptr - (n+1);
-				multiplyUpperBlock(xn_r, xn_i,n,gamma, yn_r, yn_i); //Compute yn = R_n x_{n+1}
+				multiplyUpperBlock(xn_r, xn_i,n,coalescenceRate, yn_r, yn_i); //Compute yn = R_n x_{n+1}
 				//advance(yptr,-((int)n+1)); //Backwind to beginning of y_n.
 				yptr = yptr - (n+1);
 				for(int r=0;r<=n;r++) {
@@ -895,7 +895,7 @@ public class QMatrix extends AbstractMatrix {
 				}
 				//advance(yptr,-((int)n+1)); //Backwind to beginning of y_n.
 				
-				solveCentralBlock(yn_r, yn_i, offset_r, offset_i,n,u,v,gamma,xn_r, xn_i);
+				solveCentralBlock(yn_r, yn_i, offset_r, offset_i,n,u,v,coalescenceRate,xn_r, xn_i);
 				
 				//copy(xn.begin(),xn.end(),xptr);
 				for (int i = 0; i <= n; i++) {
