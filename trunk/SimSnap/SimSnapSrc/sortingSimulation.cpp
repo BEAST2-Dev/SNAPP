@@ -25,8 +25,10 @@ phylo<simNodeData> initialiseSimTree(phylo<basic_newick>& tree, double rate) {
 	//Convert the theta values into gamma values
 	// The expected divergence between two individuals is 
 	// theta = 2*rate/gamma.
-	for(S_ITER s = simTree.leftmost_leaf();!s.null(); s = s.next_post()) 
+	for(S_ITER s = simTree.leftmost_leaf();!s.null(); s = s.next_post()) {
 		s->gamma = 2.0*rate/(s->theta);
+		s->numberCoalescences = 0;
+	}
 	
 	
 	return simTree;
@@ -72,6 +74,8 @@ phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vect
 		double branch_length = s->length;
 		
 		for( ; ; ) {
+			
+			
 			if (k==1) { //All lineages coalesced
 				if(s.root()) {//If we're at the root of the species tree, and coalesced to one lineage, we're done.
 					phylo<geneTreeNode> geneTree;
@@ -88,6 +92,7 @@ phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vect
 			}
 			
 			//Waiting time until next coalescent event.
+			
 			double wait = random_exp(2.0 / ( (double)k*(k-1.0) * s->gamma));
 			
 			if (!s.root() && height_in_branch+wait>=branch_length) {
@@ -97,9 +102,20 @@ phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vect
 				break;
 			}
 			
-			for(L_ITER node = s->lineages.begin();node!=s->lineages.end();node++) 
+			s->numberCoalescences++; 
+			for(L_ITER node = s->lineages.begin();node!=s->lineages.end();node++) {
 				(*node).root()->length+=wait;
+			}
+			
 			height_in_branch+=wait;
+			
+		/*	for(L_ITER node = s->lineages.begin();node!=s->lineages.end();node++) {
+				print_newick(cerr,(*node),true,true);
+				cerr<<"\t";
+			}
+			cerr<<endl;
+			*/
+			
 			
 			//Choose a random pair (a,b),  a<b, to coalesce.
 			int a = random_num(k);
@@ -155,6 +171,7 @@ static void computeTransitionProbs(phylo<geneTreeNode>& G, double u, double v) {
 		p->P[1][1] = 1.0 - pi_0*x;
 		p->P[0][1] = pi_1*x;
 		p->P[0][0] = 1.0 - pi_1*x;
+		
 	}
 }
 
@@ -256,15 +273,15 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 
 
 void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const vector<uint>& sampleSizes, int nSites, bool rejectConstant, vector<vector<uint> >& redCounts, double& proportionConstant, bool outputTrees) {
+	typedef phylo<simNodeData>::iterator S_ITER;
+
+	
 	redCounts.resize(nSites);
 	double rate = 2.0*u*v/(u+v);
 	
 	phylo<simNodeData> simTree = initialiseSimTree(tree,rate);
 	
-	cout<<"SimTree = ";
-	print_newick(cout,simTree,true,true);
-	cout<<endl;
-	
+		
 	uint numberAttempts, numberAttemptsTotal;
 	numberAttemptsTotal = 0;
 	
@@ -273,11 +290,28 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 		numberAttemptsTotal+=numberAttempts;
 	}
 	
+	
+	for(S_ITER p = simTree.root();!p.null();p=p.next_pre()) {
+		stringstream s;
+		s<<"theta = "<<rate/((*p).gamma)<<", nc = "<<(*p).numberCoalescences;
+		//s<<" P = ("<<(*p).P[0][1]<<","<<(*p).P[1][0]<<")";
+		(*p).meta_data = s.str();
+	}
+		
+	cout<<"SimTree = ";
+	print_newick(cout,simTree,true,true);
+	cout<<endl;
+
+	
 	simTree.clear();
 	if (rejectConstant)
 		proportionConstant = 1.0-(double)nSites/(double)numberAttemptsTotal;
 	else
 		proportionConstant = -1.0;
+	
+	
+	
+	
 }
 
 
