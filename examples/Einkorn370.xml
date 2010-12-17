@@ -397,104 +397,81 @@
 </data>
 
 
-<run id='mcmc' spec='snap.MCMC' chainLength='1000000' preBurnin='0' stateBurnin='0'>
-        <state storeEvery='1000'>
-          <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10' dimension='8'>
-                <tree idref='tree'/>
-          </stateNode>
 
+<run id="mcmc" spec='snap.MCMC' chainLength="10000" preBurnin="0" stateBurnin='0' killAfter='0'>
+        <state>
+          <parameter name='stateNode' id='coalescenceRate' value='10'/>
+          
          <parameter name='stateNode' id='v' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='u' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='alpha'  value='10' lower='0.0'/>
           <parameter name='stateNode' id='beta'   value='100' lower='0.0'/>
           <parameter name='stateNode' id='lambda' value='0.00765' lower='0.0'/>
 
-<!--
-          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>
-               <input name='taxa' idref='alignment'/>
-          </tree>
--->
           <tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' singlechild='true'>
                 <input name='newick'>((A:0.03300078574017586,G:0.03300078574017586):0.010782359905664028,(B:0.02675178044169345,(M:0.02):0.00675178044169345):0.017031365204146443):0.0</input>
                 <input name='taxa' idref='alignment'/>
           </tree>
-
         </state>
 
-        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>
- 	          <snapprior name='distribution' id='prior'>
-	              <input name='alpha' idref='alpha'/>
-    		      <input name='beta' idref='beta'/>
-	    	      <input name='lambda' idref='lambda'/>
-	              <input name='gamma' idref='gamma'/>
-		          <input name='tree' idref='tree'/>
-            </snapprior>
-            <snaptreelikelihood name='distribution' id='treeLikelihood'>
-                <input name='data' idref='alignment'/>
-                <input name='tree' idref='tree'/>
-                <input name='mutationRateU' idref='u'/>
-                <input name='mutationRateV' idref='v'/>
-	              <input name='gamma' idref='gamma'/>
+        <distribution id="posterior" spec='CompoundDistribution'>
+     	    <snapprior name='distribution' id='prior'>
+    	        <alpha idref='alpha'/>
+        		<beta idref='beta'/>
+    	    	<lambda idref='lambda'/>
+        		<input name='tree' idref='tree'/>
+       	        <coalescenceRate idref='coalescenceRate'/>
+             </snapprior>
+             <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='true' pattern='coalescenceRate' >
+                <data idref='alignment'/>
+                <tree idref='tree'/>
+                <siteModel spec='sitemodel.SiteModel' id="siteModel">
+                    <substModel spec='snap.likelihood.SnapSubstitutionModel'>
+                        <mutationRateU idref='u'/>
+                        <mutationRateV idref='v'/>
+            	        <coalescenceRate idref='coalescenceRate'/>
+                    </substModel>
+                </siteModel>
             </snaptreelikelihood>
         </distribution>
 
         <stateDistribution idref='prior'/>
 
+
 <!-- estimate u and v -->
 	    <operator spec='operators.MutationMover' window='0.1' weight='0.25' u='@u' v='@v'/>
-<!--
-    	<operator spec='operators.NodeSwapper' weight='0.5'>
-	        <tree name='tree' idref='tree'/>
-    	</operator>
--->
-        <operator spec='operators.NodeBudger' weight='3' size='0.1'>
-            <tree name='tree' idref='tree'/>
-        </operator>
-	    <operator spec='operators.ScaleOperator' scaleFactor='0.1' weight='0.5'>
-	        <tree name='tree' idref='tree'/>
-    	</operator>
-        <operator spec='operators.GammaMover' pGammaMove='0.1' weight='3'>
-	        <parameter name='gamma' idref='gamma'/>
-        </operator>
-        <operator spec='operators.RateMixer' scaleFactors='0.1' weight='1'>
-	        <tree name='tree' idref='tree'/>
-	        <parameter name='gamma' idref='gamma'/>
-        </operator>
 
-        <logger logEvery='100'>
-			  <model idref='posterior'/>
-            <log idref='u'/>
-            <log idref='v'/>
-            <log idref='prior'/>
-            <log idref='treeLikelihood'/>
-            <log idref='posterior'/>
-	          <log idref='gamma'/>
-	          <log spec='snap.ThetaLogger'>
-		          <gamma idref='gamma'/>
-	          </log>
-	          <log spec='beast.evolution.tree.TreeHeightLogger'>
-		         <tree idref='tree'/>
-	          </log>
+        <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>
+        <operator spec='operators.NodeBudger' weight='5' size='0.5' tree='@tree'/>
+        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='1' tree='@tree'/>
+        <operator spec='operators.GammaMover' scale='0.5' weight='0.5' coalescenceRate='@coalescenceRate'/>
+        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' tree='@tree' coalescenceRate='@coalescenceRate'/>>
+
+
+        <logger logEvery="100">
+    	    <model idref='posterior'/>
+            <log idref="u"/>
+            <log idref="v"/>
+            <log idref="prior"/>
+            <log idref="treeLikelihood"/>
+            <log idref="posterior"/>
         </logger>
-        <logger logEvery='100' fileName='Einkorn370.$(seed).log'>
-	          <model idref='posterior'/>
-            <log idref='u'/>
-            <log idref='v'/>
-            <log idref='prior'/>
-            <log idref='treeLikelihood'/>
-            <log idref='posterior'/>
-			<log idref='gamma'/>
-			<log spec='snap.ThetaLogger'>
-				<gamma idref='gamma'/>
-			</log>
-			<log spec='beast.evolution.tree.TreeHeightLogger'>
-				<tree idref='tree'/>
-			</log>
+        <logger logEvery="100" fileName="test.$(seed).log">
+	        <model idref='posterior'/>
+            <log idref="u"/>
+            <log idref="v"/>
+            <log idref="prior"/>
+            <log idref="treeLikelihood"/>
+            <log idref="posterior"/>
+    	    <log idref='coalescenceRate'/>
+    	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
+    	    <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+    	    <log spec='TreeLengthLogger' tree='@tree'/>
         </logger>
-        <logger logEvery='100' fileName='Einkorn370.$(seed).trees'>
-            <log idref='tree'/>
+        <logger logEvery="100" fileName="test.$(seed).trees">
+            <tree name='log' idref="tree"/>
         </logger>
 </run>
 
-
 </snap>
+
