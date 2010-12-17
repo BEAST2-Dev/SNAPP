@@ -2,7 +2,7 @@
 u=v=1.0 alpha=2, beta=0.2 lambda=10
 --> 
 
-<snap version='2.0' namespace='snap:beast.util'>
+<snap version='2.0' namespace='snap:beast.util:beast.core.util:beast.evolution'>
 
 <map name='snapprior'>snap.likelihood.SnAPPrior</map>
 <map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
@@ -39,12 +39,10 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 		</sequence>
 	</data>
 
-<run id="mcmc" spec='snap.MCMC' chainLength="100000" preBurnin="0" stateBurnin='100000'>
+<run id="mcmc" spec='snap.MCMC' chainLength="10000" preBurnin="0" stateBurnin='0' killAfter='0'>
         <state>
-          <stateNode spec='GammaParameter' id='gamma' initFromTree='true' pattern='gamma' value='10'>
-            <tree idref="tree"/>
-          </stateNode>
-
+          <parameter name='stateNode' id='coalescenceRate' value='10'/>
+          
           <parameter name='stateNode' id='v' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='u' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='alpha'  value='2' lower='0.0'/>
@@ -61,41 +59,48 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 -->
         </state>
 
-        <distribution id="posterior" spec='beast.core.util.CompoundDistribution'>
+        <distribution id="posterior" spec='CompoundDistribution'>
      	    <snapprior name='distribution' id='prior'>
     	        <alpha idref='alpha'/>
         		<beta idref='beta'/>
     	    	<lambda idref='lambda'/>
         		<input name='tree' idref='tree'/>
-       	        <gamma idref='gamma'/>
+       	        <coalescenceRate idref='coalescenceRate'/>
              </snapprior>
-             <snaptreelikelihood name='distribution' id='treeLikelihood'>
+             <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='theta' >
                 <data idref='alignment'/>
                 <tree idref='tree'/>
-                <mutationRateU idref='u'/>
-                <mutationRateV idref='v'/>
-    	        <gamma idref='gamma'/>
+                <siteModel spec='sitemodel.SiteModel' id="siteModel">
+                    <substModel spec='snap.likelihood.SnapSubstitutionModel'>
+                        <mutationRateU idref='u'/>
+                        <mutationRateV idref='v'/>
+            	        <coalescenceRate idref='coalescenceRate'/>
+                    </substModel>
+                </siteModel>
             </snaptreelikelihood>
         </distribution>
 
         <stateDistribution idref='prior'/>
 
-    	<operator spec='operators.NodeSwapper' weight="0.5">
-    	    <tree name='tree' idref="tree"/>
-    	</operator>
-        <operator spec='operators.NodeBudger' weight="0.5" size="0.5">
-            <tree name='tree' idref="tree"/>
+
+        <operator spec='operators.NodeSwapper' weight='0.5'>
+            <tree name='tree' idref='tree'/>
         </operator>
-    	<operator spec='operators.ScaleOperator' scaleFactor="0.25" weight="0.5">
-    	    <tree name='tree' idref="tree"/>
-    	</operator>
-        <operator spec='operators.GammaMover' pGammaMove="0.5" weight="8">
-    	    <parameter name='gamma' idref="gamma"/>
+        <operator spec='operators.NodeBudger' weight='5' size='0.5'>
+            <tree name='tree' idref='tree'/>
         </operator>
-        <operator spec='operators.RateMixer' scaleFactors="0.25" weight="1">
-    	    <tree name='tree' idref="tree"/>
-    	    <parameter name='gamma' idref="gamma"/>
+        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='1'>
+            <tree name='tree' idref='tree'/>
         </operator>
+        <operator spec='operators.GammaMover' scale='0.5' weight='0.5'>
+            <parameter name='coalescenceRate' idref='coalescenceRate'/>
+        </operator>
+        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>
+            <tree name='tree' idref='tree'/>
+            <parameter name='coalescenceRate' idref='coalescenceRate'/>
+        </operator>
+
+
 
         <logger logEvery="100">
     	    <model idref='posterior'/>
@@ -105,7 +110,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             <distribution name='log' idref="treeLikelihood"/>
             <distribution name='log' idref="posterior"/>
     	    <log spec='snap.ThetaLogger'>
-	        	<gamma idref='gamma'/>
+	        	<coalescenceRate idref='coalescenceRate'/>
     	    </log>
 	        <log spec='beast.evolution.tree.TreeHeightLogger'>
 	        	<tree idref='tree'/>
@@ -118,9 +123,9 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             <distribution name='log' idref="prior"/>
             <distribution name='log' idref="treeLikelihood"/>
             <distribution name='log' idref="posterior"/>
-    	    <parameter name='log' idref='gamma'/>
+    	    <parameter name='log' idref='coalescenceRate'/>
     	    <log spec='snap.ThetaLogger'>
-        		<gamma idref='gamma'/>
+        		<coalescenceRate idref='coalescenceRate'/>
     	    </log>
     	    <log spec='beast.evolution.tree.TreeHeightLogger'>
         		<tree idref='tree'/>
@@ -129,7 +134,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 	        	<tree idref='tree'/>
     	    </log>
         </logger>
-        <logger logEvery="100" fileName="test.$(seed).trees">
+        <logger logEvery="1000" fileName="test.$(seed).trees">
             <tree name='log' idref="tree"/>
         </logger>
 </run>
