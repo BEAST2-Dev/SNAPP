@@ -127,7 +127,7 @@
 	        	<tree idref='tree'/>
     	    </log>
         </logger>
-        <logger logEvery="1000" fileName="test.$(seed).trees">
+        <logger logEvery="100" fileName="test.$(seed).trees">
             <tree name='log' idref="tree"/>
         </logger>
 </run>
