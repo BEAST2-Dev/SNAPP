@@ -47,7 +47,7 @@ public:
 	string inputfile;
 	int nsites;
 	ArgumentParser(int argc, char* argv[]) {
-
+		
 		outputXML=true;
 		excludeConst = true;
 		outputTrees = false;
@@ -84,123 +84,145 @@ public:
 		inputfile = string(argv[arg]);
 	}
 };
-		
-void output_xml(ostream& os, const vector<string>& taxa, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, const string fileroot="test") {
-	os<<"<snap version='2.0' namespace='snap:beast.util'>\n";
+
+void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, const string fileroot="test") {
+	
+	os<<"<!-- Generated with SimSnap -->\n";
+	os<<"<!-- -->\n";
+	os<<"<!-- u = "<<u<<" v = "<<v<<"   -->\n";
+	os << "<!-- input tree: ";
+	print_newick(os,tree,true,true);
+	os << "-->\n";
+	
+	os<<"<snap version='2.0' namespace='snap:snap.likelihood:beast.util:beast.evolution'>\n";
 	os<<"\n";
 	os<<"<map name='snapprior'>snap.likelihood.SnAPPrior</map>\n";
 	os<<"<map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>\n";
-
+	
 	os<<"\n\n\n\t<!-- n = "<<alleleCounts.size()<<" -->\n";
 	//Compute largest sample size.
-	int statecount = *max_element(sampleSizes.begin(),sampleSizes.end());
-	os<<"\t<data spec='snap.Data' id='alignment' dataType='integerdata' statecount='"<<statecount + 1<<"'>\n";
+	int statecount = *max_element(sampleSizes.begin(),sampleSizes.end()); //if k is the largest sample size, states are 0...k, so k+1 states
+	os<<"\t<data spec='snap.Data' id='snapalignment' dataType='integerdata' statecount='"<<statecount + 1<<"'>\n";
 	for(uint i=0;i<taxa.size();i++) {
 		os<<"\t\t<sequence taxon='"<<taxa[i]<<"' totalcount='"<<sampleSizes[i]<<"'>\n";
-		for(uint j=0;j<alleleCounts.size()-1;j++)
+		for(uint j=0;j<alleleCounts.size();j++)
 			os<<alleleCounts[j][i]<<",";
-		os<<alleleCounts[alleleCounts.size()-1][i]<<",\n";
-		os<<"\t\t</sequence>\n";
+		os<<"\n\t\t</sequence>\n";
 	}
 	os<<"\t</data>\n\n\n";
-
-double alpha=2;
-double beta=200;
-double lambda=10;
-
-
-os <<"\n";
-os <<"<run id='mcmc' spec='snap.MCMC' chainLength='100000' preBurnin='0' stateBurnin='10000'>\n";
-os <<"        <state>\n";
-os <<"          <stateNode spec='GammaParameter' id='gamma' initFromTree='false' pattern='gamma' value='10'>\n";
-os <<"            <tree idref='tree'/>\n";
-os <<"          </stateNode>\n";
-os <<"\n";
-os <<"          <parameter name='stateNode' id='v' value='"<<v<<"' lower='0.0'/>\n";
-os <<"          <parameter name='stateNode' id='u' value='"<<u<<"' lower='0.0'/>\n";
-os <<"          <parameter name='stateNode' id='alpha'  value='"<<alpha<<"' lower='0.0'/>\n";
-os <<"          <parameter name='stateNode' id='beta'   value='"<<beta<<"' lower='0.0'/>\n";
-os <<"          <parameter name='stateNode' id='lambda' value='"<<lambda<<"' lower='0.0'/>\n";
-os <<"\n";
-os <<"          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
-os <<"               <input name='taxa' idref='alignment'/>\n";
-os <<"          </tree>\n";
-os <<"        </state>\n";
-os <<"\n";
-os <<"        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>\n";
-os <<" 	          <snapprior name='distribution' id='prior'>\n";
-os <<"	              <input name='alpha' idref='alpha'/>\n";
-os <<"    		      <input name='beta' idref='beta'/>\n";
-os <<"	    	      <input name='lambda' idref='lambda'/>\n";
-os <<"	              <input name='gamma' idref='gamma'/>\n";
-os <<"		          <input name='tree' idref='tree'/>\n";
-os <<"            </snapprior>\n";
-os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood'>\n";
-os <<"                <input name='data' idref='alignment'/>\n";
-os <<"                <input name='tree' idref='tree'/>\n";
-os <<"                <input name='mutationRateU' idref='u'/>\n";
-os <<"                <input name='mutationRateV' idref='v'/>\n";
-os <<"	              <input name='gamma' idref='gamma'/>\n";
-os <<"            </snaptreelikelihood>\n";
-os <<"        </distribution>\n";
-os <<"\n";
-os <<"        <stateDistribution idref='prior'/>\n";
-os <<"\n";
-os <<"    	<operator spec='operators.NodeSwapper' weight='0.5'>\n";
-os <<"	        <tree name='tree' idref='tree'/>\n";
-os <<"    	</operator>\n";
-os <<"        <operator spec='operators.NodeBudger' weight='0.5' size='0.5'>\n";
-os <<"            <tree name='tree' idref='tree'/>\n";
-os <<"        </operator>\n";
-os <<"	    <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5'>\n";
-os <<"	        <tree name='tree' idref='tree'/>\n";
-os <<"    	</operator>\n";
-os <<"        <operator spec='operators.GammaMover' pGammaMove='0.5' weight='8'>\n";
-os <<"	        <parameter name='gamma' idref='gamma'/>\n";
-os <<"        </operator>\n";
-os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>\n";
-os <<"	        <tree name='tree' idref='tree'/>\n";
-os <<"	        <parameter name='gamma' idref='gamma'/>\n";
-os <<"        </operator>\n";
-os <<"\n";
+	
+	double alpha=2;
+	double beta=200;
+	double lambda=10;
+	
+	
+	os <<"\n";
+	os <<"<!-- If starting from true tree, set stateBurnin='0' -->\n";
+	os <<"<run id='mcmc' spec='snap.MCMC' chainLength='1000000' preBurnin='0' stateBurnin='10000'>\n";
+	os <<"        <state>\n";
+	
+	os <<"          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
+	os <<"               <input name='taxa' idref='snapalignment'/>\n";
+	os <<"          </tree>\n";
+	
+	os <<"<!--\n";
+	os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
+	os <<"			<input name='newick'>";
+	print_newick(os,tree,true,true);
+	os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>\n-->\n";
+	
+	
+	os <<"\n";
+	os <<"			<parameter name='stateNode' id='coalescenceRate' value='10'/>\n";
+	os <<"          <parameter name='stateNode' id='v' value='"<<v<<"' lower='0.0'/>\n";
+	os <<"          <parameter name='stateNode' id='u' value='"<<u<<"' lower='0.0'/>\n";
+	os <<"          <parameter name='stateNode' id='alpha'  value='"<<alpha<<"' lower='0.0'/>\n";
+	os <<"          <parameter name='stateNode' id='beta'   value='"<<beta<<"' lower='0.0'/>\n";
+	os <<"          <parameter name='stateNode' id='lambda' value='"<<lambda<<"' lower='0.0'/>\n";
+	os <<"\n";
+	
+	os <<"        </state>\n";
+	os <<"\n";
+	os <<"        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>\n";
+	os <<" 	          <distribution spec='SnAPPrior' name='distribution' id='prior'>\n";
+	os <<"	              <input name='alpha' idref='alpha'/>\n";
+	os <<"    		      <input name='beta' idref='beta'/>\n";
+	os <<"	    	      <input name='lambda' idref='lambda'/>\n";
+	os <<"	              <input name='coalescenceRate' idref='coalescenceRate'/>\n";
+	os <<"		          <input name='tree' idref='tree'/>\n";
+	os <<"            </distribution>\n";
+	os <<"<!-- when starting from tree, set initFromTree='true' -->\n";
+	os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate'>\n";
+	os <<"                <siteModel spec='sitemodel.SiteModel' id='siteModel'>\n";
+	os <<"				<substModel spec='snap.likelihood.SnapSubstitutionModel'>\n";
+	os <<"				<mutationRateU idref='u'/>\n";
+	os<<"				<mutationRateV idref='v'/>\n";
+	os<<"				<coalescenceRate idref='coalescenceRate'/>\n";
+	os<<"				</substModel>\n";
+	os<<"				</siteModel>\n";
+	os<<"					<data idref='snapalignment'/>\n";
+	os<<"				<tree idref='tree'/>\n";
+	os <<"            </snaptreelikelihood>\n";
+	os <<"        </distribution>\n";
+	os <<"\n";
+	os <<"        <stateDistribution idref='prior'/>\n";
+	os <<"\n";
+	os <<"    	<operator spec='operators.NodeSwapper' weight='0.5'>\n";
+	os <<"	        <tree name='tree' idref='tree'/>\n";
+	os <<"    	</operator>\n";
+	os <<"        <operator spec='operators.NodeBudger' weight='4' size='0.5'>\n";
+	os <<"            <tree name='tree' idref='tree'/>\n";
+	os <<"        </operator>\n";
+	os <<"	    <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5'>\n";
+	os <<"	        <tree name='tree' idref='tree'/>\n";
+	os <<"    	</operator>\n";
+	os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4'>\n";
+	os <<"	        <parameter name='coalescenceRate' idref='coalescenceRate'/>\n";
+	os <<"        </operator>\n";
+	os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>\n";
+	os <<"	        <tree name='tree' idref='tree'/>\n";
+	os <<"	        <parameter name='coalescenceRate' idref='coalescenceRate'/>\n";
+	os <<"        </operator>\n";
+	os <<"\n";
 	//Settings for output of MCMC chain
-os <<"        <logger logEvery='100'>\n";
-os <<"			  <model idref='posterior'/>\n";
-os <<"            <log idref='u'/>\n";
-os <<"            <log idref='v'/>\n";
-os <<"            <log idref='prior'/>\n";
-os <<"            <log idref='treeLikelihood'/>\n";
-os <<"            <log idref='posterior'/>\n";
-os <<"	          <log idref='gamma'/>\n";
-os <<"	          <log spec='snap.ThetaLogger'>\n";
-os <<"		          <gamma idref='gamma'/>\n";
-os <<"	          </log>\n";
-os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger'>\n";
-os <<"		         <tree idref='tree'/>\n";
-os <<"	          </log>\n";
-os <<"        </logger>\n";
-os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
-os <<"	          <model idref='posterior'/>\n";
-os <<"            <log idref='u'/>\n";
-os <<"            <log idref='v'/>\n";
-os <<"            <log idref='prior'/>\n";
-os <<"            <log idref='treeLikelihood'/>\n";
-os <<"            <log idref='posterior'/>\n";
-os <<"			<log idref='gamma'/>\n";
-os <<"			<log spec='snap.ThetaLogger'>\n";
-os <<"				<gamma idref='gamma'/>\n";
-os <<"			</log>\n";
-os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
-os <<"				<tree idref='tree'/>\n";
-os <<"			</log>\n";
-os <<"        </logger>\n";
-os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).trees'>\n";
-os <<"            <log idref='tree'/>\n";
-os <<"        </logger>\n";
-os <<"</run>\n";
-os <<"\n";
-os <<"\n";
-os <<"</snap>\n";
+	os <<"        <logger logEvery='100'>\n";
+	os <<"			  <model idref='posterior'/>\n";
+	os <<"            <log idref='u'/>\n";
+	os <<"            <log idref='v'/>\n";
+	os <<"            <log idref='prior'/>\n";
+	os <<"            <log idref='treeLikelihood'/>\n";
+	os <<"            <log idref='posterior'/>\n";
+	os <<"	          <log idref='coalescenceRate'/>\n";
+	os <<"	          <log spec='snap.ThetaLogger'>\n";
+	os <<"		          <coalescenceRate idref='coalescenceRate'/>\n";
+	os <<"	          </log>\n";
+	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger'>\n";
+	os <<"		         <tree idref='tree'/>\n";
+	os <<"	          </log>\n";
+	os <<"        </logger>\n";
+	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
+	os <<"	          <model idref='posterior'/>\n";
+	os <<"            <log idref='u'/>\n";
+	os <<"            <log idref='v'/>\n";
+	os <<"            <log idref='prior'/>\n";
+	os <<"            <log idref='treeLikelihood'/>\n";
+	os <<"            <log idref='posterior'/>\n";
+	os <<"			<log idref='coalescenceRate'/>\n";
+	os <<"			<log spec='snap.ThetaLogger'>\n";
+	os <<"				<coalescenceRate idref='coalescenceRate'/>\n";
+	os <<"			</log>\n";
+	os <<" <!-- log branch lengths:\n		<log spec='snap.TreeNodeLogger' tree='@tree'/>\n-->\n";
+	os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
+	os <<"				<tree idref='tree'/>\n";
+	os <<"			</log>\n";
+	os <<"        </logger>\n";
+	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).trees'>\n";
+	os <<"            <log idref='tree'/>\n";
+	os <<"        </logger>\n";
+	os <<"</run>\n";
+	os <<"\n";
+	os <<"\n";
+	os <<"</snap>\n";
 }
 
 void output_nexus(ostream& os, const vector<string>& species, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts) {
@@ -256,7 +278,7 @@ void output_nexus(ostream& os, const vector<string>& species, const vector<uint>
 	}
 	
 	//Now output the matrix block
-		
+	
 	int id = 0;
 	for(uint i=0;i<nspecies;i++) 
 		for(uint j=0;j<sampleSizes[i];j++) {
@@ -302,7 +324,7 @@ int main(int argc, char* argv[]) {
 	is>>nspecies;
 	if (nspecies<=0)
 		printUsage(cerr);
-
+	
 	//Get the prefix from the filename.
 	size_t dotpos = ap.inputfile.find_last_of('.');
 	string fileroot;
@@ -314,7 +336,7 @@ int main(int argc, char* argv[]) {
 	
 	
 	//string filemain = 
-		
+	
 	//Now read in the taxon names and sample sizes
 	vector<uint> sampleSizes(nspecies);
 	vector<string> species(nspecies);
@@ -325,7 +347,7 @@ int main(int argc, char* argv[]) {
 	double u,v;
 	is>>u;
 	is>>v;
-
+	
 	is>>ntrees;
 	if (ntrees<=0)
 		printUsage(cerr);
@@ -350,7 +372,7 @@ int main(int argc, char* argv[]) {
 		string treeString;
 		is>>treeString;
 		//TODO: read in semicolons, or at least check for them.
-
+		
 		phylo<basic_newick> tree;
 		read_newick(treeString, tree, species, 0.0);
 		
@@ -360,9 +382,9 @@ int main(int argc, char* argv[]) {
 		ostringstream s1;
 		s1 << fileroot<<"_tree_"<<(iTree+1);
 		if (ap.outputXML)
-		  s1<< ".xml";
+			s1<< ".xml";
 		else
-		  s1 << ".nex";		
+			s1 << ".nex";		
 		string sFile = s1.str();
 		
 		cout << "Writing " << sFile << endl;		
@@ -371,18 +393,14 @@ int main(int argc, char* argv[]) {
 		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, alleleCounts, ap.outputTrees);
 		
 		if (ap.outputXML) {
-        	(*os)<<"<!-- Generated with SimSnap -->\n";
-            (*os)<<"<!-- -->\n";
-            (*os) << "<!-- input tree: ";
-            print_newick(*os,tree,true,true);
-            (*os) << "-->\n";
-			output_xml(*os,species,sampleSizes,u,v,alleleCounts,fileroot);
+        	
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,fileroot);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
         (*os).close();
 	}
-		
+	
 	
 }
 

@@ -33,20 +33,32 @@ public:
 	double theta;
 	double gamma;	
 	list< phylo<geneTreeNode> > lineages;
+	int numberCoalescences;
 	
 	
-	simNodeData() : basic_newick(), gamma(1.0) {}
-	simNodeData(int id, double len, double gamma_val): basic_newick(id, len), gamma(gamma_val) {}
+	simNodeData() : basic_newick(), gamma(1.0) , numberCoalescences(0) {}
+	simNodeData(int id, double len, double gamma_val): basic_newick(id, len), gamma(gamma_val), numberCoalescences(0) {}
 	simNodeData(const basic_newick& data) {
 		basic_newick::copy(data);
-		theta = atof(data.meta_data.c_str());
+		
+		size_t equalPos = data.meta_data.find_first_of("=");
+		if (equalPos!=string::npos)
+			theta = atof((data.meta_data.substr(equalPos+1)).c_str());
+		else
+			theta = atof(data.meta_data.c_str());
+		
+		//TODO: Make this more robust.
+		
 		gamma = 0.0;
+		numberCoalescences = 0;
 	}
 		
 	void copy(const simNodeData& data) {
 		basic_newick::copy(data);
 		gamma = data.gamma;
 		theta = data.theta;
+		numberCoalescences = data.numberCoalescences;
+		
 		lineages.clear();
 		lineages.insert(lineages.begin(),data.lineages.begin(),data.lineages.end());
 	}
