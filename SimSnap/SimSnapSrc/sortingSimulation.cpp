@@ -293,7 +293,7 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	
 	for(S_ITER p = simTree.root();!p.null();p=p.next_pre()) {
 		stringstream s;
-		s<<"theta = "<<rate/((*p).gamma)<<", nc = "<<(*p).numberCoalescences;
+		s<<"theta = "<<2.0*rate/((*p).gamma)<<", nc = "<<(*p).numberCoalescences;
 		//s<<" P = ("<<(*p).P[0][1]<<","<<(*p).P[1][0]<<")";
 		(*p).meta_data = s.str();
 	}
