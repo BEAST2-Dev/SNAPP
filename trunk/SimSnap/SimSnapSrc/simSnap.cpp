@@ -17,7 +17,7 @@
 
 void printUsage(ostream& os) {
 	os<<"SimSnap\n\nSimulates SNPs on a species tree.\n";
-	os<<"Usage:\n\n\tSimSnap [-nc] [nsites] filename\n\n";
+	os<<"Usage:\n\n\tSimSnap [-nc]  [nsites] filename\n\n";
 	os<<"\tFlags are:\n";
 	os<<"\t-n \tOutput nexus file (default is to output snap .xml format)\n";
 	os<<"\t-c \tInclude constant sites (default is to simulate only polymorphic sites)\n";
@@ -29,13 +29,14 @@ void printUsage(ostream& os) {
 	os<<"<species_n-name>\t<sample size species n>\n";
 	os<<"<mutation rate u> <mutation rate v>\n";
 	os<<"<number of trees>\n";
-	os<<"Trees in newick notation, with branch lengths. Theta values indicated in square brackets following node.\n\n";
+	os<<"Trees in newick notation, with branch lengths. Theta values indicated in square brackets following node.\n";
+	os<<"Optionall insert <scale> before the tree to specify a branch length scaler.\n\n";
 	os<<"EXAMPLE\n\n";
 	os<<"3\n";
 	os<<"A 3\nB 4\nC 2\n";
 	os<<"0.2 0.6\n2\n";
 	os<<"((A[0.1]:0.3,B[0.3]:0.3)[0.2]:0.1,C[0.2]:0.4)[0.3]"<<endl;
-	os<<"((C[0.1]:1.3,B[0.3]:1.3)[0.2]:0.1,A[0.2]:1.4)[0.3]\n"<<endl;
+	os<<"<2.0> ((C[0.1]:1.3,B[0.3]:1.3)[0.2]:0.1,A[0.2]:1.4)[0.3]\n"<<endl;
 	exit(1);
 }
 
@@ -371,14 +372,35 @@ int main(int argc, char* argv[]) {
 		//Now read in tree string
 		string treeString;
 		is>>treeString;
+                //Check for scaling
+		double scaling = 1.0;
+		size_t pos = treeString.find_first_of("<");
+
+		if (pos!=string::npos) {
+		  size_t pos2 = treeString.find_first_of(">");
+		  string scaleString = treeString.substr(pos+1,pos2-1);
+		  treeString = treeString.substr(pos2+1);
+		  //cerr<<"Scale String is "<<scaleString<<endl;
+		  scaling = strtod(scaleString.c_str(),NULL);
+		}
+
+		//cerr<<"Tree String is "<<treeString<<" scaling = "<<scaling<<endl;
 		//TODO: read in semicolons, or at least check for them.
 		
 		phylo<basic_newick> tree;
 		read_newick(treeString, tree, species, 0.0);
 		
+		//Scale tree here.
+
+		for(phylo<basic_newick>::iterator p = tree.root();!p.null();p=p.next_pre()) {
+		  (*p).length *= scaling;
+		}
+
 		print_newick(cout,tree,true,true);
 		cout<<endl;
 		
+		
+
 		ostringstream s1;
 		s1 << fileroot<<"_tree_"<<(iTree+1);
 		if (ap.outputXML)
@@ -392,6 +414,8 @@ int main(int argc, char* argv[]) {
 		vector<vector<uint> > alleleCounts;
 		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, alleleCounts, ap.outputTrees);
 		
+
+
 		if (ap.outputXML) {
         	
 			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,fileroot);
@@ -399,6 +423,11 @@ int main(int argc, char* argv[]) {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
         (*os).close();
+
+		//Remove scaling from tree
+		for(phylo<basic_newick>::iterator p = tree.root();!p.null();p=p.next_pre()) {
+		  (*p).length /= scaling;
+		}
 	}
 	
 	
