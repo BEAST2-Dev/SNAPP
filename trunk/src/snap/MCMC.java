@@ -76,6 +76,7 @@ public class MCMC extends beast.core.MCMC {
 		// do the sampling
 		double logAlpha = 0;
 
+		boolean priorOnly = false; //If this is true, all likelihood calculations are ignored so that we sample only from the prior.
 		
 		
 		
@@ -85,7 +86,12 @@ public class MCMC extends beast.core.MCMC {
 		if (!m_bRestoreFromFile && nStateBurnin > 0) {
 			System.err.println("Sampling state from prior for " + nStateBurnin + " samples...");
 			//prepare();
-			double fOldLogLikelihood = m_stateDistribution.get().calculateLogP();
+			
+			
+			double fOldLogLikelihood = 0.0;
+			if (!priorOnly)
+				fOldLogLikelihood = m_stateDistribution.get().calculateLogP();
+			
 			for (int iSample = -nBurnIn - nStateBurnin; iSample <= -nBurnIn; iSample++) {
 				
 				//State proposedState = state.copy();
@@ -98,7 +104,10 @@ public class MCMC extends beast.core.MCMC {
 					m_stateDistribution.get().store();
 					
 					//prepare();
-					double fNewLogLikelihood = m_stateDistribution.get().calculateLogP();
+					double fNewLogLikelihood = 0.0;
+					if (!priorOnly)
+						fNewLogLikelihood = m_stateDistribution.get().calculateLogP();
+					
 					logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 		            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 						// accept
@@ -124,7 +133,12 @@ public class MCMC extends beast.core.MCMC {
 		boolean bDebug = true;
 		state.setEverythingDirty(true);
 		Distribution posterior = posteriorInput.get();
-		double fOldLogLikelihood = posterior.calculateLogP();
+		
+		
+		double fOldLogLikelihood = 0.0;
+		if (!priorOnly)
+			fOldLogLikelihood = posterior.calculateLogP();
+		
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		
 //		int iGammaParameter = -1;
@@ -152,7 +166,10 @@ public class MCMC extends beast.core.MCMC {
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				state.storeCalculationNodes();
 				
-				double fNewLogLikelihood = posterior.calculateLogP();
+				double fNewLogLikelihood = 0.0;
+				if (!priorOnly)
+					fNewLogLikelihood = posterior.calculateLogP();
+				
 				logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 	            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 					// accept
