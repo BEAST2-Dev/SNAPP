@@ -90,17 +90,16 @@ public class SnAPPrior extends Distribution {
         
         //Gamma values in tree
         RealParameter coalescenceRate = m_pCoalescenceRate.get();
-        //double [] gamma = state.getParameter(m_pGamma).getValues();
-        //	We assume that theta has a gamma (alpha,beta) distribution, so that
-        //the gamma parameter has 2/gamma(alpha,beta) distribution
-		//Because of the transform of variables, we need to include the appropriate
-		//Jacobian.... that is, if f(theta) is the GAMMA distribution, we want
-		// f(2/gamma) / (gamma^2). This has been independently tested in mathlab.
+        
+		//We assume that 2/r has a gamma(alpha,beta) distribution. That means that r has density proportional to
+		// 1/(r^2)  * GAMMA(2/r|alpha,beta)
+		//which has log (alpha - 1.0)*Math.log(2.0/r) - (beta *(2.0/ r)) - 2*log(r), which in turn simplifies to the expr. below (w/ consts)
 		
         for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
-            double x = 2.0/coalescenceRate.getValue(iNode);
-            logP += (alpha - 1.0)*Math.log(x) - (beta * x);
+            double r = coalescenceRate.getValue(iNode);
+            logP += -(alpha + 1.0)*Math.log(r) - 2.0* beta / r;
         }
+		
         return logP;
     } // calculateLogLikelihood
 
