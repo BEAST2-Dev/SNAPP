@@ -74,10 +74,7 @@ public class MCMC extends beast.core.MCMC {
 		System.err.println(state.toString());
 		
 		// do the sampling
-		double logAlpha = 0;
-
-		boolean priorOnly = false; //If this is true, all likelihood calculations are ignored so that we sample only from the prior.
-		
+		double logAlpha = 0;		
 		
 		
 		// Sample initial state from 'prior' = stateUncertainty
@@ -88,9 +85,7 @@ public class MCMC extends beast.core.MCMC {
 			//prepare();
 			
 			
-			double fOldLogLikelihood = 0.0;
-			if (!priorOnly)
-				fOldLogLikelihood = m_stateDistribution.get().calculateLogP();
+			double fOldLogLikelihood = m_stateDistribution.get().calculateLogP();
 			
 			for (int iSample = -nBurnIn - nStateBurnin; iSample <= -nBurnIn; iSample++) {
 				
@@ -104,9 +99,7 @@ public class MCMC extends beast.core.MCMC {
 					m_stateDistribution.get().store();
 					
 					//prepare();
-					double fNewLogLikelihood = 0.0;
-					if (!priorOnly)
-						fNewLogLikelihood = m_stateDistribution.get().calculateLogP();
+					double fNewLogLikelihood = m_stateDistribution.get().calculateLogP();
 					
 					logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 		            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
@@ -135,9 +128,7 @@ public class MCMC extends beast.core.MCMC {
 		Distribution posterior = posteriorInput.get();
 		
 		
-		double fOldLogLikelihood = 0.0;
-		if (!priorOnly)
-			fOldLogLikelihood = posterior.calculateLogP();
+		double fOldLogLikelihood = posterior.calculateLogP();
 		
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		
@@ -166,9 +157,7 @@ public class MCMC extends beast.core.MCMC {
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				state.storeCalculationNodes();
 				
-				double fNewLogLikelihood = 0.0;
-				if (!priorOnly)
-					fNewLogLikelihood = posterior.calculateLogP();
+				double fNewLogLikelihood = posterior.calculateLogP();
 				
 				logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
 	            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
@@ -206,9 +195,7 @@ public class MCMC extends beast.core.MCMC {
 				state.store(iSample);
 				state.setEverythingDirty(true);
 				//System.err.println(m_state.toString());
-				double fLogLikelihood = 0.0;
-				if (!priorOnly)
-					fLogLikelihood = posterior.calculateLogP();
+				double fLogLikelihood = posterior.calculateLogP();
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
 					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}
