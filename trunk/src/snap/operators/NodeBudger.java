@@ -94,9 +94,9 @@ public class NodeBudger extends NodeSwapper {
 			 so that u' = 1/u. Hastings ration is therefore the Jacobian of
 			 
 			 u	h
-			 0  1/u  
+			 0  -u^{-2}  
 			 
-			 which is one.
+			 which is 1/u.
 			 
 			 
 			 **/
@@ -108,7 +108,7 @@ public class NodeBudger extends NodeSwapper {
 			//System.out.println("oldh = "+oldh+"\tbeta = "+beta+"\t u = "+u+"\t maxc = "+maxc+" \tp.getHeight = "+p.getHeight()+" proposed new height = "+h2 +"="+p.getHeight());
 			
 			//return Double.NEGATIVE_INFINITY;
-			return 0;
+			return -Math.log(u);
 		}
 
 		//Find shortest branch to any child.
