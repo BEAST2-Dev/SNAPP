@@ -119,7 +119,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	os <<"\n";
 	os <<"<!-- If starting from true tree, set stateBurnin='0' -->\n";
-	os <<"<run id='mcmc' spec='snap.MCMC' chainLength='1000000' preBurnin='0' stateBurnin='10000'>\n";
+	os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='10000'>\n";
 	os <<"        <state>\n";
 	
 	os <<"          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
@@ -212,6 +212,22 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"			<log spec='snap.ThetaLogger'>\n";
 	os <<"				<coalescenceRate idref='coalescenceRate'/>\n";
 	os <<"			</log>\n";
+
+	os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
+	os <<"				<tree idref='tree'/>\n";
+	os <<"			</log>\n";
+	os <<"            <log spec='TreeLengthLogger'>\n";
+	os <<"                <tree idref='tree'/>\n";
+	os <<"            </log>\n";
+	os <<"        </logger>\n";
+	os <<"        <logger fileName='step1.$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";
+	os <<"            <log id='TreeWithMetaDataLogger0' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>\n";
+	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta'/>\n";
+	os <<"            </log>\n";
+	os <<"        </logger>\n";
+
+
+/*
 	os <<" <!-- log branch lengths:\n		<log spec='snap.TreeNodeLogger' tree='@tree'/>\n-->\n";
 	os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
 	os <<"				<tree idref='tree'/>\n";
@@ -220,6 +236,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).trees'>\n";
 	os <<"            <log idref='tree'/>\n";
 	os <<"        </logger>\n";
+*/
 	os <<"</run>\n";
 	os <<"\n";
 	os <<"\n";
