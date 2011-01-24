@@ -21,13 +21,14 @@ phylo<simNodeData> initialiseSimTree(phylo<basic_newick>& tree, double rate) {
 	
 	phylo<simNodeData> simTree;
 	Phylib::copy(tree,simTree);
-	
+		
 	//Convert the theta values into gamma values
 	// The expected divergence between two individuals is 
 	// theta = 2*rate/gamma.
 	for(S_ITER s = simTree.leftmost_leaf();!s.null(); s = s.next_post()) {
 		s->gamma = 2.0*rate/(s->theta);
 		s->numberCoalescences = 0;
+		s->numberCoalescencesTotal = 0;
 	}
 	
 	
@@ -228,9 +229,16 @@ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, con
 	 
 	bool allConstant = true;
 
+	
+	 
+	 
 	do {
 		numberAttempts++;
 		//First generate the species tree
+		for(phylo<simNodeData>::iterator p = speciesTree.root();!p.null();p=p.next_pre() ) {
+			p->numberCoalescences=0;			
+		}
+		
 		phylo<geneTreeNode> G = simulateGeneTree(speciesTree, sampleSizes);
 		
 		
@@ -255,6 +263,9 @@ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, con
 		G.clear();
 
 	} while(allConstant && rejectConstant);	
+	 for(phylo<simNodeData>::iterator p = speciesTree.root();!p.null();p=p.next_pre() ) {
+		 p->numberCoalescencesTotal+=p->numberCoalescences;
+	 }
 }
 
 /**
@@ -293,7 +304,7 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	
 	for(S_ITER p = simTree.root();!p.null();p=p.next_pre()) {
 		stringstream s;
-		s<<"theta = "<<2.0*rate/((*p).gamma)<<", nc = "<<(*p).numberCoalescences;
+		s<<"theta = "<<2.0*rate/((*p).gamma)<<", nc = "<<((double)(*p).numberCoalescencesTotal/nSites);
 		//s<<" P = ("<<(*p).P[0][1]<<","<<(*p).P[1][0]<<")";
 		(*p).meta_data = s.str();
 	}
