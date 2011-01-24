@@ -34,7 +34,8 @@ public:
 	double gamma;	
 	list< phylo<geneTreeNode> > lineages;
 	int numberCoalescences;
-	
+	int numberCoalescencesTotal;
+
 	
 	simNodeData() : basic_newick(), gamma(1.0) , numberCoalescences(0) {}
 	simNodeData(int id, double len, double gamma_val): basic_newick(id, len), gamma(gamma_val), numberCoalescences(0) {}
