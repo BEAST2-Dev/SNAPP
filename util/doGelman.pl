@@ -123,10 +123,12 @@ print "Data points=$nData\n";
         }
     }
 
-    print "\n Gelman statistics\n";
+    print "\nGelman statistics\n";
     for($i=1;$i<=$nCols;$i++) {
         print "$sHeader[$i] ";
         print sqrt($R[$i]);
+        print "  B=".$B[$i] * $nFiles;
+        print "  W=".$W[$i];
         print "\n";
     }
     print "\n";

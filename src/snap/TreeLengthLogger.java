@@ -39,9 +39,10 @@ public class TreeLengthLogger extends Plugin implements Loggable {
             return 0;
         } else {
             double h = node.getHeight();
-            h +=
-                    heightSum(node.m_left) +
-                            heightSum(node.m_right);
+            h += heightSum(node.m_left);
+            if (node.m_right != null) {
+                h += heightSum(node.m_right);
+            }
             return h;
         }
     } // heightSum
