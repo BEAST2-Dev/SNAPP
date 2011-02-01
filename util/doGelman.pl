@@ -127,7 +127,7 @@ print "Data points=$nData\n";
     for($i=1;$i<=$nCols;$i++) {
         print "$sHeader[$i] ";
         print sqrt($R[$i]);
-        print "  B=".$B[$i] * $nFiles;
+        print "  B=".$B[$i] * $nData;
         print "  W=".$W[$i];
         print "\n";
     }
