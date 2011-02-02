@@ -91,14 +91,44 @@ public class SnAPPrior extends Distribution {
         //Gamma values in tree
         RealParameter coalescenceRate = m_pCoalescenceRate.get();
         
-		//We assume that 2/r has a gamma(alpha,beta) distribution. That means that r has density proportional to
-		// 1/(r^2)  * GAMMA(2/r|alpha,beta)
-		//which has log (alpha - 1.0)*Math.log(2.0/r) - (beta *(2.0/ r)) - 2*log(r), which in turn simplifies to the expr. below (w/ consts)
 		
-        for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
-            double r = coalescenceRate.getValue(iNode);
-            logP += -(alpha + 1.0)*Math.log(r) - 2.0* beta / r;
-        }
+		int PRIORCHOICE = 0;
+		
+		if (PRIORCHOICE == 0) {
+			//Assume independent gamma distributions for thetas.
+			
+			//We assume that 2/r has a gamma(alpha,beta) distribution. That means that r has density proportional to
+			// 1/(r^2)  * GAMMA(2/r|alpha,beta)
+			//which has log (alpha - 1.0)*Math.log(2.0/r) - (beta *(2.0/ r)) - 2*log(r), which in turn simplifies to the expr. below (w/ consts)
+		
+			for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
+				double r = coalescenceRate.getValue(iNode);
+				logP += -(alpha + 1.0)*Math.log(r) - 2.0* beta / r;
+			}
+		} else if (PRIORCHOICE == 1) {
+			//Assume independent inverse gamma distributions for thetas
+			
+			//We assume that (2/r) has an inverse gamma (alpha,beta) distribution. That means that r has density proportional to
+			// 1/(r^2) * INVGAMMA(2/r|alpha,beta)
+			//which has logarithm:
+			// -(alpha+1) log(2/r) - beta*r/2 - 2 log(r) = C + (alpha-1) log(r) - beta*r / 2.
+			for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
+				double r = coalescenceRate.getValue(iNode);
+				logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
+			}
+		} else {
+			//Assume that rate has uniform distribution on [[0,1000]
+			for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
+				double r = coalescenceRate.getValue(iNode);
+				if (r>1000.0 || r<0.0)
+					return -Double.NEGATIVE_INFINITY;
+			}
+		}
+		
+		
+		
+		
+		
 		
         return logP;
     } // calculateLogLikelihood
