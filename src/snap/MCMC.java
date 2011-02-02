@@ -196,7 +196,7 @@ public class MCMC extends beast.core.MCMC {
 				state.setEverythingDirty(true);
 				//System.err.println(m_state.toString());
 				double fLogLikelihood = posterior.calculateLogP();
-				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
+				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
 					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}
 				if (iSample > NR_OF_DEBUG_SAMPLES) {

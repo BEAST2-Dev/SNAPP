@@ -100,6 +100,10 @@ public class Data extends beast.evolution.alignment.Alignment {
 		}
 		
 		super.initAndValidate();
+		
+		if (m_rawData.get() != null) {
+			m_pSequences.get().clear();
+		}
 	} // initAndValidate
 	
 	/** guesses taxon sets based on pattern in sRegExp based
@@ -109,6 +113,10 @@ public class Data extends beast.evolution.alignment.Alignment {
 		List<Taxon> taxa = new ArrayList<Taxon>();
 		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {
 			Taxon taxon = new Taxon();
+			// ensure sequence and taxon do not get same ID
+			if (sequence.getID().equals(sequence.m_sTaxon.get())) {
+				sequence.setID("_"+sequence.getID());
+			}
 			taxon.setID(sequence.m_sTaxon.get());
 			taxa.add(taxon);
 		}
