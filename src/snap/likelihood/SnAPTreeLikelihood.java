@@ -40,7 +40,6 @@ import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
 
 import snap.NodeData;
