@@ -29,6 +29,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import snap.NodeData;
+import snap.distribution.ChiSquareNoncentralDist;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Distribution;
@@ -46,13 +49,17 @@ import beast.evolution.tree.Node;
 public class SnAPPrior extends Distribution {
     public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "prior parameter -- see docs for details", Validate.REQUIRED);
     public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "prior parameter -- see docs for details", Validate.REQUIRED);
+    public Input<RealParameter> m_pKappa = new Input<RealParameter>("kappa", "prior parameter -- see docs for details");
     public Input<RealParameter> m_pCoalescenceRate = new Input<RealParameter>("coalescenceRate", "Populations sizes for the nodes in the tree", Validate.REQUIRED);
     public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process");//, Validate.REQUIRED);
     public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations"); //, Validate.REQUIRED);
 
     @Override
-    public void initAndValidate() {
-    	// nothing to initialise
+    public void initAndValidate() throws Exception {
+    	if (m_pKappa.get() == null) {
+    		System.err.println("WARNING: kappa parameter not set for SnAPPrior. using default value of 1.0");
+    		m_pKappa.setValue(new RealParameter("1.0"), this);
+    	}
     }
 
 
@@ -62,6 +69,7 @@ public class SnAPPrior extends Distribution {
 
         double alpha = m_pAlpha.get().getValue();
         double beta = m_pBeta.get().getValue();
+        double kappa = m_pKappa.get().getValue();
         
         Tree tree = m_pTree.get();
         double heightsum = tree.getRoot().getHeight();
@@ -90,9 +98,9 @@ public class SnAPPrior extends Distribution {
         
         //Gamma values in tree
         RealParameter coalescenceRate = m_pCoalescenceRate.get();
-        
+
 		
-		int PRIORCHOICE = 0;
+		int PRIORCHOICE = 2;
 		
 		if (PRIORCHOICE == 0) {
 			//Assume independent gamma distributions for thetas.
@@ -116,6 +124,40 @@ public class SnAPPrior extends Distribution {
 				double r = coalescenceRate.getValue(iNode);
 				logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
 			}
+		} else if (PRIORCHOICE == 2) {
+	        //> let x be the root.
+	        //> r = rate for node x.
+	        double r = ((NodeData)tree.getRoot()).coalescenceRate();
+	        //> logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
+	        logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
+
+	        
+	        //> for all nodes x in a pre-order traversal
+	        //> 	let y be parent of node x. 
+	        //> 	let t be length of branch connecting x with y
+	        //> 	r = rate for node x. 
+	        //> 	r0 = rate for node y.
+	        //> 	df = 2*alpha
+	        //> 	nc = 2*(2/r0) * beta * exp(-kappa * t) / (1 - exp(-kappa*t))
+	        //> 	p = ChiSquareNoncentralDist(df,nc) -> density (2/r)
+	        //> 	logP +=log(p) - 2 * log (r)         [this second part is the Jacobian for the transform r <-> theta]
+	        //> end        
+
+	        for (int iNode = 0; iNode < tree.getNodeCount(); iNode++) {
+	        	NodeData node = (NodeData) tree.getNode(iNode);
+	        	if (!node.isRoot()) {
+	        		NodeData parent = (NodeData) node.getParent();
+	        		double t = parent.getHeight() - node.getHeight();
+	        		r = node.coalescenceRate();
+	        		double r0 = parent.coalescenceRate();
+	        		double df = 2 * alpha;
+	        		double nc = 2*(2.0/r0) * beta * Math.exp(-kappa * t) / (1 - Math.exp(-kappa*t));
+	        		double p = ChiSquareNoncentralDist.density(df, nc, 2/r);
+	        		logP += Math.log(p) - 2.0 * Math.log(r);
+	        	}
+	        }
+	        
+			
 		} else {
 			//Assume that rate has uniform distribution on [[0,1000]
 			for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
