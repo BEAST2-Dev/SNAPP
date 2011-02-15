@@ -128,7 +128,9 @@ public class NodeData extends Node implements Serializable  {
 		}
 
 	public double t() {return getLength();}
-	public double coalescenceRate() {return m_fCoalescenceRate;}
+	public double coalescenceRate() {
+		return m_fCoalescenceRate;
+	}
 //	public void set_t(double t) {m_fLength = t;}
 	public void set_coalescenceRate(double fCoalescenceRate) {m_fCoalescenceRate = fCoalescenceRate;}
 
