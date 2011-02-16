@@ -127,7 +127,7 @@ public class SnAPPrior extends Distribution {
 		} else if (PRIORCHOICE == 2) {
 	        //> let x be the root.
 	        //> r = rate for node x.
-	        double r = ((NodeData)tree.getRoot()).coalescenceRate();
+    		double r = coalescenceRate.getArrayValue(tree.getRoot().getNr());
 	        //> logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
 	        logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
 
@@ -148,7 +148,7 @@ public class SnAPPrior extends Distribution {
 	        	if (!node.isRoot()) {
 	        		NodeData parent = (NodeData) node.getParent();
 	        		double t = parent.getHeight() - node.getHeight();
-	        		r = node.coalescenceRate();
+	        		r = coalescenceRate.getArrayValue(node.getNr());
 	        		double r0 = parent.coalescenceRate();
 	        		double df = 2 * alpha;
 	        		double nc = 2*(2.0/r0) * beta * Math.exp(-kappa * t) / (1 - Math.exp(-kappa*t));
