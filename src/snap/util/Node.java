@@ -87,11 +87,11 @@ public class Node {
 		} else {
 			buf.append(m_iLabel);
 		}
-//		if (m_sMetaData != null) {
-//			buf.append('[');
-//			buf.append(m_sMetaData);
-//			buf.append(']');
-//		}
+		if (m_sMetaData != null) {
+			buf.append('[');
+			buf.append(m_sMetaData);
+			buf.append(']');
+		}
 		buf.append(":" + m_fLength);
 		return buf.toString();
 	}
