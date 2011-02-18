@@ -15,8 +15,8 @@ import beast.util.Randomizer;
  */
 public class CIRSimulator {
 
-	static double m_fAlpha = 200.0;
-	static double m_fBeta = 2.0;
+	static double m_fAlpha = 2.0;
+	static double m_fBeta = 2000.0;
 	static double m_fKappa = 138;
 
 //	Generate a normal X  (mean 0, sd 1)
