@@ -25,6 +25,7 @@
  */
 package snap.likelihood;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -54,12 +55,31 @@ public class SnAPPrior extends Distribution {
     public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process");//, Validate.REQUIRED);
     public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations"); //, Validate.REQUIRED);
 
+    
+   enum Priors {
+        gamma,inverseGamma,CIR,uniform
+    }
+
+   public Input<Priors> m_priors = new Input<Priors>("rateprior", "prior on rates. " +
+           "This can be " + Arrays.toString(Priors.values()) + " (default 'CIR')", Priors.CIR, Priors.values());
+
+	int PRIORCHOICE = 2;
+
     @Override
     public void initAndValidate() throws Exception {
     	if (m_pKappa.get() == null) {
     		System.err.println("WARNING: kappa parameter not set for SnAPPrior. using default value of 1.0");
     		m_pKappa.setValue(new RealParameter("1.0"), this);
     	}
+
+    	// determine rate prior
+    	switch (m_priors.get()) {
+	    	case gamma: PRIORCHOICE =1;break;
+	    	case inverseGamma: PRIORCHOICE =2;break;
+	    	case CIR: PRIORCHOICE =3;break;
+	    	case uniform: PRIORCHOICE =4;break;
+    	}
+    	System.err.println("Rate prior = " + Priors.values()[PRIORCHOICE-1] + "");
     }
 
 
@@ -100,7 +120,6 @@ public class SnAPPrior extends Distribution {
         RealParameter coalescenceRate = m_pCoalescenceRate.get();
 
 		
-		int PRIORCHOICE = 2;
 		
 		if (PRIORCHOICE == 0) {
 			//Assume independent gamma distributions for thetas.
@@ -156,14 +175,18 @@ public class SnAPPrior extends Distribution {
 	        		logP += Math.log(p) - 2.0 * Math.log(r);
 	        	}
 	        }
+       		if (Double.isInfinite(logP)) {
+       			// take care of numeric instability
+       			logP = Double.NEGATIVE_INFINITY;
+       		}
 	        
 			
 		} else {
 			//Assume that rate has uniform distribution on [[0,1000]
 			for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
 				double r = coalescenceRate.getValue(iNode);
-				if (r>1000.0 || r<0.0)
-					return -Double.NEGATIVE_INFINITY;
+				if (r>10000.0 || r<0.0)
+					return Double.NEGATIVE_INFINITY;
 			}
 		}
 		
