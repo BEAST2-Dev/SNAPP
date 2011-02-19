@@ -74,12 +74,12 @@ public class SnAPPrior extends Distribution {
 
     	// determine rate prior
     	switch (m_priors.get()) {
-	    	case gamma: PRIORCHOICE =1;break;
-	    	case inverseGamma: PRIORCHOICE =2;break;
-	    	case CIR: PRIORCHOICE =3;break;
-	    	case uniform: PRIORCHOICE =4;break;
+	    	case gamma: PRIORCHOICE =0;break;
+	    	case inverseGamma: PRIORCHOICE =1;break;
+	    	case CIR: PRIORCHOICE =2;break;
+	    	case uniform: PRIORCHOICE =3;break;
     	}
-    	System.err.println("Rate prior = " + Priors.values()[PRIORCHOICE-1] + "");
+    	System.err.println("Rate prior = " + Priors.values()[PRIORCHOICE] + "");
     }
 
 
