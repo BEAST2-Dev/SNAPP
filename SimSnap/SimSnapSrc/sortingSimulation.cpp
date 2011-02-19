@@ -8,6 +8,7 @@
  */
 
 #include "sortingSimulation.h"
+string g_simtree;
 
 using namespace Phylib;
 /**
@@ -312,6 +313,12 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	cout<<"SimTree = ";
 	print_newick(cout,simTree,true,true);
 	cout<<endl;
+
+	stringstream s;
+	s<<"SimTree = ";
+	print_newick(s,simTree,true,true);
+	s<<endl;
+    g_simtree = s.str();
 
 	
 	simTree.clear();
