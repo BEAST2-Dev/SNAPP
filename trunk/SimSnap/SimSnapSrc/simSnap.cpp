@@ -86,6 +86,10 @@ public:
 	}
 };
 
+
+
+
+
 void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, const string fileroot="test") {
 	
 	os<<"<!-- Generated with SimSnap -->\n";
@@ -94,6 +98,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os << "<!-- input tree: ";
 	print_newick(os,tree,true,true);
 	os << "-->\n";
+    os << "<!--" << g_simtree << "-->\n";
 	
 	os<<"<snap version='2.0' namespace='snap:snap.likelihood:beast.util:beast.evolution'>\n";
 	os<<"\n";
@@ -114,12 +119,22 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	double alpha=2;
 	double beta=200;
-	double lambda=10;
+    //lambda = 1/(n t) \sum_{k=1}^{n-1} k/(n-k) 
+    double t = 0.005; // t = height(tree);
+    int n = taxa.size();
+    double fSum = 0;
+    for (int k = 1; k < n; k++) {
+        fSum += ((double)k)/(n-k);
+    }
+    double lambda = fSum/(n*t);
+    
+    //kappa = - log(0.5) / (5 x 10^{-3}) = 138
+    double kappa = -log(0.5)/t;
 	
 	
 	os <<"\n";
 	os <<"<!-- If starting from true tree, set stateBurnin='0' -->\n";
-	os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='10000'>\n";
+	os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='1000'>\n";
 	os <<"        <state>\n";
 	
 	os <<"          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
@@ -139,51 +154,42 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"          <parameter name='stateNode' id='u' value='"<<u<<"' lower='0.0'/>\n";
 	os <<"          <parameter name='stateNode' id='alpha'  value='"<<alpha<<"' lower='0.0'/>\n";
 	os <<"          <parameter name='stateNode' id='beta'   value='"<<beta<<"' lower='0.0'/>\n";
+	os <<"          <parameter name='stateNode' id='kappa'   value='"<<kappa<<"' lower='0.0'/>\n";
 	os <<"          <parameter name='stateNode' id='lambda' value='"<<lambda<<"' lower='0.0'/>\n";
 	os <<"\n";
 	
 	os <<"        </state>\n";
 	os <<"\n";
 	os <<"        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>\n";
-	os <<" 	          <distribution spec='SnAPPrior' name='distribution' id='prior'>\n";
-	os <<"	              <input name='alpha' idref='alpha'/>\n";
-	os <<"    		      <input name='beta' idref='beta'/>\n";
-	os <<"	    	      <input name='lambda' idref='lambda'/>\n";
-	os <<"	              <input name='coalescenceRate' idref='coalescenceRate'/>\n";
-	os <<"		          <input name='tree' idref='tree'/>\n";
+	os <<"            <distribution id='prior' spec='beast.core.util.CompoundDistribution'>\n";
+	os <<"                <distribution spec='beast.math.distributions.Prior' id='lambdaPrior' x='@lambda'>\n";
+	os <<"                    <distribution spec='beast.math.distributions.OneOnX'/>\n";
+	os <<"                </distribution>\n";
+	os <<"                <distribution spec='SnAPPrior' name='distribution' id='snapprior' \n";
+	os <<"                    kappa='@kappa' alpha='@alpha' beta='@beta' lambda='@lambda' rateprior='CIR'\n";
+	os <<"                    coalescenceRate='@coalescenceRate' tree='@tree'\n";
+	os <<"                    />\n";
 	os <<"            </distribution>\n";
 	os <<"<!-- when starting from tree, set initFromTree='true' -->\n";
-	os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate'>\n";
+	os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate' data='@snapalignment' tree='@tree'>\n";
 	os <<"                <siteModel spec='sitemodel.SiteModel' id='siteModel'>\n";
-	os <<"				<substModel spec='snap.likelihood.SnapSubstitutionModel'>\n";
-	os <<"				<mutationRateU idref='u'/>\n";
-	os<<"				<mutationRateV idref='v'/>\n";
-	os<<"				<coalescenceRate idref='coalescenceRate'/>\n";
-	os<<"				</substModel>\n";
-	os<<"				</siteModel>\n";
-	os<<"					<data idref='snapalignment'/>\n";
-	os<<"				<tree idref='tree'/>\n";
+	os <<"				      <substModel spec='snap.likelihood.SnapSubstitutionModel'\n";
+	os <<"                    mutationRateU='@u' mutationRateV='@v' coalescenceRate='@coalescenceRate'/>\n";
+	os<<"				  </siteModel>\n";
 	os <<"            </snaptreelikelihood>\n";
 	os <<"        </distribution>\n";
 	os <<"\n";
 	os <<"        <stateDistribution idref='prior'/>\n";
 	os <<"\n";
-	os <<"    	<operator spec='operators.NodeSwapper' weight='0.5'>\n";
-	os <<"	        <tree name='tree' idref='tree'/>\n";
-	os <<"    	</operator>\n";
-	os <<"        <operator spec='operators.NodeBudger' weight='4' size='0.5'>\n";
-	os <<"            <tree name='tree' idref='tree'/>\n";
-	os <<"        </operator>\n";
-	os <<"	    <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5'>\n";
-	os <<"	        <tree name='tree' idref='tree'/>\n";
-	os <<"    	</operator>\n";
-	os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4'>\n";
-	os <<"	        <parameter name='coalescenceRate' idref='coalescenceRate'/>\n";
-	os <<"        </operator>\n";
-	os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1'>\n";
-	os <<"	        <tree name='tree' idref='tree'/>\n";
-	os <<"	        <parameter name='coalescenceRate' idref='coalescenceRate'/>\n";
-	os <<"        </operator>\n";
+
+	os <<"        <!--uncomment following line to estimate lambda-->\n";
+	os <<"        <!--operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' parameter='@lambda'/-->\n";
+
+	os <<"        <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>\n";
+	os <<"        <operator spec='operators.NodeBudger' weight='4' size='0.5' tree='@tree'/>\n";
+	os <<"        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@tree'/>\n";
+	os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4' coalescenceRate='@coalescenceRate'/>\n";
+	os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
 	os <<"\n";
 	//Settings for output of MCMC chain
 	os <<"        <logger logEvery='100'>\n";
@@ -191,36 +197,31 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
 	os <<"            <log idref='prior'/>\n";
+	os <<"            <log idref='lambdaPrior'/>\n";
 	os <<"            <log idref='treeLikelihood'/>\n";
 	os <<"            <log idref='posterior'/>\n";
-	os <<"	          <log idref='coalescenceRate'/>\n";
-	os <<"	          <log spec='snap.ThetaLogger'>\n";
-	os <<"		          <coalescenceRate idref='coalescenceRate'/>\n";
-	os <<"	          </log>\n";
-	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger'>\n";
-	os <<"		         <tree idref='tree'/>\n";
-	os <<"	          </log>\n";
+	os <<"            <log idref='lambda'/>\n";
+//	os <<"	          <log idref='coalescenceRate'/>\n";
+//	os <<"	          <log spec='snap.ThetaLogger'>\n";
+//	os <<"		          <coalescenceRate idref='coalescenceRate'/>\n";
+//	os <<"	          </log>\n";
+	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
 	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
 	os <<"	          <model idref='posterior'/>\n";
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
 	os <<"            <log idref='prior'/>\n";
+	os <<"            <log idref='lambdaPrior'/>\n";
 	os <<"            <log idref='treeLikelihood'/>\n";
 	os <<"            <log idref='posterior'/>\n";
-	os <<"			<log idref='coalescenceRate'/>\n";
-	os <<"			<log spec='snap.ThetaLogger'>\n";
-	os <<"				<coalescenceRate idref='coalescenceRate'/>\n";
-	os <<"			</log>\n";
-
-	os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
-	os <<"				<tree idref='tree'/>\n";
-	os <<"			</log>\n";
-	os <<"            <log spec='TreeLengthLogger'>\n";
-	os <<"                <tree idref='tree'/>\n";
-	os <<"            </log>\n";
+	os <<"            <log idref='lambda'/>\n";
+	os <<"		      <log idref='coalescenceRate'/>\n";
+	os <<"		      <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>\n";
+	os <<"		      <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
+	os <<"            <log spec='TreeLengthLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger fileName='step1.$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";
+	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";
 	os <<"            <log id='TreeWithMetaDataLogger0' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>\n";
 	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta'/>\n";
 	os <<"            </log>\n";

@@ -14,6 +14,7 @@
 
 using namespace Phylib;
 
+extern string g_simtree;
 
 /**
  Node type for gene trees 
