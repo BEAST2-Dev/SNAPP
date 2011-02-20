@@ -1,9 +1,0 @@
-<itsabeastystatewerein version='2.0'>
-<statenode id='gamma'>gamma[7] (-Infinity,Infinity): 69.01847029878579 168.07975147671638 36.61186421509959 42.60873805515887 68.33739572121368 949.5862412794713 100.93522607693825 </statenode>
-<statenode id='v'>v[1] (0.0,Infinity): 1.0 </statenode>
-<statenode id='u'>u[1] (0.0,Infinity): 1.0 </statenode>
-<statenode id='alpha'>alpha[1] (0.0,Infinity): 2.0 </statenode>
-<statenode id='beta'>beta[1] (0.0,Infinity): 200.0 </statenode>
-<statenode id='lambda'>lambda[1] (0.0,Infinity): 10.0 </statenode>
-<statenode id='tree'>((1[theta=0.011899113262771896]:0.5860637259791137,(3[theta=0.04693872879809097]:0.02414769317341401,2[theta=0.05462710088319276]:0.02414769317341401)[theta=0.0021061804742507667]:0.5619160328056997)[theta=0.029266552798691867]:0.6009335810606811,0[theta=0.028977750323092646]:1.1869973070397948)[theta=0.01981468787195753]:0.0</statenode>
-</itsabeastystatewerein>
