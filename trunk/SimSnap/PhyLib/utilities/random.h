@@ -40,7 +40,7 @@ namespace Phylib {
 	 * @return random double
 	 */
 	inline double random_exp(double mean) {
-		return -mean * std::log(randu());
+		return -(mean) * std::log(randu());
 	}	
 	
 	/**
