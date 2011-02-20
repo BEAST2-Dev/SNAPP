@@ -73,7 +73,7 @@ namespace Phylib {
 			os<<(*v).id;
 		if (print_meta && !(*v).meta_data.empty())
 			os<<"["<<(*v).meta_data<<"]";
-		if (print_lengths && !v.root()) {
+		if (print_lengths /*&& !v.root()*/) {
 			os<<":"<<(*v).length;
 		}
 	}
@@ -121,7 +121,7 @@ namespace Phylib {
 			os<<taxa_names[(*v).id];
 		if (print_meta && !(*v).meta_data.empty())
 			os<<"["<<(*v).meta_data<<"]";
-		if (print_lengths && !v.root()) {
+		if (print_lengths /*&& !v.root()*/) {
 			os<<":"<<(*v).length;
 		}
 	}
