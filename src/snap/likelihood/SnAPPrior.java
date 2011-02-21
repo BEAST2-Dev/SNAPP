@@ -146,36 +146,73 @@ public class SnAPPrior extends Distribution {
 		} else if (PRIORCHOICE == 2) {
 	        //> let x be the root.
 	        //> r = rate for node x.
+    		
+			//> let x be the root.
+	        //> r = rate for node x.
     		double r = coalescenceRate.getArrayValue(tree.getRoot().getNr());
-	        //> logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
-	        logP += (alpha - 1.0)*Math.log(r) - 0.5* beta * r;
-
-	        
-	        //> for all nodes x in a pre-order traversal
-	        //> 	let y be parent of node x. 
-	        //> 	let t be length of branch connecting x with y
-	        //> 	r = rate for node x. 
-	        //> 	r0 = rate for node y.
-	        //> 	df = 2*alpha
-	        //> 	nc = 2*(2/r0) * beta * exp(-kappa * t) / (1 - exp(-kappa*t))
-	        //> 	p = ChiSquareNoncentralDist(df,nc) -> density (2/r)
-	        //> 	logP +=log(p) - 2 * log (r)         [this second part is the Jacobian for the transform r <-> theta]
-	        //> end        
-
+	        logP += -(alpha + 1.0)*Math.log(r) - 2.0* beta / r;
+			
+			/*
+			 
+			 The CIR process (Cox, Ingersoll and Ross 1985. Econometrica) has SDE
+			 dr = \kappa (\theta - r) dt + \sigma \sqrt{r} dz_1
+			 has a stationary distribution that is gamma with 
+				alpha = 2 \kappa \theta / \sigma^2
+			 and 
+				beta = 2 \kappa / \sigma^2
+			 The correlation between time 0 and time t is  exp(-kappa t).
+			 
+			 
+			 Let c = 2 \kappa / (sigma^2 * (1 - exp(-kappa t)))
+			 
+			 If we condition on rate r0 at time 0, the distribution of 2*c*rt is non-central
+			 chi squared with 
+				2q+2 = 4\kappa \theta / sigma^2  
+			 degrees of freedom and parameter of non-centrality
+				2u = c r_0 exp(-kappa t)
+			 
+			 
+			 Converting these into our set of parameters (alpha, beta, kappa) we have
+			 \theta = \alpha / \beta
+			 \sigma^2 = 2 \kappa / \beta
+			 so
+			 c = \beta/(1 - exp(-kappa t))
+			 
+			 df = 2q+2 = 2 \alpha
+			 
+			 nc= 2u = 2 \beta r_0 \frac{exp(-kappa t)}{1-\exp(-kappa t)}
+			 
+			 We are applying the CIR process to THETA = 2/r
+			 
+			*/
+			
+			
 	        for (int iNode = 0; iNode < tree.getNodeCount(); iNode++) {
 	        	NodeData node = (NodeData) tree.getNode(iNode);
 	        	if (!node.isRoot()) {
 	        		NodeData parent = (NodeData) node.getParent();
 	        		double t = parent.getHeight() - node.getHeight();
 	        		r = coalescenceRate.getArrayValue(node.getNr());
-	        		double r0 = parent.coalescenceRate();
-	        		double df = 2 * alpha;
-	        		double nc = 2*(2.0/r0) * beta * Math.exp(-kappa * t) / (1 - Math.exp(-kappa*t));
-	        		double p = ChiSquareNoncentralDist.density(df, nc, 2/r);
+					
+					double r0 = coalescenceRate.getArrayValue(parent.getNr());
+					
+	        		//double r0 = parent.coalescenceRate(); <=== I think that this might be buggy.
+					
+					double theta0 = 2.0/r0;					
+					double ekt = Math.exp(-kappa*t);
+					double c = beta / (1.0 - ekt);
+					double df = 2*alpha;
+					double nc = 2.0 * beta * theta0 * ekt / (1.0 - ekt);
+					double theta = 2.0/r;
+					
+					double p = ChiSquareNoncentralDist.density(df, nc, 2*c*theta);
+					
 	        		logP += Math.log(p) - 2.0 * Math.log(r);
 	        	}
 	        }
-       		if (Double.isInfinite(logP)) {
+			
+			
+			       		if (Double.isInfinite(logP)) {
        			// take care of numeric instability
        			logP = Double.NEGATIVE_INFINITY;
        		}
