@@ -3,7 +3,6 @@ package snap.util;
 import java.util.Vector;
 
 import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.GammaDistributionImpl;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 
