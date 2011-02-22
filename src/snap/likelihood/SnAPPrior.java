@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import snap.NodeData;
 import snap.distribution.ChiSquareNoncentralDist;
 
 import beast.core.Description;
@@ -186,11 +185,13 @@ public class SnAPPrior extends Distribution {
 			 
 			*/
 			
-			
+	        
+	        Node [] nodes = tree.getNodesAsArray();
+	        
 	        for (int iNode = 0; iNode < tree.getNodeCount(); iNode++) {
-	        	NodeData node = (NodeData) tree.getNode(iNode);
+	        	Node node = nodes[iNode];
 	        	if (!node.isRoot()) {
-	        		NodeData parent = (NodeData) node.getParent();
+	        		Node parent = node.getParent();
 	        		double t = parent.getHeight() - node.getHeight();
 	        		r = coalescenceRate.getArrayValue(node.getNr());
 					
@@ -212,7 +213,7 @@ public class SnAPPrior extends Distribution {
 	        }
 			
 			
-			       		if (Double.isInfinite(logP)) {
+       		if (Double.isInfinite(logP)) {
        			// take care of numeric instability
        			logP = Double.NEGATIVE_INFINITY;
        		}

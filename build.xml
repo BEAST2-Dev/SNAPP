@@ -58,6 +58,10 @@
 			<!-- compile JUnit test classes -->
 			<include name="test/snap/**" />
 		</javac>
+        <copy todir="${build}">
+            <fileset dir="${src}" includes="**/*.properties"/>
+            <fileset dir="${src}" includes="**/*.png"/>
+        </copy>
 		<echo message="Successfully compiled." />
 	</target>
 
@@ -72,15 +76,17 @@
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="${main_class_SnAP}" />
 			</manifest>
-			<fileset dir="${build}">
-				<include name="snap/**/*.class" />
-			</fileset>
 			<zipgroupfileset dir="${lib}" includes="mtj.jar" />
 			<zipgroupfileset dir="${lib}" includes="beast.jar" />
+			<fileset dir="${build}">
+				<include name="snap/**/*.class" />
+				<include name="**/*.properties" />
+			</fileset>
 		</jar>
 		<jar jarfile="${dist}/snap.src.jar">
 			<fileset dir="${src}">
 				<include name="snap/**/*.java" />
+				<include name="**/*.properties" />
 				<include name="snap/**/*.png" />
 				<include name="snap/**/*.xsl" />
 			</fileset>
