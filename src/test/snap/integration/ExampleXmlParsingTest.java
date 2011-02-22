@@ -23,7 +23,7 @@ public class ExampleXmlParsingTest extends TestCase {
 		try {
 			Randomizer.setSeed(127);
 			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
-			String sDir = System.getProperty("user.dir") + "/examples";
+			String sDir = System.getProperty("user.dir") + "/examples2";
 			System.out.println("Test XML Examples in " + sDir);
 			File sExampleDir = new File(sDir);
 			String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
