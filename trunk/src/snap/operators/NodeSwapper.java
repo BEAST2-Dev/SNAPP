@@ -106,40 +106,52 @@ public class NodeSwapper extends Operator {
 //		}
 //		Node mrca = xa;
 
-		double mheight = mrca.getHeight() - x.getHeight(); //length of path up to mrca
+		
+		/*
+		 Let mheight be the height of the MRCA, xheight & yheight be the heights of x and y.
+		 Let minb be the length of the shortest branch adjancent to, and below, the mrca.
+		 
+		 We want to cut the tree at a height U[max(xheight,yheight), mheight-minb]
+		 
+		 */
 		
 		
-		//Find a cut-off. No effect if choose a height between mrca and its children
-		double minb = 10e10;
-		minb = Math.min(mrca.m_left.getLength(), mrca.m_right.getLength());
-		double height = Randomizer.nextDouble()*(mheight-minb);
-
-		//Want to cut paths from x and y to MRCA at this height.
+		
+		
+		double mheight = mrca.getHeight();
+		double xheight = x.getHeight();
+		double yheight = y.getHeight();
+		double minb = Math.min(mrca.m_left.getLength(), mrca.m_right.getLength());
+		double cutheight = Randomizer.nextDouble()*(mheight - minb - Math.max(xheight,yheight)) + Math.max(xheight,yheight);
+		
+		
+		//System.err.println("mheight = "+mheight+" "+xheight+" "+yheight+" "+minb+" "+cutheight);
+		
+		/* Identify the nodes on the paths from x to y that are directly below the cut point */
 		xa = x;
-		double xheight = 0.0;
-		while(xheight+(xa.getLength())<height) {
+		while(xheight+(xa.getLength())<cutheight) {
 			xheight+=(xa.getLength());
 			xa = xa.getParent();
 		}
-
-		ya = y;
-		double yheight = 0.0;
-		while(yheight+(ya.getLength())<height) {
+		ya=y;
+		while(yheight+(ya.getLength())<cutheight) {
 			yheight+=ya.getLength();
 			ya = ya.getParent();
 		}
+		
+		/* Compute the lengths of the branches after the swap. This is (segment below cut) + (segment above cut) */
+		double xlength = (cutheight - xheight) + (yheight + ya.getLength() - cutheight);
+		double ylength = (cutheight - yheight) + (xheight + xa.getLength() - cutheight);
 
-		//Swap
-		double xlength = ya.getLength() + (yheight - xheight);
-		double ylength = xa.getLength() + (xheight - yheight);
-
+		/* Perform the swap and fix heights */
 		swap(nodes, xa, ya);
 		
-		//xa.m_fLength = (float) xlength;
 		xa.setHeight(xa.getParent().getHeight() - xlength);
-		//ya.m_fLength = (float) ylength;
 		ya.setHeight(ya.getParent().getHeight() - ylength);
+		
+		
 		return Math.log(hastingsRatio);
+		
 	}
 	
 	void swap(Node [] nodes, Node x, Node y) {
