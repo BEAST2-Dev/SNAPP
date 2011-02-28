@@ -44,8 +44,16 @@ public:
 		basic_newick::copy(data);
 		
 		size_t equalPos = data.meta_data.find_first_of("=");
-		if (equalPos!=string::npos)
-			theta = atof((data.meta_data.substr(equalPos+1)).c_str());
+		if (equalPos!=string::npos) {
+			if (data.meta_data.compare(0,5,"theta") == 0)
+				theta = atof((data.meta_data.substr(equalPos+1)).c_str());
+			else if (data.meta_data.compare(0,15,"coalescenceRate")==0)
+				theta = 2.0 / atof((data.meta_data.substr(equalPos+1)).c_str());
+			else	{		
+				theta = atof((data.meta_data.substr(equalPos+1)).c_str());
+				cerr<<"Error reading in tree"<<endl;
+			}
+		}
 		else
 			theta = atof(data.meta_data.c_str());
 		
