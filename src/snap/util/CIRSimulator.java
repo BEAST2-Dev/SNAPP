@@ -81,7 +81,8 @@ public class CIRSimulator {
     		double r0 = fParentRate;
     		double df = 2 * m_fAlpha;
     		double nc = 2*(2.0/r0) * m_fBeta * Math.exp(-m_fKappa * t) / (1 - Math.exp(-m_fKappa*t));
-			fRate = generateFromNonCentralChiSquare(df, nc);
+			double c = m_fBeta / (1.0 - Math.exp(-m_fKappa *t));
+			fRate = generateFromNonCentralChiSquare(df, nc)/c;
 			node.m_sMetaData = "theta=" +2.0/fRate +"";
 		}
 		
