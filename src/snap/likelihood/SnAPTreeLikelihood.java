@@ -79,6 +79,11 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
     @Override
     public void initAndValidate() throws Exception {
+    	// check that alignment has same taxa as tree
+    	if (m_data.get().getNrTaxa() != m_tree.get().getLeafNodeCount()) {
+    		throw new Exception("The number of nodes in the tree does not match the number of sequences");
+    	}
+
     	m_bUsenNonPolymorphic = m_usenNonPolymorphic.get();
     	m_siteModel = m_pSiteModel.get();
     	
@@ -122,7 +127,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     		// multi-threaded likelihood core
     		m_core = new SnAPLikelihoodCoreT(m_tree.get().getRoot(), m_data.get());
     	}
-    	Integer [] nSampleSizes = m_data2.m_nStateCounts.toArray(new Integer[0]);
+    	Integer [] nSampleSizes = m_data2.getStateCounts().toArray(new Integer[0]);
     	m_nSampleSizes = new int[nSampleSizes.length];
     	for (int i = 0; i < nSampleSizes.length; i++) {
     		m_nSampleSizes[i] = nSampleSizes[i];
@@ -157,8 +162,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			boolean useCache = true;
 			boolean dprint = false;
 			
-			double [] fCategoryRates = m_siteModel.getCategoryRates();
-			double [] fCategoryProportions = m_siteModel.getCategoryProportions();
+			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
+			double [] fCategoryProportions = m_siteModel.getCategoryProportions(null);
 			double [][] patternProbs = new double[m_siteModel.getCategoryCount()][];
 			int nCategories = m_siteModel.getCategoryCount();
 			
@@ -218,18 +223,21 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		}
     } // calculateLogLikelihood
 
+    /** CalculationNode methods **/
 	@Override
 	public void store() {
-    	//super.store();
         storedLogP = logP;
     	m_core.m_bReuseCache = true;
+    	// DO NOT CALL super.store, since the super class TreeLikelihood has nothing to store
+    	//super.store();
     }
 
 	@Override
     public void restore() {
-    	//super.restore();
         logP = storedLogP;
     	m_core.m_bReuseCache = false;
+    	// DO NOT CALL super.restore, since the super class TreeLikelihood has nothing to store
+    	//super.restore();
     }
 
 	
