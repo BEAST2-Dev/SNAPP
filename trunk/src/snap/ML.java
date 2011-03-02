@@ -49,9 +49,10 @@ public class ML extends beast.core.MCMC {
 		}
 		
 		m_gammas = new ArrayList<Integer>();
-		for (StateNode stateNode: state.stateNode) {
+		for (int i = 0 ; i < state.getNrOfStateNodes(); i++) {
+			StateNode stateNode = state.getStateNode(i);
 			if (stateNode instanceof GammaParameter) {
-				m_gammas.add(stateNode.index);
+				m_gammas.add(stateNode.getIndex());
 			}
 		}
 	} // init

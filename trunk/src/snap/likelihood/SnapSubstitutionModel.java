@@ -26,7 +26,7 @@ public class SnapSubstitutionModel extends SubstitutionModel.Base {
 	public double[] getFrequencies() {return null;}
 
 	@Override
-	public EigenDecomposition getEigenDecomposition() {return null;}
+	public EigenDecomposition getEigenDecomposition(Node node) {return null;}
 
 	@Override
 	public boolean canReturnComplexDiagonalization() {return false;}
