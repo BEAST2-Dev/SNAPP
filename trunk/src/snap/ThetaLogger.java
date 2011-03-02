@@ -25,7 +25,8 @@ public class ThetaLogger extends Plugin implements Loggable {
             out.print(param.getID() + "\t");
         } else {
             for (int iValue = 0; iValue < nValues; iValue++) {
-                out.print("2/"+param.getID() + iValue + "\t");
+                //out.print("2/"+param.getID() + iValue + "\t");
+				out.print("theta" + iValue + "\t"); //The 2/ coalescence rate confuses R (and, at times, me)
             }
         }
 	}
@@ -35,7 +36,7 @@ public class ThetaLogger extends Plugin implements Loggable {
         RealParameter var = (RealParameter) m_coalescenceRate.get();
         int nValues = var.getDimension();
         for (int iValue = 0; iValue < nValues; iValue++) {
-            out.print((2.0/var.getValue(iValue)) + "\t");
+            out.print((2.0/var.getValue(iValue)) + "\t"); //WARNING: this will be a bug when we allow u and v to change. Value should be 2uv/((u+v)*rate) 
         }
 	}
 
