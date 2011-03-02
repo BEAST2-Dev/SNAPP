@@ -149,7 +149,12 @@ public class SnAPPrior extends Distribution {
 			//> let x be the root.
 	        //> r = rate for node x.
     		double r = coalescenceRate.getArrayValue(tree.getRoot().getNr());
-	        logP += -(alpha + 1.0)*Math.log(r) - 2.0* beta / r;
+	        //TEMPORARY!!!! logP += -(alpha + 1.0)*Math.log(r) - 2.0* beta / r;
+			
+			
+			logP += -(alpha*2 + 1.0)*Math.log(r) - 2.0* beta / r;
+			
+			
 			
 			/*
 			 
@@ -186,6 +191,13 @@ public class SnAPPrior extends Distribution {
 			*/
 			
 	        
+			/* Priors for the hyperparameters */
+			logP -= Math.log(kappa);
+			
+				
+			
+			
+			
 	        Node [] nodes = tree.getNodesAsArray();
 	        
 	        for (int iNode = 0; iNode < tree.getNodeCount(); iNode++) {
@@ -195,16 +207,21 @@ public class SnAPPrior extends Distribution {
 	        		double t = parent.getHeight() - node.getHeight();
 	        		r = coalescenceRate.getArrayValue(node.getNr());
 					
-					double r0 = coalescenceRate.getArrayValue(parent.getNr());
 					
+					double r0 = coalescenceRate.getArrayValue(parent.getNr());
+										
 	        		//double r0 = parent.coalescenceRate(); <=== I think that this might be buggy.
 					
-					double theta0 = 2.0/r0;					
+					double theta0 = 2.0/r0;			
+					
+					
 					double ekt = Math.exp(-kappa*t);
 					double c = beta / (1.0 - ekt);
 					double df = 2*alpha;
 					double nc = 2.0 * beta * theta0 * ekt / (1.0 - ekt);
 					double theta = 2.0/r;
+					
+					//System.err.println("kappa,t,beta,ekt,df,nc = "+kappa+", "+t+", "+beta+", "+ekt+", "+df+", "+nc);
 					
 					double p = ChiSquareNoncentralDist.density(df, nc, 2*c*theta);
 					
