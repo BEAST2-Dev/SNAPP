@@ -74,8 +74,15 @@ public class TreeSetAnalyser {
 		}
 	}
 	String getTheta(String sTheta) {
-		return sTheta.replaceAll("theta=", "");
+		if (sTheta.startsWith("coalescenceRate")) {
+			double rate = Double.parseDouble(sTheta.replaceAll("coalescenceRate=",""));
+			return Double.toString(2.0/rate);
+		}
+		else
+			return sTheta.replaceAll("theta=", "");
 	}
+	
+	
 	String getTreeData(Node node) {
 		if (node.isLeaf()) {
 			String sMetaData = getTheta(node.m_sMetaData);
