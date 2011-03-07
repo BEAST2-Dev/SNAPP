@@ -37,6 +37,8 @@ phylo<simNodeData> initialiseSimTree(phylo<basic_newick>& tree, double rate) {
 }
 
 
+
+
 /**
  Simulates a gene tree. 
  We use GIllespie's algorithm up each branch of the species tree to simulate the coalescent.
