@@ -12,6 +12,7 @@
 
 #include"../global/stdIncludes.h"
 #include"../utilities/phylibException.h"
+#include"../utilities/random.h"
 #include"phylo.h"
 
 
@@ -240,7 +241,81 @@ namespace Phylib {
 		subtrees[0].clear();
 	}
 		
-
+	/* Constructs a tree with the yule distribution, with given birth rate lambda. 
+	 Hence it is assumed that T contains the fields of basic_newick as well as a height field
+	 */
+	//test
+	template<typename T> void yule(phylo<T>& tree, uint ntax, const double birthRate) {
+		tree.clear();
+		
+				
+		typedef typename phylo<T>::iterator ITERATOR;
+		
+		//Create the ntax subtrees containing the leaves.
+		vector< phylo<T> > subtrees(ntax);
+		for(uint i=0;i<ntax;i++) {
+			ITERATOR p = subtrees[i].insert_child(subtrees[i].header());
+			p->id = i;
+			p->height = 0.0;
+		}
+		vector<uint> n(ntax); //Number of taxa in each cluster
+		fill(n.begin(),n.end(),1);
+		
+		double height = 0.0; 
+		
+		//Begin the loops
+		for(uint r=ntax;r>1;r--) {
+			
+			//Add waiting times to the current subtrees.
+			height += random_exp(birthRate*r);			
+							
+			
+			//Choose two to amalgamate. First choose a pair of numbers from 0...r-1 such that i1 < j1
+			unsigned int i1 = random_num(r);
+			unsigned int j1 = random_num(r-1);
+			if (j1>=i1) 
+				j1++;
+			else {
+				int tmp = i1; i1 = j1; j1 = tmp;
+			}
+			
+			//Now find which indices these belong to.
+			int kcount = 0;
+			int i2,j2;
+			for (int k=0;k<ntax;k++) {
+				if (n[k]!=0) {
+					if (kcount == i1)
+						i2 = k;
+					else if (kcount == j1) {
+						j2 = k;
+						break;
+					}
+					kcount++;
+				}
+			}
+			
+			//Perform the amalgamation			
+			phylo<T> newNode;
+			ITERATOR newRoot = newNode.insert_child(newNode.header());
+			newRoot->id = -1;
+			newNode.graft_child(newRoot,subtrees[j2],subtrees[j2].root());
+			newNode.graft_child(newRoot,subtrees[i2],subtrees[i2].root());
+			newRoot->height = height;
+			
+			
+			n[i2] += n[j2];
+			n[j2] = 0;
+			subtrees[j2].clear();
+			subtrees[i2].clear();
+			subtrees[i2].graft_child(subtrees[i2].header(),newNode,newNode.root());
+		}
+		
+		//At this point, subtrees[0] contains the root of the upgma tree.
+		computeLengthsFromHeights(subtrees[0]);
+		tree = subtrees[0];
+		subtrees[0].clear();
+	}
+	
 	
 }
 
