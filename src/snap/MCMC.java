@@ -128,7 +128,7 @@ public class MCMC extends beast.core.MCMC {
 		Distribution posterior = posteriorInput.get();
 		
 		
-		double fOldLogLikelihood = posterior.calculateLogP();
+		double fOldLogLikelihood = robustlyCalcPosterior(posterior);//posterior.calculateLogP();
 		
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
 		
@@ -147,15 +147,11 @@ public class MCMC extends beast.core.MCMC {
         	state.store(iSample);
 
 			Operator operator = operatorSet.selectOperator();
-			if (iSample == 6) {
-				int h = 3;
-				h++;
-				//proposedState.makeDirty(State.IS_GORED);
-			}
 			//System.err.println(operator.getClass().getName() + " " + operator.getID());
 			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 				state.storeCalculationNodes();
+                state.checkCalculationNodesDirtiness();
 				
 				double fNewLogLikelihood = posterior.calculateLogP();
 				
@@ -196,6 +192,7 @@ public class MCMC extends beast.core.MCMC {
 				state.setEverythingDirty(true);
 				//System.err.println(m_state.toString());
 				double fLogLikelihood = posterior.calculateLogP();
+				state.setEverythingDirty(false);
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
 					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}

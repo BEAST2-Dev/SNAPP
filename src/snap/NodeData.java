@@ -228,7 +228,7 @@ public class NodeData extends Node implements Serializable  {
 		if (sPattern.equals("theta")) {
 			m_fCoalescenceRate = 2.0/(Double) fValue;
 		}
-		super.setMetaData(sPattern, fValue);
+		//super.setMetaData(sPattern, fValue);
 	}
 	
 	public double getMetaData(String sPattern) {
