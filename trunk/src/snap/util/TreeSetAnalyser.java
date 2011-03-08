@@ -73,29 +73,33 @@ public class TreeSetAnalyser {
 			return getHeight(node.m_left) + node.m_fLength; 
 		}
 	}
-	String getTheta(String sTheta) {
-		if (sTheta.startsWith("coalescenceRate")) {
-			double rate = Double.parseDouble(sTheta.replaceAll("coalescenceRate=",""));
-			return Double.toString(2.0/rate);
+
+	double getTheta(String sMetaData) {
+		if (sMetaData.contains("theta=")) {
+			String sStr = sMetaData.replaceAll("theta=", "");
+			double f = Double.parseDouble(sStr);
+			return f;
+		} else {
+			String sStr = sMetaData.replaceAll("coalescenceRate=", "");
+			double f = 2.0/Double.parseDouble(sStr);
+			return f;
 		}
-		else
-			return sTheta.replaceAll("theta=", "");
 	}
 	
 	
 	String getTreeData(Node node) {
 		if (node.isLeaf()) {
-			String sMetaData = getTheta(node.m_sMetaData);
+			double fTheta = getTheta(node.m_sMetaData);
 			double fHeight = (getHeight(node) - node.m_fLength);
-			m_thetas[node.getNr()].add(Double.parseDouble(sMetaData));
+			m_thetas[node.getNr()].add(fTheta);
 			m_heights[node.getNr()].add(fHeight);
-			return sMetaData + "\t" +fHeight; 
+			return fTheta + "\t" +fHeight; 
 		} else {
-			String sMetaData = getTheta(node.m_sMetaData);
+			double fTheta = getTheta(node.m_sMetaData);
 			double fHeight = (getHeight(node) - node.m_fLength);
-			m_thetas[node.getNr()].add(Double.parseDouble(sMetaData));
+			m_thetas[node.getNr()].add(fTheta);
 			m_heights[node.getNr()].add(fHeight);
-			return getTreeData(node.m_left) + "\t" + getTreeData(node.m_right) + "\t" + sMetaData + "\t"+ fHeight;
+			return getTreeData(node.m_left) + "\t" + getTreeData(node.m_right) + "\t" + fTheta + "\t"+ fHeight;
 		}
 	}
 	
