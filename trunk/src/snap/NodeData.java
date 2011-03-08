@@ -42,7 +42,7 @@ import beast.evolution.tree.Node;
 public class NodeData extends Node implements Serializable  {
 	private static final long serialVersionUID = 1L;
 
-	private	double m_fCoalescenceRate = 1;
+	//private	double m_fCoalescenceRate = 1;
 	
 	//Number of individuals at or below this node.
 	public	int m_n;
@@ -128,11 +128,12 @@ public class NodeData extends Node implements Serializable  {
 		}
 
 	public double t() {return getLength();}
-	public double coalescenceRate() {
-		return m_fCoalescenceRate;
-	}
 //	public void set_t(double t) {m_fLength = t;}
-	public void set_coalescenceRate(double fCoalescenceRate) {m_fCoalescenceRate = fCoalescenceRate;}
+
+//	public double coalescenceRate() {
+//		return m_fCoalescenceRate;
+//	}
+//	public void set_coalescenceRate(double fCoalescenceRate) {m_fCoalescenceRate = fCoalescenceRate;}
 
 	public NodeData copyx() throws CloneNotSupportedException {
 		NodeData node = new NodeData();
@@ -156,7 +157,7 @@ public class NodeData extends Node implements Serializable  {
 		node.m_iLabel = m_iLabel;
 		node.m_sMetaData = m_sMetaData;
 
-		node.set_coalescenceRate(m_fCoalescenceRate);
+//		node.set_coalescenceRate(m_fCoalescenceRate);
 		node.m_n = m_n;
 		//if (m_Nt != null) {
 			//node.m_Nt = new double[m_Nt.length];
@@ -182,7 +183,7 @@ public class NodeData extends Node implements Serializable  {
 	}
 
 	public String getNewickMetaData() {
-		return "[theta=" + 2.0/coalescenceRate() + ']';
+		return "";//"[theta=" + 2.0/coalescenceRate() + ']';
 	}
 
 	public void resizeF(int n) {
@@ -222,22 +223,22 @@ public class NodeData extends Node implements Serializable  {
 	//boolean m_bIsDirty = true;
 	@Override
 	public void setMetaData(String sPattern, Object fValue) {
-		if (sPattern.equals("coalescenceRate")) {
-			m_fCoalescenceRate = (Double) fValue;
-		}
-		if (sPattern.equals("theta")) {
-			m_fCoalescenceRate = 2.0/(Double) fValue;
-		}
+//		if (sPattern.equals("coalescenceRate")) {
+//			m_fCoalescenceRate = (Double) fValue;
+//		}
+//		if (sPattern.equals("theta")) {
+//			m_fCoalescenceRate = 2.0/(Double) fValue;
+//		}
 		//super.setMetaData(sPattern, fValue);
 	}
 	
 	public double getMetaData(String sPattern) {
-		if (sPattern.equals("coalescenceRate")) {
-			return m_fCoalescenceRate;
-		}
-		if (sPattern.equals("theta")) {
-			 return 2.0/m_fCoalescenceRate;
-		}
+//		if (sPattern.equals("coalescenceRate")) {
+//			return m_fCoalescenceRate;
+//		}
+//		if (sPattern.equals("theta")) {
+//			 return 2.0/m_fCoalescenceRate;
+//		}
 		return super.getMetaData(sPattern);
 	}
 
