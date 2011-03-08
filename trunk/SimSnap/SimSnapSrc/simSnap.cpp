@@ -192,7 +192,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
 	os <<"\n";
 	//Settings for output of MCMC chain
-	os <<"        <logger logEvery='100'>\n";
+	os <<"        <logger logEvery='1000'>\n";
 	os <<"			  <model idref='posterior'/>\n";
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
@@ -207,7 +207,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 //	os <<"	          </log>\n";
 	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
+	os <<"        <logger logEvery='1000' fileName='"<<fileroot<<".$(seed).log'>\n";
 	os <<"	          <model idref='posterior'/>\n";
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
@@ -221,7 +221,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"		      <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"            <log spec='TreeLengthLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";
+	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='1000' mode='tree'>\n";
 	os <<"            <log id='TreeWithMetaDataLogger0' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>\n";
 	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta'/>\n";
 	os <<"            </log>\n";
