@@ -149,7 +149,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     public double calculateLogP() {
     	try {
     		// get current tree
-	    	NodeData root = (NodeData) m_tree.get(null).getRoot();
+	    	NodeData root = (NodeData) m_tree.get().getRoot();
 	    	Double [] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
 	    	// assing gamma values to tree
 //	    	if (m_pGamma.get().somethingIsDirty()) {

@@ -1,6 +1,5 @@
 package snap;
 
-import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Valuable;
@@ -12,8 +11,9 @@ import beast.evolution.tree.Tree;
 
 import java.io.PrintStream;
 
+
 @Description("Logger to report height of all internal nodes in a tree")
-public class TreeNodeLogger extends CalculationNode implements Loggable, Valuable {
+public class TreeNodeLogger extends Plugin implements Loggable, Valuable {
 	public Input<Tree> m_tree = new Input<Tree>("tree", "tree to report height for.", Validate.REQUIRED);
 
 	@Override
