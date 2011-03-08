@@ -6,7 +6,7 @@ import java.util.List;
 
 import snap.util.TreeFileParser;
 
-public class TreeSetAnalyser2 extends TreeSetAnalyser {
+public class TreeSetAnalyser3 extends TreeSetAnalyser {
 	/** tree to compare the tree set with, if provided **/
 	String m_sOriginalTree = null;
 	
@@ -155,8 +155,8 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 			for(int node = m_sLabels.size(); node<nNodes;node++) {
 				List<Double> heights = m_heights[node];
 				int n = heights.size();
-				
-				System.out.print("\t"+n);
+								
+				//System.out.print("\t"+heights.get(1));
 				
 				Double sum = 0.0;
 				Double sumSquared = 0.0;
@@ -178,7 +178,7 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 				List<Double> thetas = m_thetas[node];
 				int n = thetas.size();
 				
-				System.out.print("\t"+n);
+				//System.out.print("\t"+heights.get(1));
 
 				
 				
