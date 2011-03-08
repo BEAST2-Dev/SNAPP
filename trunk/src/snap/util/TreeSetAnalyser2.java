@@ -166,8 +166,8 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 				Double mean = sum/(ntrees-1.0);
 				Double bias = mean - root_heights.get(0);
 				Double var = sumSquared/(ntrees-1.0) - mean*mean;
-				System.out.println(""+root_heights.get(0)+"\t"+bias+"\t"+Math.sqrt(var));
-				System.err.print("\t"+root_heights.get(0)+"\t"+bias+"\t"+Math.sqrt(var));
+				System.out.println(""+mean+"\t"+bias+"\t"+Math.sqrt(var));
+				//System.err.print("\t"+root_heights.get(0)+"\t"+bias+"\t"+Math.sqrt(var));
 
 				sum = 0.0;
 				sumSquared = 0.0;
@@ -180,8 +180,8 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 				mean = sum/(ntrees-1.0);
 				bias = mean - root_thetas.get(0);
 				var = sumSquared/(ntrees-1.0) - (mean*mean);
-				System.out.println(""+root_thetas.get(0) + "\t"+bias+"\t"+Math.sqrt(var));
-				System.err.println("\t"+root_thetas.get(0) + "\t"+bias+"\t"+Math.sqrt(var));
+				System.out.println(""+mean + "\t"+bias+"\t"+Math.sqrt(var));
+				//System.err.println("\t"+root_thetas.get(0) + "\t"+bias+"\t"+Math.sqrt(var));
 
 			}
 			
