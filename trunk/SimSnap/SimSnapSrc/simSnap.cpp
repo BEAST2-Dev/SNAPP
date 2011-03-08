@@ -223,7 +223,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"        </logger>\n";
 	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='1000' mode='tree'>\n";
 	os <<"            <log id='TreeWithMetaDataLogger0' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>\n";
-	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta'/>\n";
+	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta' id='theta'/>\n";
 	os <<"            </log>\n";
 	os <<"        </logger>\n";
 
