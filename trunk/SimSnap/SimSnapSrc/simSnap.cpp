@@ -207,7 +207,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 //	os <<"	          </log>\n";
 	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger logEvery='1000' fileName='"<<fileroot<<".$(seed).log'>\n";
+	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
 	os <<"	          <model idref='posterior'/>\n";
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
@@ -221,7 +221,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"		      <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"            <log spec='TreeLengthLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='1000' mode='tree'>\n";
+	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";
 	os <<"            <log id='TreeWithMetaDataLogger0' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>\n";
 	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta' id='theta'/>\n";
 	os <<"            </log>\n";
@@ -421,10 +421,14 @@ int main(int argc, char* argv[]) {
 
 		ostringstream s1;
 		s1 << fileroot<<"_tree_"<<(iTree+1);
+		
+		string shortFileName = s1.str();
+		
 		if (ap.outputXML)
 			s1<< ".xml";
 		else
 			s1 << ".nex";		
+		
 		string sFile = s1.str();
 		
 		cout << "Writing " << sFile << endl;		
@@ -436,7 +440,7 @@ int main(int argc, char* argv[]) {
 
 		if (ap.outputXML) {
         	
-			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,fileroot);
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
