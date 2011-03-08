@@ -156,7 +156,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				List<Double> heights = m_heights[node];
 				int n = heights.size();
 								
-				//System.out.print("\t"+heights.get(1));
+				System.out.print("\t"+heights.get(1));
 				
 				Double sum = 0.0;
 				Double sumSquared = 0.0;
@@ -178,7 +178,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				List<Double> thetas = m_thetas[node];
 				int n = thetas.size();
 				
-				//System.out.print("\t"+heights.get(1));
+				System.out.print("\t"+thetas.get(1));
 
 				
 				
@@ -206,7 +206,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 	}
 	
 	public static void main(String [] args) {
-		TreeSetAnalyser2 analyser = new TreeSetAnalyser2();
+		TreeSetAnalyser3 analyser = new TreeSetAnalyser3();
 		analyser.analyse(args);
 	} // main
 }
