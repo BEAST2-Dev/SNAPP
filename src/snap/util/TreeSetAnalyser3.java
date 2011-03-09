@@ -40,7 +40,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 		m_trace = new ArrayList<Double>();
 		m_fSquareLaggedSums = new ArrayList<Double>();
 		double fESS = 0;
-		for (int i = 1; i < trace.size(); i++)
+		for (int i = 1; i < trace.size(); i++) {
 			fESS = incrementalESS(trace.get(i));
 		}
 		return fESS;
