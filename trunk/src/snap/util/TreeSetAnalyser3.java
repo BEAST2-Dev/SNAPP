@@ -1,6 +1,8 @@
 package snap.util;
 
 
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +25,85 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 						   );
 		System.exit(0);
 	}
+	
+    final static int MAX_LAG = 2000;
+	/** values from which the ESS is calculated **/
+	List<Double> m_trace;
+	/** sum of trace, excluding burn-in **/
+	double m_fSum = 0;
+	/** keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  **/
+    List<Double> m_fSquareLaggedSums;
+	/** return effective sample size of a sample 
+	 * @param trace:  values from which the ESS is calculated **/
+	public double ESS(List<Double> trace) {
+		m_fSum = 0;
+		m_trace = new ArrayList<Double>();
+		m_fSquareLaggedSums = new ArrayList<Double>();
+		double fESS = 0;
+		for (Double fValue : trace) {
+			fESS = incrementalESS(fValue);
+		}
+		return fESS;
+	}
+	double incrementalESS(double fNewValue) {
+		m_trace.add(fNewValue);
+		m_fSum += fNewValue;
+		
+        final int nTotalSamples = m_trace.size();
+
+        // take no burn in, it is already taken out of the input
+        //final int iStart = 0;
+        final int nSamples = nTotalSamples - 0;
+        final int nMaxLag = Math.min(nSamples, MAX_LAG);
+
+        // calculate mean
+        final double fMean = m_fSum / nSamples;
+
+        while (m_fSquareLaggedSums.size()< nMaxLag) {
+        	m_fSquareLaggedSums.add(0.0);
+        }
+    
+        // calculate auto correlation for selected lag times
+        double[] fAutoCorrelation = new double[nMaxLag];
+        // fSum1 = \sum_{iStart ... nTotalSamples-iLag-1} trace
+    	double fSum1 = m_fSum;
+        // fSum1 = \sum_{iStart+iLag ... nTotalSamples-1} trace
+    	double fSum2 = m_fSum;
+        for (int iLag = 0; iLag < nMaxLag; iLag++) {
+            m_fSquareLaggedSums.set(iLag, m_fSquareLaggedSums.get(iLag) + m_trace.get(nTotalSamples - iLag - 1) * m_trace.get(nTotalSamples - 1));
+            // The following line is the same approximation as in Tracer 
+            // (valid since fMean *(nSamples - iLag), fSum1, and fSum2 are approximately the same)
+            // though a more accurate estimate would be
+            // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
+            fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - (fSum1 + fSum2) * fMean + fMean * fMean * (nSamples - iLag);
+            fAutoCorrelation[iLag] /= ((double) (nSamples - iLag));
+        	fSum1 -= m_trace.get(nTotalSamples - 1 - iLag);
+        	fSum2 -= m_trace.get(0 + iLag);
+        }
+
+        double integralOfACFunctionTimes2 = 0.0;
+        for (int iLag = 0; iLag < nMaxLag; iLag++) {
+            if (iLag == 0) {
+                integralOfACFunctionTimes2 = fAutoCorrelation[0];
+            } else if (iLag % 2 == 0) {
+                // fancy stopping criterion - see main comment
+                if (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag] > 0) {
+                    integralOfACFunctionTimes2 += 2.0 * (fAutoCorrelation[iLag - 1] + fAutoCorrelation[iLag]);
+                } else {
+                    // stop
+                    break;
+                }
+            }
+        }
+
+        // auto correlation time
+        final double fACT = integralOfACFunctionTimes2 / fAutoCorrelation[0];
+
+        // effective sample size
+        final double fESS = nSamples / fACT;
+        return fESS;
+    } // ESS
+	
 	
 	void parseArgs(String [] args) {
 		int i = 0;
@@ -169,8 +250,10 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				Double mean = sum/n;
 				Double var = sumSquared/(n - 1.0)  - sum*sum/(n*(n-1.0));
 				
+				double fESS = ESS(heights);
+				
 				//System.err.print("\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.err.print("\tNode"+node+"\t"+mean+"\t"+Math.sqrt(var));
+				System.err.print("\tNode"+node+"\t"+mean+"\t"+Math.sqrt(var)+ "\t" + fESS);
 			}
 			
 			//Now Thetas
@@ -194,8 +277,10 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				Double mean = sum/n;
 				Double var = sumSquared/(n - 1.0)  - sum*sum/(n*(n-1.0));
 				
+				double fESS = ESS(thetas);
+				
 				//System.err.print("\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.err.print("\ttheta"+node+"\t"+mean+"\t"+Math.sqrt(var));
+				System.err.print("\ttheta"+node+"\t"+mean+"\t"+Math.sqrt(var) +"\t" + fESS);
 			}
 			
 			System.err.println();
