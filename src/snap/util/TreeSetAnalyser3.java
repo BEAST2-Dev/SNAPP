@@ -235,13 +235,13 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 			System.err.print("\tH");
 			for(int node = m_sLabels.size(); node<nNodes;node++) {
 				List<Double> heights = m_heights[node];
-				int n = heights.size();
+				int n = heights.size()-1;
 								
 				//System.out.print("\t"+heights.get(1));
 				
 				Double sum = 0.0;
 				Double sumSquared = 0.0;
-				for(int i=1;i<n;i++) {
+				for(int i=1;i<=n;i++) {
 					Double r = heights.get(i);
 					sum+=r;
 					sumSquared+=r*r;
@@ -260,7 +260,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 			System.err.print("\tTH");
 			for(int node = 0; node<nNodes;node++) {
 				List<Double> thetas = m_thetas[node];
-				int n = thetas.size();
+				int n = thetas.size()-1;
 				
 				//System.out.print("\t"+thetas.get(1));
 
@@ -268,7 +268,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				
 				Double sum = 0.0;
 				Double sumSquared = 0.0;
-				for(int i=1;i<n;i++) {
+				for(int i=1;i<=n;i++) {
 					Double r = thetas.get(i);
 					sum+=r;
 					sumSquared+=r*r;
