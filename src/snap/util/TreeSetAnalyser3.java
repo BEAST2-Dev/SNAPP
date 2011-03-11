@@ -253,7 +253,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				double fESS = ESS(heights);
 				
 				//System.err.print("\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.err.print("\tNode"+node+"\t"+mean+"\t"+Math.sqrt(var)+ "\t" + fESS);
+				System.err.print("\tNode"+node+"\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
 			}
 			
 			//Now Thetas
@@ -280,7 +280,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				double fESS = ESS(thetas);
 				
 				//System.err.print("\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.err.print("\ttheta"+node+"\t"+mean+"\t"+Math.sqrt(var) +"\t" + fESS);
+				System.err.print("\ttheta"+node+"\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
 			}
 			
 			System.err.println();
