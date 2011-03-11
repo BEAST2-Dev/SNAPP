@@ -45,6 +45,7 @@ public:
 	bool outputXML;
 	bool excludeConst;
 	bool outputTrees;
+	bool simulationOutput;
 	string inputfile;
 	int nsites;
 	ArgumentParser(int argc, char* argv[]) {
@@ -52,7 +53,7 @@ public:
 		outputXML=true;
 		excludeConst = true;
 		outputTrees = false;
-		
+		simulationOutput = false;
 		
 		nsites = 0;
 		inputfile = "";
@@ -65,7 +66,7 @@ public:
 		//First read in the flags.
 		string flags = string(argv[arg]);
 		if (flags[0]=='-') {
-			if (flags.find_first_not_of("-nct")!=string::npos)
+			if (flags.find_first_not_of("-ncst")!=string::npos)
 				printUsage(cerr);
 			
 			if (flags.find_first_of('n')!=string::npos)
@@ -74,6 +75,9 @@ public:
 				excludeConst = false;
 			if (flags.find_first_of('t')!=string::npos)
 				outputTrees = true;
+			if (flags.find_first_of('s')!=string::npos)
+				simulationOutput = true;
+			
 			
 			arg++;
 			if (argc < 4)
@@ -90,13 +94,15 @@ public:
 
 
 
-void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, const string fileroot="test") {
+void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, const string fileroot="test") {
 	
 	os<<"<!-- Generated with SimSnap -->\n";
 	os<<"<!-- -->\n";
 	os<<"<!-- u = "<<u<<" v = "<<v<<"   -->\n";
 	os << "<!-- input tree: ";
 	print_newick(os,tree,true,true);
+	//print_newick(cout,tree,true,true);
+
 	os << "-->\n";
     os << "<!--" << g_simtree << "-->\n";
 	
@@ -134,7 +140,11 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	os <<"\n";
 	os <<"<!-- If starting from true tree, set stateBurnin='0' -->\n";
-	os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='1000'>\n";
+	if (simulationOutput)
+		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='LENGTH' preBurnin='0' stateBurnin='1000'>\n";
+	else 
+		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='1000'>\n";
+	
 	os <<"        <state>\n";
 	
 	os <<"          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
@@ -152,10 +162,21 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"			<parameter name='stateNode' id='coalescenceRate' value='10'/>\n";
 	os <<"          <parameter name='stateNode' id='v' value='"<<v<<"' lower='0.0'/>\n";
 	os <<"          <parameter name='stateNode' id='u' value='"<<u<<"' lower='0.0'/>\n";
+	
+	if (simulationOutput) {
+		os <<"          <parameter name='stateNode' id='alpha'  value='ALPHA' lower='0.0'/>\n";
+		os <<"          <parameter name='stateNode' id='beta'   value='BETA' lower='0.0'/>\n";
+		os <<"          <parameter name='stateNode' id='lambda' value='LAMBDA' lower='0.0'/>\n";
+	}
+	else{
 	os <<"          <parameter name='stateNode' id='alpha'  value='"<<alpha<<"' lower='0.0'/>\n";
 	os <<"          <parameter name='stateNode' id='beta'   value='"<<beta<<"' lower='0.0'/>\n";
-	os <<"          <parameter name='stateNode' id='kappa'   value='"<<kappa<<"' lower='0.0'/>\n";
 	os <<"          <parameter name='stateNode' id='lambda' value='"<<lambda<<"' lower='0.0'/>\n";
+	}
+	
+	
+	os <<"          <parameter name='stateNode' id='kappa'   value='"<<kappa<<"' lower='0.0'/>\n";
+	
 	os <<"\n";
 	
 	os <<"        </state>\n";
@@ -166,7 +187,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"                    <distribution spec='beast.math.distributions.OneOnX'/>\n";
 	os <<"                </distribution>\n";
 	os <<"                <distribution spec='SnAPPrior' name='distribution' id='snapprior' \n";
-	os <<"                    kappa='@kappa' alpha='@alpha' beta='@beta' lambda='@lambda' rateprior='CIR'\n";
+	os <<"                    kappa='@kappa' alpha='@alpha' beta='@beta' lambda='@lambda' rateprior='gamma'\n";
 	os <<"                    coalescenceRate='@coalescenceRate' tree='@tree'\n";
 	os <<"                    />\n";
 	os <<"            </distribution>\n";
@@ -371,19 +392,19 @@ int main(int argc, char* argv[]) {
 	if (ntrees<=0)
 		printUsage(cerr);
 	
-	cout<<"Simulating data from "<<ntrees<<" species trees\n";
-	cout<<"Mutation rates u = "<<u<<" v = "<<v<<"\n";
-	cout<<"Number of sites = "<<ap.nsites<<"\n";
-	cout<<"Number of trees = "<<ntrees<<"\n";
-	cout<<"Output to "<<((ap.outputXML)?"XML":"nexus")<<"\n";
-	cout<<((ap.excludeConst)?"Exclude":"Include")<<" constant characters\n\n";
-	cout<<((ap.outputTrees)?"Output":"Don't output")<<" trees\n";
-	cout<<"Species and sample sizes:\n";
+	cerr<<"Simulating data from "<<ntrees<<" species trees\n";
+	cerr<<"Mutation rates u = "<<u<<" v = "<<v<<"\n";
+	cerr<<"Number of sites = "<<ap.nsites<<"\n";
+	cerr<<"Number of trees = "<<ntrees<<"\n";
+	cerr<<"Output to "<<((ap.outputXML)?"XML":"nexus")<<"\n";
+	cerr<<((ap.excludeConst)?"Exclude":"Include")<<" constant characters\n\n";
+	cerr<<((ap.outputTrees)?"Output":"Don't output")<<" trees\n";
+	cerr<<"Species and sample sizes:\n";
 	for(int i=0;i<nspecies;i++)
-		cout<<(i+1)<<" "<<species[i]<<"\t"<<sampleSizes[i]<<"\n";
-	cout<<endl;
+		cerr<<(i+1)<<" "<<species[i]<<"\t"<<sampleSizes[i]<<"\n";
+	cerr<<endl;
 	
-	cout<<"Fileroot = "<<fileroot<<endl;
+	cerr<<"Fileroot = "<<fileroot<<endl;
 	
 	
 	for (int iTree = 0; iTree < ntrees; iTree++) {
@@ -414,8 +435,8 @@ int main(int argc, char* argv[]) {
 		  (*p).length *= scaling;
 		}
 
-		print_newick(cout,tree,true,true);
-		cout<<endl;
+		print_newick(cerr,tree,true,true);
+		cerr<<endl;
 		
 		
 
@@ -431,7 +452,7 @@ int main(int argc, char* argv[]) {
 		
 		string sFile = s1.str();
 		
-		cout << "Writing " << sFile << endl;		
+		cerr << "Writing " << sFile << endl;		
 		ofstream * os =  new ofstream(sFile.c_str());
 		vector<vector<uint> > alleleCounts;
 		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, alleleCounts, ap.outputTrees);
@@ -440,7 +461,7 @@ int main(int argc, char* argv[]) {
 
 		if (ap.outputXML) {
         	
-			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,shortFileName);
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
