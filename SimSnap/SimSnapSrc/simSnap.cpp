@@ -140,22 +140,40 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	os <<"\n";
 	os <<"<!-- If starting from true tree, set stateBurnin='0' -->\n";
-	if (simulationOutput)
-		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='LENGTH' preBurnin='0' stateBurnin='1000'>\n";
-	else 
+	if (simulationOutput) {
+		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='LENGTH' preBurnin='0' stateBurnin='PRIORBURN'>\n";
+	}
+	else { 
 		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='1000'>\n";
+	}
 	
 	os <<"        <state>\n";
 	
-	os <<"          <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
+	if (simulationOutput) {
+		
+		
+	os <<" <!--     <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
 	os <<"               <input name='taxa' idref='snapalignment'/>\n";
-	os <<"          </tree>\n";
+	os <<"          </tree>  --> \n  ";
 	
-	os <<"<!--\n";
+	os <<"\n";
 	os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
 	os <<"			<input name='newick'>";
 	print_newick(os,tree,true,true);
-	os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>\n-->\n";
+	os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>\n\n";
+		
+	} else {
+		os <<"      <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
+		os <<"               <input name='taxa' idref='snapalignment'/>\n";
+		os <<"      </tree>   \n  ";
+		
+		os <<"<!-- \n";
+		os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
+		os <<"			<input name='newick'>";
+		print_newick(os,tree,true,true);
+		os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree> --> \n\n";
+	}
+		
 	
 	
 	os <<"\n";
@@ -206,7 +224,13 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"        <!--uncomment following line to estimate lambda-->\n";
 	os <<"        <!--operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' parameter='@lambda'/-->\n";
 
-	os <<"        <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>\n";
+	if (simulationOutput)
+		os <<"        <operator spec='operators.NodeSwapper' weight='TREEWEIGHT' tree='@tree'/>\n";
+	else 
+		os <<"        <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>\n";
+
+
+	
 	os <<"        <operator spec='operators.NodeBudger' weight='4' size='0.5' tree='@tree'/>\n";
 	os <<"        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@tree'/>\n";
 	os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4' coalescenceRate='@coalescenceRate'/>\n";
