@@ -48,8 +48,18 @@ function makeSimSnapInput {
 #	alpha value
 #	beta value
 #	lambda value
+#    length of chain
+#    weight of tree move
+#    burnin using only prior
 
 function modifySnapXML {
+	
+	#Get the root of the filename
+	len=${#1}  #length of filename
+	let len-=4
+	FILEROOT=${1:0:len}
+	
+	sed -ie 's/FILEROOT/'$FILEROOT'/g' $1
 	sed -ie 's/ALPHA/'$2'/g' $1
 	sed -ie 's/BETA/'$3'/g' $1
 	sed -ie 's/LAMBDA/'$4'/g' $1
@@ -129,7 +139,7 @@ function runSNAPandDelete {
 # Y or N indicating if true is in credibility set.
 
 function testTopology {
-#arguments.  1: number of taxa. 2: tree. 3: runName 4: Chain length
+#arguments.  1: number of taxa. 2: tree. 3: runName 4: Chain length 5. Lambda
 
 
     makeSimSnapInput thetree.txt $1 1 1 $2
@@ -148,15 +158,17 @@ function testTopology {
 	
 		basename='tree_'$3'_'$nsites
 	
-	
+		lambda=$5
+		let "lambda2=$lambda/2"
+		
 		cp thetree_tree_1.xml $basename'_aa.xml'
-		modifySnapXML $basename'_aa.xml' 1 200 50 5 1000 $4
+		modifySnapXML $basename'_aa.xml' 1 200 $lambda $4 5 1000 
 		cp thetree_tree_1.xml $basename'_ab.xml'
-		modifySnapXML $basename'_ab.xml' 1 200 25 5 1000 $4
+		modifySnapXML $basename'_ab.xml' 1 200 $lambda2 $4 5 1000 
 		cp thetree_tree_1.xml $basename'_ba.xml'
-		modifySnapXML $basename'_ba.xml' 1 2000 50 5 1000 $4
+		modifySnapXML $basename'_ba.xml' 1 2000 $lambda $4 5 1000 
 		cp thetree_tree_1.xml $basename'_bb.xml'
-		modifySnapXML $basename'_bb.xml' 1 2000 25 5 1000 $4
+		modifySnapXML $basename'_bb.xml' 1 2000 $lambda2 $4 5 1000 
 	
 		for suffix in aa ab ba bb
 		do
@@ -171,15 +183,15 @@ function testTopology {
 
 #################################
 function testParameters {
-#arguments.  1: number of taxa. 2: tree. 3: runName 4: Chain length
+#arguments.  1: number of taxa. 2: tree. 3: runName 4: Chain length 5: Lambda
 
 
-    makeSimSnapInput thetree.txt $1 1 1 $2
+    makeSimSnapInput thetree.txt $1 7 1 $2
  
 	#cat thetree.txt
 	
 
-	for nsites in 1000 10000 100000
+	for nsites in  10000 
 	do
 		 $SIMSNAP -s $nsites thetree.txt 1> original$3'_'$nsites'.txt' 2>&-
 	
@@ -190,20 +202,23 @@ function testParameters {
 	
 		basename='testParams_'$3'_'$nsites
 	
-	
+		#lambda=50 for 4 taxa, 80 for 8 taxa
+		lambda=$5
+		let "lambda2=$lambda/2"
+		
 		cp thetree_tree_1.xml $basename'_aa.xml'
-		modifySnapXML $basename'_aa.xml' 1 200 50 0 0 $4
+		modifySnapXML $basename'_aa.xml' 1 200 $lambda $4 0 1000
 		cp thetree_tree_1.xml $basename'_ab.xml'
-		modifySnapXML $basename'_ab.xml' 1 200 25 0 0 $4
+		modifySnapXML $basename'_ab.xml' 1 200 $lambda2 $4 0 1000
 		cp thetree_tree_1.xml $basename'_ba.xml'
-		modifySnapXML $basename'_ba.xml' 1 2000 50 0 0 $4
+		modifySnapXML $basename'_ba.xml' 1 2000 $lambda $4 0 1000
 		cp thetree_tree_1.xml $basename'_bb.xml'
-		modifySnapXML $basename'_bb.xml' 1 2000 25 0 0 $4
+		modifySnapXML $basename'_bb.xml' 1 2000 $lambda2 $4 0 1000
 	
 		for suffix in aa ab ba bb
 		do
 		   # runSNAPandDelete $filename 200 $2  &
-			echo	java -jar ./snap.jar  -threads 4 -overwrite -seed 300 $basename'_'$suffix'.xml' '&>'$basename'_'$suffix'.out &' >>commands_$3_$nsites.sh
+			echo	java -jar ./snap.jar  -threads 4 -overwrite -seed 300 $basename'_'$suffix'.xml' '&>'$basename'_'$suffix'.out &' >>commands_params_$3_$nsites.sh
 	
 		done
 		
@@ -214,11 +229,20 @@ function testParameters {
 
 #################################
 
+#chainLength=1000
+
 chainLength=200000
-#testTopology 4 $EASYTREE4 "easy4" $chainLength
-#testTopology 4 $HARDTREE4 "hard4" $chainLength
-testTopology 8 $EASYTREE8 "easy8" $chainLength
-testTopology 8 $HARDTREE8 "hard8" $chainLength
+testTopology 4 $EASYTREE4 "easy4" $chainLength 50
+testTopology 4 $HARDTREE4 "hard4" $chainLength 50
+chainLength=400000
+testTopology 8 $EASYTREE8 "easy8" $chainLength 80
+testTopology 8 $HARDTREE8 "hard8" $chainLength 80
+
+chainLength=1000000
+testParameters 4 $EASYTREE4 "easyparam4" $chainLength 50
+testParameters 4 $HARDTREE4 "hardparam4" $chainLength 50
+testParameters 8 $EASYTREE8 "easyparam8" $chainLength 80
+testParameters 8 $HARDTREE8 "hardparam8" $chainLength 80
 
 
 
