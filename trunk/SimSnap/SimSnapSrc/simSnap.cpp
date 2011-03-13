@@ -21,6 +21,13 @@ void printUsage(ostream& os) {
 	os<<"\tFlags are:\n";
 	os<<"\t-n \tOutput nexus file (default is to output snap .xml format)\n";
 	os<<"\t-c \tInclude constant sites (default is to simulate only polymorphic sites)\n";
+	os<<"\t-s \tUse the following strings instead of values (for simulations) \n";
+	os<<"\t\tLENGTH\tChain length\n";
+	os<<"\t\tPRIORBURN\tNumber of iterations with prior only\n";
+	os<<"\t\tALPHA BETA\tParameters of gamma prior\n";
+	os<<"\t\tLAMBDA\tParameter of Yule prior\n";
+	os<<"\t\tTREEWEIGHT\tWeight assigned to NodeSwapping operator\n";
+	os<<"\t\tFILEROOT\tName used for output files: .log, .trees\n\n";
 	os<<"INPUT FILE FORMAT:\n\n";
 	os<<"<number of species>\n";
 	os<<"<species1-name>\t<sample size species 1>\n";
@@ -252,7 +259,13 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 //	os <<"	          </log>\n";
 	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
+	if (!simulationOutput)
+		os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
+	else 
+		os <<"        <logger logEvery='100' fileName='FILEROOT.log'>\n";
+
+	
+
 	os <<"	          <model idref='posterior'/>\n";
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
@@ -266,7 +279,10 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"		      <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"            <log spec='TreeLengthLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
-	os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";
+	if (simulationOutput)
+		os <<"        <logger fileName='FILEROOT.trees' id='treelog' logEvery='100' mode='tree'>\n";
+	else 
+		os <<"        <logger fileName='"<<fileroot<<".$(seed).trees' id='treelog' logEvery='100' mode='tree'>\n";	
 	os <<"            <log id='TreeWithMetaDataLogger0' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@tree'>\n";
 	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta' id='theta'/>\n";
 	os <<"            </log>\n";
