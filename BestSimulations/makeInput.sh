@@ -54,6 +54,8 @@ function modifySnapXML {
 	sed -ie 's/BETA/'$3'/g' $1
 	sed -ie 's/LAMBDA/'$4'/g' $1
 	sed -ie 's/LENGTH/'$5'/g' $1
+	sed -ie 's/TREEWEIGHT/'$6'/g' $1
+	sed -ie 's/PRIORBURN/'$7'/g' $1
 	rm -rf $1'e'
 }
 
@@ -132,40 +134,85 @@ function testTopology {
 
     makeSimSnapInput thetree.txt $1 1 1 $2
  
-cat thetree.txt
+	#cat thetree.txt
 
 
-for nsites in 100 200 300 400 500 600
-do
-	 $SIMSNAP -s $nsites thetree.txt 1> original$3'_'$nsites'.txt' 2>&-
-
-
-	
-#2x2 combinations of prior.
-	rm -f commands_$3_$nsites.sh
-
-	basename='tree_'$3'_'$nsites
-
-
-	cp thetree_tree_1.xml $basename'_aa.xml'
-	modifySnapXML $basename'_aa.xml' 1 200 50 $4
-	cp thetree_tree_1.xml $basename'_ab.xml'
-	modifySnapXML $basename'_ab.xml' 1 200 25 $4
-	cp thetree_tree_1.xml $basename'_ba.xml'
-	modifySnapXML $basename'_ba.xml' 1 2000 50 $4
-	cp thetree_tree_1.xml $basename'_bb.xml'
-	modifySnapXML $basename'_bb.xml' 1 2000 25 $4
-
-	for suffix in aa ab ba bb
+	for nsites in 100 200 300 400 500 600
 	do
-	   # runSNAPandDelete $filename 200 $2  &
-echo	   	java -jar ./snap.jar  -threads 4 -overwrite -seed 200 $basename'_'$suffix'.xml' '&>'$basename'_'$suffix'.out &' >>commands_$3_$nsites.sh
+		 $SIMSNAP -s $nsites thetree.txt 1> original$3'_'$nsites'.txt' 2>&-
+	
+	
+		
+		#2x2 combinations of prior.
+		rm -f commands_$3_$nsites.sh
+	
+		basename='tree_'$3'_'$nsites
+	
+	
+		cp thetree_tree_1.xml $basename'_aa.xml'
+		modifySnapXML $basename'_aa.xml' 1 200 50 5 1000 $4
+		cp thetree_tree_1.xml $basename'_ab.xml'
+		modifySnapXML $basename'_ab.xml' 1 200 25 5 1000 $4
+		cp thetree_tree_1.xml $basename'_ba.xml'
+		modifySnapXML $basename'_ba.xml' 1 2000 50 5 1000 $4
+		cp thetree_tree_1.xml $basename'_bb.xml'
+		modifySnapXML $basename'_bb.xml' 1 2000 25 5 1000 $4
+	
+		for suffix in aa ab ba bb
+		do
+		   # runSNAPandDelete $filename 200 $2  &
+			echo	java -jar ./snap.jar  -threads 4 -overwrite -seed 200 $basename'_'$suffix'.xml' '&>'$basename'_'$suffix'.out &' >>commands_$3_$nsites.sh
+	
+		done
+		
+	
+	done
+}
 
-      	done
+#################################
+function testParameters {
+#arguments.  1: number of taxa. 2: tree. 3: runName 4: Chain length
+
+
+    makeSimSnapInput thetree.txt $1 1 1 $2
+ 
+	#cat thetree.txt
 	
 
-done
+	for nsites in 1000 10000 100000
+	do
+		 $SIMSNAP -s $nsites thetree.txt 1> original$3'_'$nsites'.txt' 2>&-
+	
+	
+		
+		#2x2 combinations of prior.
+		rm -f commands_$3_$nsites.sh
+	
+		basename='testParams_'$3'_'$nsites
+	
+	
+		cp thetree_tree_1.xml $basename'_aa.xml'
+		modifySnapXML $basename'_aa.xml' 1 200 50 0 0 $4
+		cp thetree_tree_1.xml $basename'_ab.xml'
+		modifySnapXML $basename'_ab.xml' 1 200 25 0 0 $4
+		cp thetree_tree_1.xml $basename'_ba.xml'
+		modifySnapXML $basename'_ba.xml' 1 2000 50 0 0 $4
+		cp thetree_tree_1.xml $basename'_bb.xml'
+		modifySnapXML $basename'_bb.xml' 1 2000 25 0 0 $4
+	
+		for suffix in aa ab ba bb
+		do
+		   # runSNAPandDelete $filename 200 $2  &
+			echo	java -jar ./snap.jar  -threads 4 -overwrite -seed 300 $basename'_'$suffix'.xml' '&>'$basename'_'$suffix'.out &' >>commands_$3_$nsites.sh
+	
+		done
+		
+	
+	done
 }
+
+
+#################################
 
 chainLength=200000
 #testTopology 4 $EASYTREE4 "easy4" $chainLength
