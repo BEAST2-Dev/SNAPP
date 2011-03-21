@@ -161,9 +161,10 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 	        	<tree idref='tree'/>
     	    </log>
         </logger>
-        <logger logEvery="1000" fileName="test.$(seed).trees">
-            <tree name='log' idref="tree"/>
+        <logger logEvery="1000" fileName="test.$(seed).trees" mode='tree'>
+            <log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
         </logger>
+        
 </run>
 
 </beast>
