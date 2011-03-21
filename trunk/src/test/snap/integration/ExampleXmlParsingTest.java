@@ -61,7 +61,7 @@ public class ExampleXmlParsingTest extends TestCase {
 	public void test_ThatXmlExamplesRun() {
 		try {
 			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
-			String sDir = System.getProperty("user.dir") + "/examples";
+			String sDir = System.getProperty("user.dir") + "/examples2";
 			System.out.println("Test that XML Examples run in " + sDir);
 			File sExampleDir = new File(sDir);
 			String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {

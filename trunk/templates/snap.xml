@@ -30,10 +30,11 @@
         <state storeEvery='1000'>
           <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>
                 <input name='taxa' idref='snapalignment'/>
-	            <trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year'
-		            value=''>
+<!--
+	            <trait spec='beast.evolution.tree.TraitSet' traitname='date' units='year' value=''>
 		            <taxa idref='snapalignment'/>
 	            </trait>
+-->
           </tree>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
           <parameter name='stateNode' id='v' value='0.588235' lower='0.0'/>

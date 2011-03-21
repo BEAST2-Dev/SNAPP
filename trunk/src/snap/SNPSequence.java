@@ -7,6 +7,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.datatype.DataType;
 
 @Description("A SNPSequence holds a collection of binary sequences that are summarized in a new sequence " +
 		"by counting the number of sites with a 1.")
@@ -23,15 +24,15 @@ public class SNPSequence extends Sequence {
 	}
 
 	@Override
-	public List<Integer> getSequence(String sDataMap) throws Exception {
+    public List<Integer> getSequence(DataType dataType) throws Exception {
         Integer [] sequences = null;
         
         // grab info from sub sequences and add them up
         for (Sequence sequence: m_sequences.get()) {
         	if (sequences == null) {
-        		sequences = sequence.getSequence(sDataMap).toArray(new Integer[0]);
+        		sequences = sequence.getSequence(dataType).toArray(new Integer[0]);
         	} else {
-                List<Integer> sequence2 = sequence.getSequence(sDataMap);
+                List<Integer> sequence2 = sequence.getSequence(dataType);
                 // sanity check: make sure sequence2 is of same length as rest
                 if (sequence2.size() != sequences.length) {
                 	throw new Exception("sequence " + sequence.m_sTaxon.get() + " is of length " + sequence2.size() + 

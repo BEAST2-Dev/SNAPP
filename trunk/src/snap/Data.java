@@ -61,14 +61,10 @@ public class Data extends beast.evolution.alignment.Alignment {
 				m_pSequences.get().remove(0);
 			}
 			// by separator
-			guessTaxonSets("^(.+)[_\\. ](.*)$");
+			guessTaxonSets("^(.+)[_\\. ](.*)$", 1);
 			if (m_taxonsets.get().size() == 0) {
-				// by sequence of numbers
-				guessTaxonSets("^(.+?)[0-9]++.*$");
-			}
-			if (m_taxonsets.get().size() == 0) {
-				// by first letter
-				guessTaxonSets("^(.).*$");
+				// by taxon name letter
+				guessTaxonSets("^(.*)$", 0);
 			}
 		}
 		
@@ -109,7 +105,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	/** guesses taxon sets based on pattern in sRegExp based
 	 * on the taxa in m_rawData 
 	 */
-	void guessTaxonSets(String sRegexp) throws Exception {
+	void guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
 		List<Taxon> taxa = new ArrayList<Taxon>();
 		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {
 			Taxon taxon = new Taxon();
@@ -143,7 +139,7 @@ public class Data extends beast.evolution.alignment.Alignment {
     	}
     	// add taxon sets
     	for (TaxonSet set : map.values()) {
-    		if (set.m_taxonset.get().size() > 1) {
+    		if (set.m_taxonset.get().size() > nMinSize) {
                 m_taxonsets.setValue(set, this);
     		}
     	}
