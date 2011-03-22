@@ -231,7 +231,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 			//Write true value, posterior mean value, posterior std dev for each height and each theta.
 			
 			//Heights first.
-			
+			System.err.print("\tPProb\t"+m_fTreeWeight[iTopology]);
 			System.err.print("\tH");
 			for(int node = m_sLabels.size(); node<nNodes;node++) {
 				List<Double> heights = m_heights[node];
