@@ -3,6 +3,7 @@ package snap.likelihood;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.datatype.DataType;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
@@ -30,5 +31,8 @@ public class SnapSubstitutionModel extends SubstitutionModel.Base {
 
 	@Override
 	public boolean canReturnComplexDiagonalization() {return false;}
+
+	@Override
+	public boolean canHandleDataType(DataType dataType) throws Exception {return true;}
 
 }

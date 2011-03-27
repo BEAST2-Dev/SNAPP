@@ -1,5 +1,5 @@
 <beast version='2.0' 
-	hidepanes='DATA_PANEL|TIP_DATES_PANEL|OPERATORS_PANEL|CLOCK_MODEL_PANEL'
+	hidepanes='DATA_PANEL|TIP_DATES_PANEL|OPERATORS_PANEL|CLOCK_MODEL_PANEL|TREE_PRIOR_PANEL'
 	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution'>
 
 <map name='snapprior'>snap.likelihood.SnAPPrior</map>
@@ -37,22 +37,25 @@
 -->
           </tree>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
-          <parameter name='stateNode' id='v' value='0.588235' lower='0.0'/>
-          <parameter name='stateNode' id='u' value='3.33333' lower='0.0'/>
-          <parameter name='stateNode' id='alpha'  value='11.750' lower='0.0'/>
-          <parameter name='stateNode' id='beta'   value='109.73' lower='0.0'/>
-          <parameter name='stateNode' id='lambda' value='0.00765' lower='0.0'/>
-   		  <stateNode idref="birthRate"/>
+          <parameter name='stateNode' id='v' value='0.588235' lower='0.0' estimate='false'/>
+          <parameter name='stateNode' id='u' value='3.33333' lower='0.0' estimate='false'/>
+          <parameter name='stateNode' id='alpha'  value='11.750' lower='0.0' estimate='false'/>
+          <parameter name='stateNode' id='beta'   value='109.73' lower='0.0' estimate='false'/>
+          <parameter name='stateNode' id='lambda' value='0.00765' lower='0.0' estimate='false'/>
+          <parameter name='stateNode' id='kappa' value='1.0' lower='0.0' estimate='false'/>
+   		  <!--stateNode idref="birthRate"/-->
         </state>
 
         <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>
              <distribution spec="CompoundDistribution" id="prior">
+             <!--
 	             <distribution spec='speciation.BirthDeathGernhard08Model' id="Yule" type='timesonly'>
          	    	 <parameter name='birthDiffRate' id="birthRate" value="1.0" lower="0.0" upper="100.0"/>
                 	 <parameter name='relativeDeathRate' id='constantDeathRate' value='1.0'/>
                 	 <tree idref='tree'/>
             	 </distribution>
-                 <distribution spec='SnAPPrior' name='distribution' id='snapprior'>
+            	 -->
+                 <distribution spec='SnAPPrior' name='distribution' id='snapprior' kappa='@kappa' rateprior='gamma'>
                       <input name='alpha' idref='alpha'/>
                       <input name='beta' idref='beta'/>
                       <input name='lambda' idref='lambda'/>
@@ -63,6 +66,9 @@
         <distribution id='likelihood' spec='beast.core.util.CompoundDistribution'>
              <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate'>
                 <siteModel spec='sitemodel.SiteModel' id="siteModel">
+                    <parameter name='mutationRate' id='mutationRate' value='1.0' estimate='false'/>
+                    <parameter name='proportionInvariant' id='proportionInvariant' value='0.0' estimate='false'/>
+                    <parameter name='shape' value='2.0' id='shape' estimate='false'/>
                     <substModel spec='snap.likelihood.SnapSubstitutionModel'>
                         <mutationRateU idref='u'/>
                         <mutationRateV idref='v'/>
@@ -83,8 +89,20 @@
         <operator spec='operators.GammaMover' scale='0.5' weight='8' coalescenceRate='@coalescenceRate'/>
         <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@tree' />
 
-        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="3" parameter='@birthRate'/>
+        <!--operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="3" parameter='@birthRate'/-->
 
+
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@u'/>
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@v'/>
+
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@alpha'/>
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@beta'/>
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@lambda'/>
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@kappa'/>
+
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@mutationRate'/>
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@proportionInvariant'/>
+        <operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@shape'/>
 
         <logger logEvery='100' id='screenlog'>
             <model idref='posterior'/>
