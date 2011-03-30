@@ -1,6 +1,61 @@
 <beast version='2.0' 
-	hidepanes='DATA_PANEL|TIP_DATES_PANEL|OPERATORS_PANEL|CLOCK_MODEL_PANEL|TREE_PRIOR_PANEL'
 	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution'>
+
+    <beauticonfig spec='beast.app.beauti.BeautiConfig'
+        hidePanels='DATA_PANEL,TIP_DATES_PANEL,OPERATORS_PANEL,CLOCK_MODEL_PANEL,TREE_PRIOR_PANEL,STATE_PANEL'
+        inputLabelMap='beast.core.MCMC.operator=Operators,
+	        beast.core.MCMC.logger=Loggers,
+            beast.evolution.sitemodel.SiteModel.substModel=Mutation Model,
+            beast.core.parameter.RealParameter.estimate=Sample,
+            beast.core.parameter.IntegerParameter.estimate=Sample,
+            beast.core.parameter.BooleanParameter.estimate=Sample,
+	        snap.MCMC.preBurnin=Burn in'
+        inlinePlugins ='beast.core.MCMC.distribution,
+	        snap.MCMC.distribution,
+	        beast.core.MCMC.logger,
+	        snap.MCMC.logger,
+	        beast.evolution.sitemodel.SiteModel.substModel,
+	        beast.evolution.tree.coalescent.ExponentialGrowth,
+	        beast.evolution.tree.coalescent.ConstantPopulation,
+	        beast.evolution.tree.coalescent.Coalescent'
+        suppressPlugins = 'snap.MCMC.operator,
+	        snap.MCMC.state,
+	        snap.MCMC.distribution,
+	        snap.likelihood.SnAPPrior.tree,
+	        snap.likelihood.SnapSubstitutionModel.frequencies,
+            beast.evolution.sitemodel.SiteModel.mutationRate,
+            beast.evolution.sitemodel.SiteModel.gammaCategoryCount,
+            beast.evolution.sitemodel.SiteModel.proportionInvariant,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
+	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
+	        beast.evolution.tree.Tree.trait,
+	        beast.evolution.tree.Tree.nodetype,
+	        beast.util.TreeParser.initial,
+	        beast.util.TreeParser.taxa,
+	        beast.util.TreeParser.trait,
+	        beast.util.TreeParser.estimate,
+	        beast.util.ClusterTree.initial,
+	        beast.util.ClusterTree.taxa,
+	        beast.util.ClusterTree.trait,
+	        beast.util.ClusterTree.estimate,
+            beast.core.Logger.model,
+            beast.core.Logger.mode'
+        buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
+            beast.app.beauti.BeautiInitDlg.Create new specification=Import alignment(s),
+            beast.app.beauti.BeautiInitDlg.Load existing file=Open SNAP xml file,
+            beast.app.beauti.BeautiInitDlg.Beast file:=SNAP file:,
+            beast.app.beauti.TaxonSetInputEditor.Guess taxon sets=Guess species,
+            beast.app.beauti.Beauti.Taxon sets=Species,
+            beast.app.beauti.Beauti.Site Model=Mutation Model
+            '
+        disableMenus='View.Show Data panel,View.Show Tip Dates panel,View.Show Clock Model panel,View.Show Tree prior panel,Mode'
+    >
+    </beauticonfig>
+
+
 
 <map name='snapprior'>snap.likelihood.SnAPPrior</map>
 <map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
