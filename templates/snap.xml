@@ -5,7 +5,7 @@
         hidePanels='DATA_PANEL,TIP_DATES_PANEL,OPERATORS_PANEL,CLOCK_MODEL_PANEL,TREE_PRIOR_PANEL,STATE_PANEL'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers,
-            beast.evolution.sitemodel.SiteModel.substModel=Mutation Model,
+            beast.evolution.sitemodel.SiteModel.substModel=,
             beast.core.parameter.RealParameter.estimate=Sample,
             beast.core.parameter.IntegerParameter.estimate=Sample,
             beast.core.parameter.BooleanParameter.estimate=Sample,
@@ -52,6 +52,7 @@
             beast.app.beauti.Beauti.Site Model=Mutation Model
             '
         disableMenus='View.Show Data panel,View.Show Tip Dates panel,View.Show Clock Model panel,View.Show Tree prior panel,Mode'
+        disableButtons='beast.app.beauti.BeautiInitDlg.Analysis template:'
     >
     </beauticonfig>
 
@@ -120,11 +121,11 @@
         </distribution>
         <distribution id='likelihood' spec='beast.core.util.CompoundDistribution'>
              <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate'>
-                <siteModel spec='sitemodel.SiteModel' id="siteModel">
+                <siteModel spec='sitemodel.SiteModel' id="MutationSiteModel">
                     <parameter name='mutationRate' id='mutationRate' value='1.0' estimate='false'/>
                     <parameter name='proportionInvariant' id='proportionInvariant' value='0.0' estimate='false'/>
                     <parameter name='shape' value='2.0' id='shape' estimate='false'/>
-                    <substModel spec='snap.likelihood.SnapSubstitutionModel'>
+                    <substModel spec='snap.likelihood.SnapSubstitutionModel' id='MutationModel'>
                         <mutationRateU idref='u'/>
                         <mutationRateV idref='v'/>
             	        <coalescenceRate idref='coalescenceRate'/>
