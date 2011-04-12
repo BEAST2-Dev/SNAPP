@@ -43,7 +43,7 @@ phylo<simNodeData> initialiseSimTree(phylo<basic_newick>& tree, double rate) {
  Simulates a gene tree. 
  We use GIllespie's algorithm up each branch of the species tree to simulate the coalescent.
  **/
-phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vector<uint> sampleSizes) {
+phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vector<uint>& sampleSizes) {
 	typedef phylo<simNodeData>::iterator S_ITER;
 	typedef phylo<geneTreeNode>::iterator G_ITER;
 	typedef list<phylo<geneTreeNode> >::iterator L_ITER;
@@ -71,6 +71,7 @@ phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vect
 				s->lineages.splice(s->lineages.end(),c->lineages);
 		}
 		
+		//cerr<<"This gamma = "<<s->gamma<<endl;
 		
 		//Evolve the lineages up the branch.
 		double height_in_branch = 0.0;
@@ -213,16 +214,16 @@ static bool checkIfConstant(const vector<uint>& redCount, const vector<uint>& sa
 /**
  Wrapper for simulateSingleSite without the proportionConstant variable
  **/
-void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool outputTree) {
+void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool outputTree, int site) {
 	uint numberAttempts;
-	simulateSingleSite(speciesTree,u,v,sampleSizes,redCounts, rejectConstant, numberAttempts, outputTree);
+	simulateSingleSite(speciesTree,u,v,sampleSizes,redCounts, rejectConstant, numberAttempts, outputTree,site);
 }
 	
 /**
  Simulate a gene tree and then simulate a single binary character on it. Returns allele counts for each species.
  Uses a rejection algorithm to simulate non-constant characters. The numberAttempts is the number of characters we had to simulate to a polymorphic one.
  **/
- void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, uint& numberAttempts, bool outputTree) {
+ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, uint& numberAttempts, bool outputTree, int site) {
 	
 			
 	//Now evolve the markers.
@@ -259,6 +260,7 @@ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, con
 			allConstant = checkIfConstant(redCounts, sampleSizes);	
 		
 		if (outputTree && (!rejectConstant || !allConstant) ) {
+			cout<<"tree genetree_"<<site<<" = ";
 			print_newick(cout, G, true);
 			cout<<endl;
 		}
@@ -300,7 +302,7 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	numberAttemptsTotal = 0;
 	
 	for(int i=0;i<nSites;i++) {
-		simulateSingleSite(simTree, u, v, sampleSizes, redCounts[i], rejectConstant,numberAttempts, outputTrees);
+		simulateSingleSite(simTree, u, v, sampleSizes, redCounts[i], rejectConstant,numberAttempts, outputTrees,i+1);
 		numberAttemptsTotal+=numberAttempts;
 	}
 	
@@ -311,10 +313,11 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 		//s<<" P = ("<<(*p).P[0][1]<<","<<(*p).P[1][0]<<")";
 		(*p).meta_data = s.str();
 	}
-		
-	cout<<"SimTree = ";
-	print_newick(cout,simTree,true,true);
-	cout<<endl;
+	
+	
+	cerr<<"SimTree = ";
+	print_newick(cerr,simTree,true,true);
+	cerr<<endl;
 
 	stringstream s;
 	s<<"SimTree = ";

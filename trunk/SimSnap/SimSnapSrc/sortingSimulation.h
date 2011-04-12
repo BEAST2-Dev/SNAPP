@@ -89,13 +89,13 @@ phylo<simNodeData> initialiseSimTree(phylo<basic_newick>& tree);
 /**
  Simulates a gene tree. 
  **/
-phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vector<uint> sampleSizes);
+phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vector<uint>& sampleSizes);
 
 /**
  Simulate a single SNP. if rejectConstant = true, a non-constant site (polymorphism) will be generated.
  **/
-void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool outputTree = false);
-void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, uint& numberAttempts, bool outputTree = false);
+void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool outputTree = false, int site=0);
+void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, uint& numberAttempts, bool outputTree = false, int site=0);
 /**
  Simulate multiple unlinked sites.
  
