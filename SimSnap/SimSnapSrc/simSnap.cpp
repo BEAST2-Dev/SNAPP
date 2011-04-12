@@ -14,6 +14,8 @@
 #include "characterData.h"
 //#include "posteriorCheck.h"
 
+//#define DEBUG_2_SPECIES
+
 
 void printUsage(ostream& os) {
 	os<<"SimSnap\n\nSimulates SNPs on a species tree.\n";
@@ -21,6 +23,7 @@ void printUsage(ostream& os) {
 	os<<"\tFlags are:\n";
 	os<<"\t-n \tOutput nexus file (default is to output snap .xml format)\n";
 	os<<"\t-c \tInclude constant sites (default is to simulate only polymorphic sites)\n";
+	os<<"\t-t \tOutput the gene trees used to generate each site\n";
 	os<<"\t-s \tUse the following strings instead of values (for simulations) \n";
 	os<<"\t\tLENGTH\tChain length\n";
 	os<<"\t\tPRIORBURN\tNumber of iterations with prior only\n";
@@ -101,7 +104,7 @@ public:
 
 
 
-void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, const string fileroot="test") {
+void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, const string fileroot="test") {
 	
 	os<<"<!-- Generated with SimSnap -->\n";
 	os<<"<!-- -->\n";
@@ -217,7 +220,10 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"                    />\n";
 	os <<"            </distribution>\n";
 	os <<"<!-- when starting from tree, set initFromTree='true' -->\n";
-	os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate' data='@snapalignment' tree='@tree'>\n";
+	os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false'";
+	if (!polymorphicOnly)
+		os<<" non-polymorphic='true'";
+	os<<" pattern='coalescenceRate' data='@snapalignment' tree='@tree'>\n";
 	os <<"                <siteModel spec='sitemodel.SiteModel' id='siteModel'>\n";
 	os <<"				      <substModel spec='snap.likelihood.SnapSubstitutionModel'\n";
 	os <<"                    mutationRateU='@u' mutationRateV='@v' coalescenceRate='@coalescenceRate'/>\n";
@@ -389,6 +395,8 @@ void output_nexus(ostream& os, const vector<string>& species, const vector<uint>
 
 int main(int argc, char* argv[]) {
 	
+	seed_random();
+	
 	ArgumentParser ap(argc,argv);
 	
 	//Read in the input file.
@@ -495,16 +503,77 @@ int main(int argc, char* argv[]) {
 		cerr << "Writing " << sFile << endl;		
 		ofstream * os =  new ofstream(sFile.c_str());
 		vector<vector<uint> > alleleCounts;
+		
+		if (ap.outputTrees) {
+			cout<<"#NEXUS\n";
+			cout<<"begin trees;\n";
+			cout<<"translate\n";
+			int ntaxa = 0; 
+			for(int i=0;i<sampleSizes.size();i++) {
+				for(int j=0;j<sampleSizes[i];j++) {
+					cout<<"\t "<<ntaxa<<" \t "<<species[i]<<"_"<<j;
+					if (i==sampleSizes.size()-1 && j == sampleSizes[i]-1)
+						cout<<"\n";
+					else 
+						cout<<",\n";
+					ntaxa++;
+
+				}
+			}
+			cout<<"\t ;\n\n";
+		}		
+			
 		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, alleleCounts, ap.outputTrees);
 		
-
-
+		if (ap.outputTrees)
+			cout<<"END;"<<endl;
+		
+		
+#ifdef DEBUG_2_SPECIES
+				
+		if (species.size()==2) {
+			vector< vector< double > > F;
+			int n1 = sampleSizes[0];
+			int n2 = sampleSizes[1];
+			F.resize(n1+1);
+			for(int i=0;i<=n1;i++) {
+				F[i].resize(n2+1);
+				fill(F[i].begin(),F[i].end(),0.0);
+			}
+			
+			for(int j=0;j<ap.nsites;j++) 
+				F[alleleCounts[j][0]][alleleCounts[j][1]]++;
+			
+			cerr<<"\n\nTwo species frequencies\n";
+			cerr<<"F=[";
+			for(int i=0;i<F.size();i++) {
+				for(int j=0;j<F[0].size();j++) {
+					F[i][j]/=(double)ap.nsites;
+					cerr<<" "<<F[i][j];
+				}
+				if (i<F.size()-1)
+					cerr<<";\n";
+			}
+			cerr<<"];"<<endl;
+		} else if (species.size()==1) {
+			vector<double> F(sampleSizes[0]+1);
+			fill(F.begin(),F.end(),0.0);
+			for(int j=0;j<ap.nsites;j++) 
+				F[alleleCounts[j][0]]++;
+			cerr<<"\n\nOne species frequencies\nF=[";
+			for(int i=0;i<F.size();i++)
+				cerr<<" "<<F[i]/(double)ap.nsites;
+			cerr<<"];"<<endl;
+		}
+		
+#else
 		if (ap.outputXML) {
         	
-			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,shortFileName);
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
+#endif
         (*os).close();
 
 		//Remove scaling from tree
