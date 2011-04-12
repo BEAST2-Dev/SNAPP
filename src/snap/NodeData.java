@@ -233,6 +233,17 @@ public class NodeData extends Node implements Serializable  {
 	}
 	
 	public double getMetaData(String sPattern) {
+		if (m_sMetaData != null && m_sMetaData.indexOf(sPattern+"=")>=0) {
+			int i = m_sMetaData.indexOf(sPattern+"=") + sPattern.length() + 1;
+			String sStr = m_sMetaData.substring(i, m_sMetaData.length());
+			if (sStr.indexOf(',')>=0) {
+				sStr = sStr.substring(0, sStr.indexOf(','));
+			}
+			double f = Double.parseDouble(sStr);
+			return f;
+		}
+		
+		
 //		if (sPattern.equals("coalescenceRate")) {
 //			return m_fCoalescenceRate;
 //		}
