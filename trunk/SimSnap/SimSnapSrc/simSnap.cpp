@@ -14,7 +14,7 @@
 #include "characterData.h"
 //#include "posteriorCheck.h"
 
-#define DEBUG_2_SPECIES
+//#define DEBUG_2_SPECIES
 
 
 void printUsage(ostream& os) {
@@ -24,6 +24,7 @@ void printUsage(ostream& os) {
 	os<<"\t-n \tOutput nexus file (default is to output snap .xml format)\n";
 	os<<"\t-c \tInclude constant sites (default is to simulate only polymorphic sites)\n";
 	os<<"\t-t \tOutput the gene trees used to generate each site\n";
+	os<<"\t-i \tStart chain at the values used for simulation\n";
 	os<<"\t-s \tUse the following strings instead of values (for simulations) \n";
 	os<<"\t\tLENGTH\tChain length\n";
 	os<<"\t\tPRIORBURN\tNumber of iterations with prior only\n";
@@ -56,6 +57,7 @@ public:
 	bool excludeConst;
 	bool outputTrees;
 	bool simulationOutput;
+	bool initialiseAtTrue;
 	string inputfile;
 	int nsites;
 	ArgumentParser(int argc, char* argv[]) {
@@ -64,6 +66,7 @@ public:
 		excludeConst = true;
 		outputTrees = false;
 		simulationOutput = false;
+		initialiseAtTrue = false;
 		
 		nsites = 0;
 		inputfile = "";
@@ -87,6 +90,8 @@ public:
 				outputTrees = true;
 			if (flags.find_first_of('s')!=string::npos)
 				simulationOutput = true;
+			if (flags.find_first_of('i')!=string::npos)
+				initialiseAtTrue = true;
 			
 			
 			arg++;
@@ -104,7 +109,7 @@ public:
 
 
 
-void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, const string fileroot="test") {
+void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, bool initialiseFromTruth, const string fileroot="test") {
 	
 	os<<"<!-- Generated with SimSnap -->\n";
 	os<<"<!-- -->\n";
@@ -112,9 +117,27 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os << "<!-- input tree: ";
 	print_newick(os,tree,true,true);
 	//print_newick(cout,tree,true,true);
-
+	
 	os << "-->\n";
     os << "<!--" << g_simtree << "-->\n";
+	
+	
+	//TRanslate the meta-data in the tree. 
+	phylo<basic_newick> ratetree;
+	copy(tree,ratetree);
+	for(phylo<basic_newick>::iterator p = ratetree.root();!p.null();p=p.next_pre()) {
+		//cout<<(*p).meta_data<<endl;
+		double rate;
+		if ((*p).meta_data.compare(0,5,"theta") == 0) {
+			size_t equalPos = (*p).meta_data.find_first_of("=");
+			rate = 2.0/atof(((*p).meta_data.substr(equalPos+1)).c_str());
+			stringstream s;
+			s<<"coalesenceRate = "<<rate;;
+			(*p).meta_data = s.str();
+		}
+	}
+	
+	
 	
 	os<<"<snap version='2.0' namespace='snap:snap.likelihood:beast.util:beast.evolution'>\n";
 	os<<"\n";
@@ -154,7 +177,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='LENGTH' preBurnin='0' stateBurnin='PRIORBURN'>\n";
 	}
 	else { 
-		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='1000'>\n";
+		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='0'>\n";
 	}
 	
 	os <<"        <state>\n";
@@ -162,15 +185,15 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	if (simulationOutput) {
 		
 		
-	os <<" <!--     <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
-	os <<"               <input name='taxa' idref='snapalignment'/>\n";
-	os <<"          </tree>  --> \n  ";
-	
-	os <<"\n";
-	os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
-	os <<"			<input name='newick'>";
-	print_newick(os,tree,true,true);
-	os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>\n\n";
+		os <<" <!--     <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
+		os <<"               <input name='taxa' idref='snapalignment'/>\n";
+		os <<"          </tree>  --> \n  ";
+		
+		os <<"\n";
+		os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
+		os <<"			<input name='newick'>";
+		print_newick(os,tree,true,true);
+		os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>\n\n";
 		
 	} else {
 		os <<"      <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
@@ -180,10 +203,10 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 		os <<"<!-- \n";
 		os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
 		os <<"			<input name='newick'>";
-		print_newick(os,tree,true,true);
+		print_newick(os,ratetree,true,true);
 		os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree> --> \n\n";
 	}
-		
+	
 	
 	
 	os <<"\n";
@@ -197,9 +220,9 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 		os <<"          <parameter name='stateNode' id='lambda' value='LAMBDA' lower='0.0'/>\n";
 	}
 	else{
-	os <<"          <parameter name='stateNode' id='alpha'  value='"<<alpha<<"' lower='0.0'/>\n";
-	os <<"          <parameter name='stateNode' id='beta'   value='"<<beta<<"' lower='0.0'/>\n";
-	os <<"          <parameter name='stateNode' id='lambda' value='"<<lambda<<"' lower='0.0'/>\n";
+		os <<"          <parameter name='stateNode' id='alpha'  value='"<<alpha<<"' lower='0.0'/>\n";
+		os <<"          <parameter name='stateNode' id='beta'   value='"<<beta<<"' lower='0.0'/>\n";
+		os <<"          <parameter name='stateNode' id='lambda' value='"<<lambda<<"' lower='0.0'/>\n";
 	}
 	
 	
@@ -219,8 +242,13 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"                    coalescenceRate='@coalescenceRate' tree='@tree'\n";
 	os <<"                    />\n";
 	os <<"            </distribution>\n";
-	os <<"<!-- when starting from tree, set initFromTree='true' -->\n";
-	os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false'";
+	if (!initialiseFromTruth)
+		os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false'";
+	else 
+		os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='true' pattern='coalesenceRate'";
+
+	
+
 	if (!polymorphicOnly)
 		os<<" non-polymorphic='true'";
 	os<<" pattern='coalescenceRate' data='@snapalignment' tree='@tree'>\n";
@@ -233,16 +261,16 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"\n";
 	os <<"        <stateDistribution idref='prior'/>\n";
 	os <<"\n";
-
+	
 	os <<"        <!--uncomment following line to estimate lambda-->\n";
 	os <<"        <!--operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' parameter='@lambda'/-->\n";
-
+	
 	if (simulationOutput)
 		os <<"        <operator spec='operators.NodeSwapper' weight='TREEWEIGHT' tree='@tree'/>\n";
 	else 
 		os <<"        <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>\n";
-
-
+	
+	
 	
 	os <<"        <operator spec='operators.NodeBudger' weight='4' size='0.5' tree='@tree'/>\n";
 	os <<"        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@tree'/>\n";
@@ -259,19 +287,19 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"            <log idref='treeLikelihood'/>\n";
 	os <<"            <log idref='posterior'/>\n";
 	os <<"            <log idref='lambda'/>\n";
-//	os <<"	          <log idref='coalescenceRate'/>\n";
-//	os <<"	          <log spec='snap.ThetaLogger'>\n";
-//	os <<"		          <coalescenceRate idref='coalescenceRate'/>\n";
-//	os <<"	          </log>\n";
+	//	os <<"	          <log idref='coalescenceRate'/>\n";
+	//	os <<"	          <log spec='snap.ThetaLogger'>\n";
+	//	os <<"		          <coalescenceRate idref='coalescenceRate'/>\n";
+	//	os <<"	          </log>\n";
 	os <<"	          <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>\n";
 	os <<"        </logger>\n";
 	if (!simulationOutput)
 		os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).log'>\n";
 	else 
 		os <<"        <logger logEvery='100' fileName='FILEROOT.log'>\n";
-
 	
-
+	
+	
 	os <<"	          <model idref='posterior'/>\n";
 	os <<"            <log idref='u'/>\n";
 	os <<"            <log idref='v'/>\n";
@@ -293,18 +321,18 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"                <metadata coalescenceRate='@coalescenceRate' spec='snap.RateToTheta' id='theta'/>\n";
 	os <<"            </log>\n";
 	os <<"        </logger>\n";
-
-
-/*
-	os <<" <!-- log branch lengths:\n		<log spec='snap.TreeNodeLogger' tree='@tree'/>\n-->\n";
-	os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
-	os <<"				<tree idref='tree'/>\n";
-	os <<"			</log>\n";
-	os <<"        </logger>\n";
-	os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).trees'>\n";
-	os <<"            <log idref='tree'/>\n";
-	os <<"        </logger>\n";
-*/
+	
+	
+	/*
+	 os <<" <!-- log branch lengths:\n		<log spec='snap.TreeNodeLogger' tree='@tree'/>\n-->\n";
+	 os <<"			<log spec='beast.evolution.tree.TreeHeightLogger'>\n";
+	 os <<"				<tree idref='tree'/>\n";
+	 os <<"			</log>\n";
+	 os <<"        </logger>\n";
+	 os <<"        <logger logEvery='100' fileName='"<<fileroot<<".$(seed).trees'>\n";
+	 os <<"            <log idref='tree'/>\n";
+	 os <<"        </logger>\n";
+	 */
 	os <<"</run>\n";
 	os <<"\n";
 	os <<"\n";
@@ -459,18 +487,18 @@ int main(int argc, char* argv[]) {
 		//Now read in tree string
 		string treeString;
 		is>>treeString;
-                //Check for scaling
+		//Check for scaling
 		double scaling = 1.0;
 		size_t pos = treeString.find_first_of("<");
-
+		
 		if (pos!=string::npos) {
-		  size_t pos2 = treeString.find_first_of(">");
-		  string scaleString = treeString.substr(pos+1,pos2-1);
-		  treeString = treeString.substr(pos2+1);
-		  //cerr<<"Scale String is "<<scaleString<<endl;
-		  scaling = strtod(scaleString.c_str(),NULL);
+			size_t pos2 = treeString.find_first_of(">");
+			string scaleString = treeString.substr(pos+1,pos2-1);
+			treeString = treeString.substr(pos2+1);
+			//cerr<<"Scale String is "<<scaleString<<endl;
+			scaling = strtod(scaleString.c_str(),NULL);
 		}
-
+		
 		//cerr<<"Tree String is "<<treeString<<" scaling = "<<scaling<<endl;
 		//TODO: read in semicolons, or at least check for them.
 		
@@ -478,16 +506,16 @@ int main(int argc, char* argv[]) {
 		read_newick(treeString, tree, species, 0.0);
 		
 		//Scale tree here.
-
+		
 		for(phylo<basic_newick>::iterator p = tree.root();!p.null();p=p.next_pre()) {
-		  (*p).length *= scaling;
+			(*p).length *= scaling;
 		}
-
+		
 		print_newick(cerr,tree,true,true);
 		cerr<<endl;
 		
 		
-
+		
 		ostringstream s1;
 		s1 << fileroot<<"_tree_"<<(iTree+1);
 		
@@ -517,12 +545,12 @@ int main(int argc, char* argv[]) {
 					else 
 						cout<<",\n";
 					ntaxa++;
-
+					
 				}
 			}
 			cout<<"\t ;\n\n";
 		}		
-			
+		
 		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, alleleCounts, ap.outputTrees);
 		
 		if (ap.outputTrees)
@@ -530,7 +558,7 @@ int main(int argc, char* argv[]) {
 		
 		
 #ifdef DEBUG_2_SPECIES
-				
+		
 		if (species.size()==2) {
 			vector< vector< double > > F;
 			int n1 = sampleSizes[0];
@@ -580,16 +608,16 @@ int main(int argc, char* argv[]) {
 #else
 		if (ap.outputXML) {
         	
-			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,shortFileName);
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
 #endif
         (*os).close();
-
+		
 		//Remove scaling from tree
 		for(phylo<basic_newick>::iterator p = tree.root();!p.null();p=p.next_pre()) {
-		  (*p).length /= scaling;
+			(*p).length /= scaling;
 		}
 	}
 	
