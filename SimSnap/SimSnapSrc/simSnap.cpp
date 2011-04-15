@@ -8,13 +8,13 @@
  */
 
 
-//TODO: extend tree parser so that [theta=xxx] is allowed.
+
 
 #include "sortingSimulation.h"
 #include "characterData.h"
 //#include "posteriorCheck.h"
 
-//#define DEBUG_2_SPECIES
+#define DEBUG_2_SPECIES
 
 
 void printUsage(ostream& os) {
@@ -554,6 +554,17 @@ int main(int argc, char* argv[]) {
 				if (i<F.size()-1)
 					cerr<<";\n";
 			}
+			cerr<<"\n\nlog frequencies\n";
+			cerr<<"F=[";
+			for(int i=0;i<F.size();i++) {
+				for(int j=0;j<F[0].size();j++) {
+					cerr<<" "<<setprecision(15)<<log(F[i][j]);
+				}
+				if (i<F.size()-1)
+					cerr<<";\n";
+			}
+			
+			
 			cerr<<"];"<<endl;
 		} else if (species.size()==1) {
 			vector<double> F(sampleSizes[0]+1);
