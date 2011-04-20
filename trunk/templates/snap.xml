@@ -1,8 +1,8 @@
 <beast version='2.0' 
 	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution'>
 
+<!--        hidePanels='DATA_PANEL,TIP_DATES_PANEL,OPERATORS_PANEL,CLOCK_MODEL_PANEL,TREE_PRIOR_PANEL,STATE_PANEL'-->
     <beauticonfig spec='beast.app.beauti.BeautiConfig'
-        hidePanels='DATA_PANEL,TIP_DATES_PANEL,OPERATORS_PANEL,CLOCK_MODEL_PANEL,TREE_PRIOR_PANEL,STATE_PANEL'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers,
             beast.evolution.sitemodel.SiteModel.substModel=,
@@ -54,6 +54,27 @@
         disableMenus='View.Show Data panel,View.Show Tip Dates panel,View.Show Clock Model panel,View.Show Tree prior panel,Mode'
         disableButtons='beast.app.beauti.BeautiInitDlg.Analysis template:'
     >
+    	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
+            path='distribution/distribution[id="likelihood"]/distribution/data/taxonset'
+            hasPartitions="false" icon='1.png' forceExpansion='FALSE'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
+            path='distribution/distribution[id="likelihood"]/distribution/siteModel/substModel'
+            hasPartitions="true" icon='3.png' forceExpansion='TRUE'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
+            path='distribution/distribution[id="prior"]/distribution'
+            hasPartitions="false" icon='7.png' forceExpansion='IF_ONE_ITEM'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
+            path='operator'
+            hasPartitions="false" icon='8.png' forceExpansion='FALSE'
+            isVisible='false'
+        />
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
+            path=''
+            hasPartitions="false" icon='9.png' forceExpansion='TRUE'
+        />
     </beauticonfig>
 
 

@@ -112,7 +112,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			tree.setMetaData(tree.getRoot(), values, m_pPattern.get());
 		}
 		RealParameter pCoalescenceRate = coalescenceRatenput.get();
-		RealParameter coalescenceRate = new RealParameter(sCoalescenceRateValues, pCoalescenceRate.getLower(), pCoalescenceRate.getUpper(), values.length);
+		RealParameter coalescenceRate = new RealParameter();
+		coalescenceRate.initByName("value", sCoalescenceRateValues, "upper", pCoalescenceRate.getUpper(), "lower", pCoalescenceRate.getLower(), "dimension", values.length);
 		coalescenceRate.setID(pCoalescenceRate.getID());
 		coalescenceRatenput.get().assignFrom(coalescenceRate);
 	
