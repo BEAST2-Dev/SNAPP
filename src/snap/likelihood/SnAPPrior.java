@@ -68,7 +68,7 @@ public class SnAPPrior extends Distribution {
     public void initAndValidate() throws Exception {
     	if (m_pKappa.get() == null) {
     		System.err.println("WARNING: kappa parameter not set for SnAPPrior. using default value of 1.0");
-    		m_pKappa.setValue(new RealParameter("1.0"), this);
+    		m_pKappa.setValue(new RealParameter(new Double[]{1.0}), this);
     	}
 
     	// determine rate prior
