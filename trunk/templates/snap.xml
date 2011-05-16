@@ -1,10 +1,10 @@
 <beast version='2.0' 
-	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution'>
+	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution:beast.math.distributions'>
 
 <!--        hidePanels='DATA_PANEL,TIP_DATES_PANEL,OPERATORS_PANEL,CLOCK_MODEL_PANEL,TREE_PRIOR_PANEL,STATE_PANEL'-->
     <beauticonfig spec='beast.app.beauti.BeautiConfig'
-        inputLabelMap='beast.core.MCMC.operator=Operators,
-	        beast.core.MCMC.logger=Loggers,
+        inputLabelMap='snap.MCMC.operator=Operators,
+	        snap.MCMC.logger=Loggers,
             beast.evolution.sitemodel.SiteModel.substModel=,
             beast.core.parameter.RealParameter.estimate=Sample,
             beast.core.parameter.IntegerParameter.estimate=Sample,
@@ -13,14 +13,15 @@
         inlinePlugins ='beast.core.MCMC.distribution,
 	        snap.MCMC.distribution,
 	        beast.core.MCMC.logger,
-	        snap.MCMC.logger,
 	        beast.evolution.sitemodel.SiteModel.substModel,
 	        beast.evolution.tree.coalescent.ExponentialGrowth,
 	        beast.evolution.tree.coalescent.ConstantPopulation,
 	        beast.evolution.tree.coalescent.Coalescent'
+        collapsedPlugins ='snap.MCMC.logger'
         suppressPlugins = 'snap.MCMC.operator,
 	        snap.MCMC.state,
 	        snap.MCMC.distribution,
+	        snap.MCMC.init,
 	        snap.likelihood.SnAPPrior.tree,
 	        snap.likelihood.SnapSubstitutionModel.frequencies,
             beast.evolution.sitemodel.SiteModel.mutationRate,
@@ -64,12 +65,14 @@
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
             path='distribution/distribution[id="prior"]/distribution'
-            hasPartitions="false" icon='7.png' forceExpansion='IF_ONE_ITEM'
+            hasPartitions="false" icon='7.png' forceExpansion='TRUE'
+            buttonStatus='NONE'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
             hasPartitions="false" icon='8.png' forceExpansion='FALSE'
             isVisible='false'
+            buttonStatus='NONE'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
             path=''
@@ -85,7 +88,7 @@
     <data id="#alignments"/>
 
     <plate var='n' range='#alignments'>
-            <data spec='snap.Data' id='snapalignment' dataType='integerdata'>
+        <data spec='snap.Data' id='snapalignment' dataType='integerdata'>
             <rawdata idref='$(n)'/>
         </data>
     </plate>
@@ -139,6 +142,10 @@
                       <input name='coalescenceRate' idref='coalescenceRate'/>
                           <input name='tree' idref='tree'/>
              </distribution>
+            <distribution id='alphaPrior' spec='Prior' x='@alpha'><distribution spec='OneOnX'/></distribution>
+            <distribution id='betaPrior' spec='Prior' x='@beta'><distribution spec='OneOnX'/></distribution>
+            <distribution id='lambdaPrior' spec='Prior' x='@lambda'><distribution spec='OneOnX'/></distribution>
+            <distribution id='kappaPrior' spec='Prior' x='@kappa'><distribution spec='OneOnX'/></distribution>
         </distribution>
         <distribution id='likelihood' spec='beast.core.util.CompoundDistribution'>
              <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' pattern='coalescenceRate'>
