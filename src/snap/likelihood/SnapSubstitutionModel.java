@@ -14,7 +14,7 @@ public class SnapSubstitutionModel extends SubstitutionModel.Base {
 	public Input<RealParameter> m_pCoalescenceRate = new Input<RealParameter>("coalescenceRate", "population size parameter with one value for each node in the tree");
 	
 	public SnapSubstitutionModel() {
-		frequencies.setRule(Validate.OPTIONAL);
+		frequenciesInput.setRule(Validate.OPTIONAL);
 	}
 	
     @Override
