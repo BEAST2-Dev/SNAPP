@@ -147,7 +147,7 @@
         <log id='ThetaLogger' spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
         <log id='TreeHeightLogger' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-        <logger logEvery='100' fileName='snap.$(seed).trees' mode='tree'  id='treelog'>  
+        <logger spec='Logger' logEvery='100' fileName='snap.$(seed).trees' mode='tree'  id='treelog'>  
 	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
 	            <metadata spec='snap.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
 	        </log>
@@ -323,7 +323,7 @@
         <stateDistribution idref='prior'/>
 
 
-        <logger id='tracelog' logEvery="10000" fileName="beast.$(seed).log">
+        <logger id='tracelog' logEvery="10000" fileName="snap.$(seed).log">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
