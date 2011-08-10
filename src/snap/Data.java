@@ -60,11 +60,15 @@ public class Data extends beast.evolution.alignment.Alignment {
 			while (m_pSequences.get().size() > 0) {
 				m_pSequences.get().remove(0);
 			}
-			// by separator
-			guessTaxonSets("^(.+)[_\\. ](.*)$", 1);
-			if (m_taxonsets.get().size() == 0) {
-				// by taxon name letter
-				guessTaxonSets("^(.*)$", 0);
+			// by last separator
+			int nIgnored = guessTaxonSets("^(.+)[-_\\. ](.*)$", 1);
+			if (nIgnored > 0) {
+				// by first separator
+				nIgnored = guessTaxonSets("^([^-_\\. ]+)[-_\\. ](.*)$", 1);
+			}
+			if (nIgnored > 0) {
+				// by taxon name 
+				nIgnored = guessTaxonSets("^(.*)$", 0);
 			}
 		}
 		
@@ -105,7 +109,8 @@ public class Data extends beast.evolution.alignment.Alignment {
 	/** guesses taxon sets based on pattern in sRegExp based
 	 * on the taxa in m_rawData 
 	 */
-	void guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
+	int guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
+		m_taxonsets.get().clear();
 		List<Taxon> taxa = new ArrayList<Taxon>();
 		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {
 			Taxon taxon = new Taxon();
@@ -138,11 +143,15 @@ public class Data extends beast.evolution.alignment.Alignment {
 			}
     	}
     	// add taxon sets
+    	int nIgnored = 0;
     	for (TaxonSet set : map.values()) {
     		if (set.m_taxonset.get().size() > nMinSize) {
                 m_taxonsets.setValue(set, this);
+    		} else {
+    			nIgnored += set.m_taxonset.get().size();
     		}
     	}
+    	return nIgnored;
 	}
 	
 	public int getPatternWeight(int id) {
