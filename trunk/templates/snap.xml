@@ -56,8 +56,13 @@
         disableMenus='View.Show Data panel,View.Show Tip Dates panel,View.Show Clock Model panel,View.Show Tree prior panel,Mode'
     >
 
-
     	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
+            path='distribution/distribution[id="likelihood"]/distribution/data'
+            hasPartitions="none" icon='2.png' forceExpansion='FALSE'
+			type='snap.Data'
+        />
+
+    	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets2" tiptext="Taxon sets2" 
             path='distribution/distribution[id="likelihood"]/distribution/data/taxonset'
             hasPartitions="none" icon='1.png' forceExpansion='FALSE'
         />
