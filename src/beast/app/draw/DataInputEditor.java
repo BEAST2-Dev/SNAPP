@@ -70,8 +70,8 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 		      public Component getTreeCellRendererComponent(JTree tree,
 		          Object value, boolean sel, boolean expanded, boolean leaf,
 		          int row, boolean hasFocus) {
-		        super.getTreeCellRendererComponent(tree, value, sel, expanded,
-		            leaf, row, hasFocus);
+			        super.getTreeCellRendererComponent(tree, value, sel, expanded,
+				            leaf, row, hasFocus);
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 		        if (node != m_treemodel.getRoot() && 
 		        		node.getParent() != m_treemodel.getRoot() && !node.toString().matches(m_sFilter)) {
@@ -80,6 +80,7 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 		        return this;
 		      }
 		    });
+
 		m_tree.setCellEditor(new DefaultTreeCellEditor(m_tree, (DefaultTreeCellRenderer) m_tree.getCellRenderer()) {
 			public boolean isCellEditable(EventObject event) {
 				boolean returnValue = super.isCellEditable(event);
@@ -138,6 +139,7 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 		return filterBox;
 	}
 
+	/** for adding and deleting taxon sets **/
 	private Box createButtonBox() {
 		Box buttonBox = Box.createHorizontalBox();
 		
@@ -187,6 +189,7 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 		return buttonBox;
 	}
 
+	/** for convert taxon sets to table model **/
 	private void taxonSetToModel() {
 		List<TaxonSet> taxonsets = m_taxonset;
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) m_treemodel.getRoot();
@@ -207,6 +210,7 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 		}
 	}
 
+	/** for convert table model to taxon sets **/
 	private void modelToTaxonset() {
 		List<TaxonSet> taxonsets = m_taxonset;
 		taxonsets.clear();
@@ -441,15 +445,20 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 			// only drop into a first level entry
 			DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 			if (parent == root) {
-				return false;
-			}
-			if (parent.getParent() != root) {
-				parent = (DefaultMutableTreeNode) parent.getParent();
-			}
-			// only drop second level entries
-			for (int i = 0; i < nodes.length; i++) {
-				if (nodes[i].getParent() == root) {
-					return false;
+				for (int i = 0; i < nodes.length; i++) {
+					if (nodes[i].getParent() != root) {
+						return false;
+					}
+				}
+			} else {
+				if (parent.getParent() != root) {
+					parent = (DefaultMutableTreeNode) parent.getParent();
+				}
+				// only drop second level entries
+				for (int i = 0; i < nodes.length; i++) {
+					if (nodes[i].getParent() == root) {
+						return false;
+					}
 				}
 			}
 			// Configure for drop mode.

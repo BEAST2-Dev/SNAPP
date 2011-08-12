@@ -159,8 +159,8 @@ public class TreeSetAnalyser {
 	}
 	
 	
-	void printUsageAndExit() {
-		System.out.println("Usage: " + getClass().getName() + " [-n] <tree set file>\n");
+	public static void printUsageAndExit() {
+		System.out.println("Usage: " + TreeSetAnalyser.class.getName() + " [-n] <tree set file>\n");
 		System.out.println("Prints tree from tree set in order of popularity of topology.\n" +
 				"-n : only the most popular topology is shown in the output.\n\n" +
 				"On stdout, it prints header lines and a table with individual heights and thetas, like this: " +
@@ -214,8 +214,9 @@ public class TreeSetAnalyser {
 	} // parseArgs
 	
 
-	public void analyse(String [] args) {
-		parseArgs(args);
+//	public void analyse(String [] args) {
+//		parseArgs(args);
+	public void run() {
 		try {
 			TreeFileParser parser = new TreeFileParser(m_sLabels, null, null, 0);
 			Node [] trees = parser.parseFile(m_sFileName);
@@ -330,7 +331,8 @@ public class TreeSetAnalyser {
 	
 	public static void main(String [] args) {
 		TreeSetAnalyser analyser = new TreeSetAnalyser();
-		analyser.analyse(args);
+		analyser.parseArgs(args);
+		analyser.run();
 	} // main
 }
 

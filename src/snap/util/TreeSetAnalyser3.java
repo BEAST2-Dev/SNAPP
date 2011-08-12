@@ -12,8 +12,8 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 	/** tree to compare the tree set with, if provided **/
 	String m_sOriginalTree = null;
 	
-	void printUsageAndExit() {
-		System.out.println("Usage: " + getClass().getName() + " [-tree <newick tree>] [-b <burnin percentage>] <tree set file>\n");
+	public static void printUsageAndExit() {
+		System.out.println("Usage: " + TreeSetAnalyser3.class.getName() + " [-tree <newick tree>] [-b <burnin percentage>] <tree set file>\n");
 		System.out.println("Analyses the tree set, and compares with a tree if provided (e.g. the original used to simulate data from)\n" +
 						   "-tree <newick tree>: tree in newick format on command line\n" +
 						   "-b <burnin percentage>: percentage (so a number between 0 and 100) of tree at the start that are discarded, default 10%\n" +
@@ -105,7 +105,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 //    } // ESS
 	
 	
-	void parseArgs(String [] args) {
+	public void parseArgs(String [] args) {
 		int i = 0;
 		try {
 			while (i < args.length) {
@@ -294,7 +294,8 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 	
 	public static void main(String [] args) {
 		TreeSetAnalyser3 analyser = new TreeSetAnalyser3();
-		analyser.analyse(args);
+		analyser.parseArgs(args);
+		analyser.run();
 	} // main
 }
 
