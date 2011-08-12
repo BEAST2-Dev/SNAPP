@@ -1,0 +1,20 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/icons/beauti.ico</icon>
+  <classPath>
+  	<mainClass>beast.app.beauti.Beauti</mainClass>
+  	<cp>./lib/beast.jar</cp>
+  </classPath>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>BEAUti2</fileDescription>
+    <copyright>Beast 2 development team 2011</copyright>
+    <productName>BEAUti2</productName>
+    <internalName>BEAUti2</internalName>
+    <originalFilename>BEAUti2.exe</originalFilename>    
+  </versionInfo>
+</launch4jConfig>

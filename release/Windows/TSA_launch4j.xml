@@ -1,0 +1,17 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/icons/tsa.ico</icon>
+  <cmdLine>-window -working -options</cmdLine>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>TreeSetAnalyser</fileDescription>    
+    <copyright>SNAPP development team 2011</copyright>
+    <productName>TreeSetAnalyser</productName>
+    <internalName>TreeSetAnalyser</internalName>
+    <originalFilename>TreeSetAnalyser.exe</originalFilename>    
+  </versionInfo>
+</launch4jConfig>
