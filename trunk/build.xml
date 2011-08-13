@@ -317,7 +317,7 @@
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${SNAPP_name}"
 		            mainclass="${main_class_SnAP}"
-		            icon="${common_dir}/icons/beast.icns"
+		            icon="${common_dir}/icons/snapp.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments="-window -working -options"
