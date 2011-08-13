@@ -82,6 +82,7 @@
 			<zipgroupfileset dir="${lib}" includes="beast.jar" />
 			<fileset dir="${build}">
 				<include name="snap/**/*.class" />
+				<include name="snap/**/*.png" />
 				<include name="beast/**/*.class" />
 				<include name="**/*.properties" />
 			</fileset>
@@ -337,7 +338,7 @@
 		<jarbundler dir="${Mac_package_dir}"
 		            name="${TSA_name}"
 		            mainclass="${main_class_TSA}"
-		            icon="${common_dir}/icons/snapp.icns"
+		            icon="${common_dir}/icons/tsa.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments="-window -working -options"
@@ -357,7 +358,7 @@
 		            icon="${common_dir}/icons/beauti.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
-		            arguments=""
+		            arguments="-template templates/snap.xml"
 		            version="${version}"
 		            infostring="${BEAUti_name}, ${copyright}"
 		            bundleid="beast.app.beauti.Beauti">
