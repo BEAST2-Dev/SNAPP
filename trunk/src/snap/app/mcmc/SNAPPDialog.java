@@ -25,7 +25,7 @@ public class SNAPPDialog {
     															"overwrite: overwrite log files",
 																"resume: appends log to existing files (if any)"});
 
-    private final JComboBox threadsCombo = new JComboBox(new Object[] { "Automatic", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16, 17, 18, 19, 20, 21, 22, 23, 24 });
+    private final JComboBox threadsCombo = new JComboBox(new Object[] { "Automatic", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16, 17, 18, 19, 20, 21, 22, 23, 24 });
 
     private File inputFile = null;
 
@@ -91,6 +91,7 @@ public class SNAPPDialog {
         optionPanel.addComponentWithLabel("Random number seed: ", seedText);
 
         optionPanel.addComponentWithLabel("Thread pool size: ", threadsCombo);
+        threadsCombo.setSelectedIndex(1);
 
         optionPanel.addSeparator();
 
