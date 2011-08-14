@@ -235,7 +235,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"        <distribution id='posterior' spec='beast.core.util.CompoundDistribution'>\n";
 	os <<"            <distribution id='prior' spec='beast.core.util.CompoundDistribution'>\n";
 	os <<"                <distribution spec='beast.math.distributions.Prior' id='lambdaPrior' x='@lambda'>\n";
-	os <<"                    <distribution spec='beast.math.distributions.OneOnX'/>\n";
+	os <<"                    <distr spec='beast.math.distributions.OneOnX'/>\n";
 	os <<"                </distribution>\n";
 	os <<"                <distribution spec='SnAPPrior' name='distribution' id='snapprior' \n";
 	os <<"                    kappa='@kappa' alpha='@alpha' beta='@beta' lambda='@lambda' rateprior='gamma'\n";
