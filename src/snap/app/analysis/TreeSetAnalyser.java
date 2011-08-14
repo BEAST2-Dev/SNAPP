@@ -221,6 +221,8 @@ public class TreeSetAnalyser {
             if (arguments.hasOption("burnin")) {
                 int burnin = arguments.getIntegerOption("burnin");
                 dialog.burninText.setValue(burnin);
+            } else {
+                dialog.burninText.setValue(10);
             }
             if (arguments.hasOption("tree")) {
                 dialog.newickText.setText(arguments.getStringOption("tree"));
@@ -241,9 +243,6 @@ public class TreeSetAnalyser {
                 TSAargs.add("-tree");
                 TSAargs.add(dialog.newickText.getText());
             }
-            if (inputFile != null) {
-                TSAargs.add(inputFile.getAbsolutePath());
-            }
         } else {
             if (arguments.hasOption("burnin")) {
                 TSAargs.add("-b");
@@ -254,7 +253,7 @@ public class TreeSetAnalyser {
                 TSAargs.add(arguments.getStringOption("tree"));
             }
             if (arguments.hasOption("file")) {
-                TSAargs.add(arguments.getStringOption("file"));
+            	inputFile = new File(arguments.getStringOption("file"));
             }
         }
 
@@ -301,9 +300,9 @@ public class TreeSetAnalyser {
         try {
             // set all the settings...
         	TSAargs.add(inputFile.getAbsolutePath());
-        	analyser.parseArgs(TSAargs.toArray(new String[0]));
-            
-            new TreeSetAnalyser(analyser, consoleApp, maxErrorCount);
+        	if (analyser.parseArgs(TSAargs.toArray(new String[0]))) {
+        		new TreeSetAnalyser(analyser, consoleApp, maxErrorCount);
+        	}
        } catch (RuntimeException rte) {
             if (window) {
                 // This sleep for 2 seconds is to ensure that the final message
@@ -314,7 +313,7 @@ public class TreeSetAnalyser {
                     e.printStackTrace();
                 }
                 System.out.println();
-                System.out.println("BEAST has terminated with an error. Please select QUIT from the menu.");
+                System.out.println("TreeSetAnalyser has terminated with an error. Please select QUIT from the menu.");
             }
             // logger.severe will throw a RTE but we want to keep the console visible
         } catch (Exception e) {

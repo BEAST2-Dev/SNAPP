@@ -10,7 +10,7 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 	/** tree to compare the tree set with, if provided **/
 	String m_sOriginalTree = null;
 
-	public static void printUsageAndExit() {
+	public static void printUsage() {
 		System.out.println("Usage: " + TreeSetAnalyser2.class.getName() + " [-tree <newick tree>] [-b <burnin percentage>] <tree set file>\n");
 		System.out.println("Analyses the tree set, and compares with a tree if provided (e.g. the original used to simulate data from)\n" +
 				"-tree <newick tree>: tree in newick format on command line\n" +
@@ -21,10 +21,10 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 				"(2) Probabilities of the top 20 (?) trees\n"+
 				"(3) Whether or not the true tree is in the credible set."
 				);
-		System.exit(0);
 	}
 
-	void parseArgs(String [] args) {
+	@Override
+	boolean parseArgs(String [] args) {
 		int i = 0;
 		try {
 			while (i < args.length) {
@@ -54,11 +54,14 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n");
-			printUsageAndExit();
+			printUsage();
+			return false;
 		}
 		if (m_sFileName == null) {
-			printUsageAndExit();
+			printUsage();
+			return false;
 		}
+		return true;
 	} // parseArgs
 	
 	String getShortTopology(Node node, List<String> sLabels) {
@@ -190,8 +193,9 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 	
 	public static void main(String [] args) {
 		TreeSetAnalyser2 analyser = new TreeSetAnalyser2();
-		analyser.parseArgs(args);
-		analyser.run();
+		if (analyser.parseArgs(args)) {
+			analyser.run();
+		}
 	} // main
 }
 

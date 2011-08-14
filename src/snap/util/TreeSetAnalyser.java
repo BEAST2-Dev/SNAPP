@@ -159,7 +159,7 @@ public class TreeSetAnalyser {
 	}
 	
 	
-	public static void printUsageAndExit() {
+	public static void printUsage() {
 		System.out.println("Usage: " + TreeSetAnalyser.class.getName() + " [-n] <tree set file>\n");
 		System.out.println("Prints tree from tree set in order of popularity of topology.\n" +
 				"-n : only the most popular topology is shown in the output.\n\n" +
@@ -178,10 +178,9 @@ public class TreeSetAnalyser {
 				"#Tree 1. 0.1998002% ((0[mTheta=0.0514]:1.4090,(1[mTheta=0.0938]:0.6033,2[mTheta=0.0821]:0.6033)[mTheta=0.0455]:0.8056)[mTheta=0.0171]:2.7178,3[mTheta=0.0066]:4.1268)[mTheta=0.0263]:0.0\n" +
 				"#Tree 2. 0.0999001% (0[mTheta=0.0036]:0.0862,((1[mTheta=0.0200]:0.0189,2[mTheta=0.0037]:0.0189)[mTheta=0.0125]:0.0275,3[mTheta=0.0012]:0.0465)[mTheta=0.0071]:0.0397)[mTheta=0.0188]:0.0\n" +
 				"");
-		System.exit(0);
 	}
 
-	void parseArgs(String [] args) {
+	boolean parseArgs(String [] args) {
 		int i = 0;
 		try {
 			while (i < args.length) {
@@ -206,11 +205,14 @@ public class TreeSetAnalyser {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n");
-			printUsageAndExit();
+			printUsage();
+			return false;
 		}
 		if (m_sFileName == null) {
-			printUsageAndExit();
+			printUsage();
+			return false;
 		}
+		return true;
 	} // parseArgs
 	
 
@@ -331,8 +333,9 @@ public class TreeSetAnalyser {
 	
 	public static void main(String [] args) {
 		TreeSetAnalyser analyser = new TreeSetAnalyser();
-		analyser.parseArgs(args);
-		analyser.run();
+		if (analyser.parseArgs(args)) {
+			analyser.run();
+		}
 	} // main
 }
 

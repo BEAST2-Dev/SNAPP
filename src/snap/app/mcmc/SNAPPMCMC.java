@@ -261,7 +261,7 @@ public class SNAPPMCMC {
 
         long seed = Randomizer.getSeed();
 
-        int threadCount = 0;
+        int threadCount = 1;
 
 
         if (arguments.hasOption("prefix")) {
@@ -437,7 +437,7 @@ public class SNAPPMCMC {
                     e.printStackTrace();
                 }
                 System.out.println();
-                System.out.println("BEAST has terminated with an error. Please select QUIT from the menu.");
+                System.out.println("SNAPP has terminated with an error. Please select QUIT from the menu.");
             }
             // logger.severe will throw a RTE but we want to keep the console visible
 		} catch (XMLParserException e) {
