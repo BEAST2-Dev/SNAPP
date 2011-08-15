@@ -229,7 +229,7 @@
 		          txtProductVersion="2.0.0.0" />
 
 		<launch4j configFile="${tools_dir}/DensiTreeS_launch4j.xml"
-		          jar="${tools_dir}/DensiTree.jar"
+		          jar="${tools_dir}/DensiTreeS.jar"
 		          outfile="${Windows_package_dir}/DensiTreeS.exe"
 		          fileVersion="2.0.0.0"
 		          txtFileVersion="2.0.0.0"
@@ -411,10 +411,10 @@
 		            vmoptions="-Xmx1024M"
 		            arguments=""
 		            version="2.0"
-		            infostring="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
+		            infostring="DensiTreeS, http://compevol.auckland.ac.nz/software/DensiTree/"
 		            bundleid="viz.DensiTreeS">
 			<jarfileset dir="${tools_dir}">
-				<include name="**/DensiTree.jar" />
+				<include name="**/DensiTreeS.jar" />
 			</jarfileset>
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
