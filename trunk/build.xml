@@ -241,11 +241,9 @@
 			<fileset dir="${Linux_dir}/bin" />
 		</copy>
 		<chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
-<!--
 		<copy todir="${Linux_package_dir}/doc">
 			<fileset dir="${common_dir}/doc" />
 		</copy>
-		-->
 		<copy todir="${Linux_package_dir}/examples/">
 			<fileset dir="examples/">
 				<include name="*.xml" />
