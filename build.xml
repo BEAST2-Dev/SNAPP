@@ -42,7 +42,7 @@
 	</target>
 
 	<!-- No JUnit Test, clean previous build, compile Java source code, and make the snap.jar -->
-	<target name="build_jar_all_SnAP_NoJUnitTest" depends="clean,compile-all,dist_all_SnAP"
+	<target name="build_jar_all_SnAP_NoJUnitTest" depends="clean,compile-all,dist_all_SnAP,doc"
         description="Clean and Build all run-time stuff">
 	</target>
 
@@ -132,7 +132,16 @@
 	</target>
 	
 	
-	
+    <target name="doc">
+        <exec executable="pdflatex" dir="${basedir}/doc">
+                <arg value="SNAPP.tex" />
+        </exec>
+        <exec executable="pdflatex" dir="${basedir}/doc">
+                <arg value="SNAPP.tex" />
+        </exec>
+        <copy file="doc/SNAPP.pdf" tofile="release/common/doc/SNAPP.pdf" />
+    </target>
+
 	
 	
 	<!-- Release -->
@@ -214,6 +223,14 @@
 		<launch4j configFile="${tools_dir}/DensiTree_launch4j.xml"
 		          jar="${tools_dir}/DensiTree.jar"
 		          outfile="${Windows_package_dir}/DensiTree.exe"
+		          fileVersion="2.0.0.0"
+		          txtFileVersion="2.0.0.0"
+		          productVersion="2.0.0.0"
+		          txtProductVersion="2.0.0.0" />
+
+		<launch4j configFile="${tools_dir}/DensiTreeS_launch4j.xml"
+		          jar="${tools_dir}/DensiTree.jar"
+		          outfile="${Windows_package_dir}/DensiTreeS.exe"
 		          fileVersion="2.0.0.0"
 		          txtFileVersion="2.0.0.0"
 		          productVersion="2.0.0.0"
@@ -384,6 +401,25 @@
 			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
 			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
 		</jarbundler>
+
+		<jarbundler dir="${Mac_package_dir}"
+		            name="DensiTreeS"
+		            mainclass="viz.DensiTreeS"
+
+		            icon="${tools_dir}/DensiTreeS.icns"
+		            jvmversion="1.6+"
+		            vmoptions="-Xmx1024M"
+		            arguments=""
+		            version="2.0"
+		            infostring="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
+		            bundleid="viz.DensiTreeS">
+			<jarfileset dir="${tools_dir}">
+				<include name="**/DensiTree.jar" />
+			</jarfileset>
+			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
+			<javaproperty name="java.library.path" value="$JAVAROOT/lib" />
+		</jarbundler>
+
 
 		<copy todir="${Mac_package_dir}/templates/">
 			<fileset dir="templates/" />
