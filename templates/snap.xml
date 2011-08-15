@@ -22,6 +22,7 @@
 	        snap.MCMC.distribution,
 	        snap.MCMC.stateDistribution,
 	        snap.MCMC.init,
+	        snap.MCMC.sampleFromPrior,
 	        snap.likelihood.SnAPPrior.tree,
 	        snap.likelihood.SnapSubstitutionModel.frequencies,
             beast.evolution.sitemodel.SiteModel.mutationRate,
