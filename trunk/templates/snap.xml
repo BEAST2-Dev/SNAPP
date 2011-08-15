@@ -66,6 +66,7 @@
     	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets2" tiptext="Taxon sets2" 
             path='distribution/distribution[id="likelihood"]/distribution/data/taxonset'
             hasPartitions="none" icon='1.png' forceExpansion='FALSE'
+            isVisible='false'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel/substModel'
@@ -191,6 +192,8 @@
             <connect spec='BeautiConnector' srcID='betaPrior.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='lambdaPrior.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='kappaPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='uPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='vPrior.$(n)' targetID='prior' inputName='distribution'/>
 
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
         </partitiontemplate>
