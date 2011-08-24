@@ -109,7 +109,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	/** guesses taxon sets based on pattern in sRegExp based
 	 * on the taxa in m_rawData 
 	 */
-	int guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
+	public int guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
 		m_taxonsets.get().clear();
 		List<Taxon> taxa = new ArrayList<Taxon>();
 		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {

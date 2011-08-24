@@ -1,6 +1,6 @@
 package snap.app.mcmc;
 
-
+import jam.mac.Utils;
 import jam.panels.OptionsPanel;
 
 import javax.swing.*;
@@ -13,148 +13,158 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-
 public class SNAPPDialog {
-    private final JFrame frame;
+	private final JFrame frame;
 
-    private final OptionsPanel optionPanel;
+	private final OptionsPanel optionPanel;
 
-    private final WholeNumberField seedText = new WholeNumberField((long)1, Long.MAX_VALUE);
-//    private final JCheckBox overwriteCheckBox = new JCheckBox("Allow overwriting of log files");
-    private final JComboBox logginMode = new JComboBox(new String[] {"default: only write new log files",
-    															"overwrite: overwrite log files",
-																"resume: appends log to existing files (if any)"});
+	private final WholeNumberField seedText = new WholeNumberField((long) 1, Long.MAX_VALUE);
+	// private final JCheckBox overwriteCheckBox = new
+	// JCheckBox("Allow overwriting of log files");
+	private final JComboBox logginMode = new JComboBox(new String[] { "default: only write new log files",
+			"overwrite: overwrite log files", "resume: appends log to existing files (if any)" });
 
-    private final JComboBox threadsCombo = new JComboBox(new Object[] { "Automatic", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16, 17, 18, 19, 20, 21, 22, 23, 24 });
+	private final JComboBox threadsCombo = new JComboBox(new Object[] { "Automatic", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+			12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 });
 
-    private File inputFile = null;
+	private File inputFile = null;
 
-    public SNAPPDialog(final JFrame frame, final String titleString, final Icon icon) {
-        this.frame = frame;
+	public SNAPPDialog(final JFrame frame, final String titleString, final Icon icon) {
+		this.frame = frame;
 
-        optionPanel = new OptionsPanel(12, 12);
+		optionPanel = new OptionsPanel(12, 12);
 
-        //this.frame = frame;
+		// this.frame = frame;
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setOpaque(false);
 
-        final JLabel titleText = new JLabel(titleString);
-        titleText.setIcon(icon);
-        optionPanel.addSpanningComponent(titleText);
-        titleText.setFont(new Font("sans-serif", 0, 12));
+		final JLabel titleText = new JLabel(titleString);
+		titleText.setIcon(icon);
+		optionPanel.addSpanningComponent(titleText);
+		titleText.setFont(new Font("sans-serif", 0, 12));
 
-        final JButton inputFileButton = new JButton("Choose File...");
-        final JTextField inputFileNameText = new JTextField("not selected", 16);
+		final JButton inputFileButton = new JButton("Choose File...");
+		final JTextField inputFileNameText = new JTextField("not selected", 16);
 
-        inputFileButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-        		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        		fc.addChoosableFileFilter(new FileFilter() {
-        			public boolean accept(File f) {
-        				if (f.isDirectory()) {
-        					return true;
-        				}
-        				String name = f.getName().toLowerCase();
-        				if (name.endsWith(".xml")) {
-        					return true;
-        				}
-        				return false;
-        			}
+		inputFileButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				if (!Utils.isMacOSX()) {
+					JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+					fc.addChoosableFileFilter(new FileFilter() {
+						public boolean accept(File f) {
+							if (f.isDirectory()) {
+								return true;
+							}
+							String name = f.getName().toLowerCase();
+							if (name.endsWith(".xml")) {
+								return true;
+							}
+							return false;
+						}
 
-        			// The description of this filter
-        			public String getDescription() {
-        				return "xml files";
-        			}
-        		});
+						// The description of this filter
+						public String getDescription() {
+							return "xml files";
+						}
+					});
 
-        		fc.setDialogTitle("Load xml file");
-        		int rval = fc.showOpenDialog(null);
-        		if (rval == JFileChooser.APPROVE_OPTION) {
-                    inputFile = fc.getSelectedFile();
-                    inputFileNameText.setText(inputFile.getName());
-        		}
-            }});
-        inputFileNameText.setEditable(false);
+					fc.setDialogTitle("Load xml file");
+					int rval = fc.showOpenDialog(null);
+					if (rval == JFileChooser.APPROVE_OPTION) {
+						inputFile = fc.getSelectedFile();
+						inputFileNameText.setText(inputFile.getName());
+					}
+				} else {
+					FileDialog dialog = new FileDialog(frame, "Select SNAPP xml file...", FileDialog.LOAD);
 
-        JPanel panel1 = new JPanel(new BorderLayout(0,0));
-        panel1.add(inputFileNameText, BorderLayout.CENTER);
-        panel1.add(inputFileButton, BorderLayout.EAST);
-        optionPanel.addComponentWithLabel("SNAPP XML File: ", panel1);
+					dialog.setVisible(true);
+					if (dialog.getFile() == null) {
+						// the dialog was cancelled...
+						return;
+					}
 
-        optionPanel.addComponent(logginMode);
-//        optionPanel.addComponent(overwriteCheckBox);
+					inputFile = new File(dialog.getDirectory(), dialog.getFile());
+					inputFileNameText.setText(inputFile.getName());
 
-        optionPanel.addSeparator();
+				}
+			}
+		});
+		inputFileNameText.setEditable(false);
 
-        seedText.setColumns(12);
-        optionPanel.addComponentWithLabel("Random number seed: ", seedText);
+		JPanel panel1 = new JPanel(new BorderLayout(0, 0));
+		panel1.add(inputFileNameText, BorderLayout.CENTER);
+		panel1.add(inputFileButton, BorderLayout.EAST);
+		optionPanel.addComponentWithLabel("SNAPP XML File: ", panel1);
 
-        optionPanel.addComponentWithLabel("Thread pool size: ", threadsCombo);
-        threadsCombo.setSelectedIndex(1);
+		optionPanel.addComponent(logginMode);
+		// optionPanel.addComponent(overwriteCheckBox);
 
-        optionPanel.addSeparator();
+		optionPanel.addSeparator();
 
+		seedText.setColumns(12);
+		optionPanel.addComponentWithLabel("Random number seed: ", seedText);
 
-        final OptionsPanel optionPanel1 = new OptionsPanel(0,12);
-//        optionPanel1.setBorder(BorderFactory.createEmptyBorder());
-        optionPanel1.setBorder(new TitledBorder(""));
+		optionPanel.addComponentWithLabel("Thread pool size: ", threadsCombo);
+		threadsCombo.setSelectedIndex(1);
 
-        OptionsPanel optionPanel2 = new OptionsPanel(0,12);
-        optionPanel2.setBorder(BorderFactory.createEmptyBorder());
+		optionPanel.addSeparator();
 
-        optionPanel1.addComponent(optionPanel2);
+		final OptionsPanel optionPanel1 = new OptionsPanel(0, 12);
+		// optionPanel1.setBorder(BorderFactory.createEmptyBorder());
+		optionPanel1.setBorder(new TitledBorder(""));
 
-        //optionPanel.addSpanningComponent(optionPanel1);
+		OptionsPanel optionPanel2 = new OptionsPanel(0, 12);
+		optionPanel2.setBorder(BorderFactory.createEmptyBorder());
 
-    }
+		optionPanel1.addComponent(optionPanel2);
 
-    public boolean showDialog(String title, long seed) {
+		// optionPanel.addSpanningComponent(optionPanel1);
 
-        JOptionPane optionPane = new JOptionPane(optionPanel,
-                JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.OK_CANCEL_OPTION,
-                null,
-                new String[] { "Run", "Quit" },
-                "Run");
-        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+	}
 
-        seedText.setValue(seed);
+	public boolean showDialog(String title, long seed) {
 
-        final JDialog dialog = optionPane.createDialog(frame, title);
-        //dialog.setResizable(true);
-        dialog.pack();
+		JOptionPane optionPane = new JOptionPane(optionPanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
+				null, new String[] { "Run", "Quit" }, "Run");
+		optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        dialog.setVisible(true);
+		seedText.setValue(seed);
 
-        if (optionPane.getValue() == null) {
-        	System.exit(0);
-        }
+		final JDialog dialog = optionPane.createDialog(frame, title);
+		// dialog.setResizable(true);
+		dialog.pack();
 
-        return optionPane.getValue().equals("Run");
-    }
+		dialog.setVisible(true);
 
-    public long getSeed() {
-        return seedText.getLongValue();
-    }
+		if (optionPane.getValue() == null) {
+			System.exit(0);
+		}
 
-//    public boolean allowOverwrite() {
-//        return overwriteCheckBox.isSelected();
-//    }
+		return optionPane.getValue().equals("Run");
+	}
 
-    public int getLogginMode() {
-    	return logginMode.getSelectedIndex();
-    }
+	public long getSeed() {
+		return seedText.getLongValue();
+	}
 
-    public int getThreadPoolSize() {
-        if (threadsCombo.getSelectedIndex() == 0) {
-            // Automatic
-            return -1;
-        }
-        return (Integer)threadsCombo.getSelectedItem();
-    }
+	// public boolean allowOverwrite() {
+	// return overwriteCheckBox.isSelected();
+	// }
 
-    public File getInputFile() {
-        return inputFile;
-    }
+	public int getLogginMode() {
+		return logginMode.getSelectedIndex();
+	}
+
+	public int getThreadPoolSize() {
+		if (threadsCombo.getSelectedIndex() == 0) {
+			// Automatic
+			return -1;
+		}
+		return (Integer) threadsCombo.getSelectedItem();
+	}
+
+	public File getInputFile() {
+		return inputFile;
+	}
 }
