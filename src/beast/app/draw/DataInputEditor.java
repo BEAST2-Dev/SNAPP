@@ -3,7 +3,6 @@ package beast.app.draw;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +19,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import beast.core.Input;
 import beast.core.Plugin;
@@ -142,15 +140,22 @@ public class DataInputEditor extends InputEditor {
 			public void addCellEditorListener(CellEditorListener l) {}
 		
 		});				
-
+		m_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		m_table.getColumnModel().getColumn(0).setPreferredWidth(250);
+		m_table.getColumnModel().getColumn(1).setPreferredWidth(250);
+		
 		JTableHeader header = m_table.getTableHeader();
 		header.addMouseListener(new ColumnHeaderListener());
 
 		JScrollPane pane = new JScrollPane(m_table);
+		Box tableBox = Box.createHorizontalBox();
+		tableBox.add(Box.createHorizontalGlue());
+		tableBox.add(pane);
+		tableBox.add(Box.createHorizontalGlue());
 
 		Box box = Box.createVerticalBox();
 		box.add(createFilterBox());
-		box.add(pane);
+		box.add(tableBox);
 		box.add(createButtonBox());
 		return box;
 	}
@@ -168,7 +173,7 @@ public class DataInputEditor extends InputEditor {
 				if (rows.length < 2) {
 					return;
 				}
-				String sTaxon = (String) ((Vector) m_model.getDataVector().elementAt(rows[0])).elementAt(1);
+				String sTaxon = (String) ((Vector<?>) m_model.getDataVector().elementAt(rows[0])).elementAt(1);
 				for (int i = 1; i < rows.length; i++) {
 					m_model.setValueAt(sTaxon, rows[i], 1);
 				}
@@ -201,10 +206,12 @@ public class DataInputEditor extends InputEditor {
 	        if (vColIndex == -1) {
 	            return;
 	        }
-	        if (vColIndex != m_sortByColumn)
+	        if (vColIndex != m_sortByColumn) {
 	        	m_sortByColumn = vColIndex;
-	        else 
+	        	m_bIsAscending = true; 
+	        } else { 
 	        	m_bIsAscending = !m_bIsAscending;
+	        }
 	        taxonSetToModel();
 	    }
 	}
@@ -223,13 +230,14 @@ public class DataInputEditor extends InputEditor {
 				}
 				taxonSetToModel();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	class GuessDlg extends JDialog {
+		private static final long serialVersionUID = 1L;
+
 		String m_sPattern = "^(.+)[-_\\. ](.*)$";
 		Component m_parent;
 		Box guessPanel;
@@ -367,7 +375,7 @@ public class DataInputEditor extends InputEditor {
 		filterBox.add(new JLabel("filter: "));
 		//Dimension size = new Dimension(100,20);
 		filterEntry = new JTextField();
-		filterEntry.setColumns(80);
+		filterEntry.setColumns(20);
 //		filterEntry.setMinimumSize(size);
 //		filterEntry.setPreferredSize(size);
 //		filterEntry.setSize(size);
@@ -408,6 +416,7 @@ public class DataInputEditor extends InputEditor {
 
 
 	/** for convert taxon sets to table model **/
+	@SuppressWarnings("unchecked")
 	private void taxonSetToModel() {
 		// count number if lineages that match the filter
 		int i = 0;
@@ -432,10 +441,11 @@ public class DataInputEditor extends InputEditor {
 			}
 		}
 		
-	    Vector data = m_model.getDataVector();
-	    Collections.sort(data, new Comparator<Vector>() {
+	    @SuppressWarnings("rawtypes")
+		Vector data = m_model.getDataVector();
+	    Collections.sort(data, new Comparator<Vector<?>>() {
 			@Override
-			public int compare(Vector v1, Vector v2) {
+			public int compare(Vector<?> v1, Vector<?> v2) {
 		        String o1 = (String) v1.get(m_sortByColumn);
 		        String o2 = (String) v2.get(m_sortByColumn);
 		        if (o1.equals(o2)) {
@@ -450,8 +460,6 @@ public class DataInputEditor extends InputEditor {
 			}
 	    	
 		});
-//	    m_model.fireTableStructureChanged();
-
 	    m_model.fireTableRowsInserted(0, m_model.getRowCount());
 	}
 
@@ -459,8 +467,8 @@ public class DataInputEditor extends InputEditor {
 	private void modelToTaxonset() {
 		// update map
 		for (int i = 0; i < m_model.getRowCount();i++) {
-			String sLineageID = (String) ((Vector)m_model.getDataVector().elementAt(i)).elementAt(0);
-			String sTaxonSetID = (String) ((Vector)m_model.getDataVector().elementAt(i)).elementAt(1);
+			String sLineageID = (String) ((Vector<?>)m_model.getDataVector().elementAt(i)).elementAt(0);
+			String sTaxonSetID = (String) ((Vector<?>)m_model.getDataVector().elementAt(i)).elementAt(1);
 			
 			// new taxon set?
 			if (!m_taxonMap.containsValue(sTaxonSetID)) {
