@@ -3,32 +3,43 @@ package beast.app.draw;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.datatransfer.*;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
-public class DataInputEditor extends InputEditor implements TreeModelListener {
+public class DataInputEditor extends InputEditor {
 	private static final long serialVersionUID = 1L;
 	List<TaxonSet> m_taxonset;
-	Map<String,Taxon> m_taxonMap;
-	DefaultTreeModel m_treemodel;
-	JTree m_tree;
+	List<Taxon> m_lineageset;
+	Map<String,String> m_taxonMap;
+	JTable m_table;
+	DefaultTableModel m_model = new DefaultTableModel();
+	
 	JTextField filterEntry;
 	String m_sFilter = ".*";
-
+	int m_sortByColumn = 0;
+	boolean m_bIsAscending = true;
+	
 	@Override
 	public Class<?> type() {
 		return snap.Data.class;
@@ -37,6 +48,8 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 	
 	@Override
 	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+		m_input = input;
+		m_plugin = plugin;
 		List<TaxonSet> taxonset = ((snap.Data)input.get()).m_taxonsets.get(); 
 		add(getContent(taxonset));
 	}
@@ -44,61 +57,96 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 	
 	private Component getContent(List<TaxonSet> taxonset) {
 		m_taxonset = taxonset;
-		m_taxonMap = new HashMap<String, Taxon>();
+		m_taxonMap = new HashMap<String, String>();
+		m_lineageset = new ArrayList<Taxon>();
 		for (Taxon taxonset2 : m_taxonset) {
 			for (Taxon taxon : ((TaxonSet)taxonset2).m_taxonset.get()) {
-				m_taxonMap.put(taxon.getID(), taxon);
+				m_lineageset.add(taxon);
+				m_taxonMap.put(taxon.getID(), taxonset2.getID());
 			}
 		}
 		
-		DefaultMutableTreeNode Node = new DefaultMutableTreeNode("Taxon sets");
-		m_treemodel = new DefaultTreeModel(Node);
-		m_treemodel.addTreeModelListener(this);
-		
+		// set up table.
+		// special features: background shading of rows
+		// custom editor allowing only Date column to be edited.		
+		m_model = new DefaultTableModel();
+		m_model.addColumn("Lineage");
+		m_model.addColumn("Taxon");
 		taxonSetToModel();
 
-		m_tree = new JTree(m_treemodel);
-		m_tree.setDragEnabled(true);
-		m_tree.setEditable(true);
-		// tree.setRootVisible(false);
-		m_tree.setDropMode(DropMode.ON_OR_INSERT);
-		m_tree.setTransferHandler(new TreeTransferHandler());
-		m_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		expandTree(m_tree);
-		
-		m_tree.setCellRenderer(new DefaultTreeCellRenderer() {
-		      public Component getTreeCellRendererComponent(JTree tree,
-		          Object value, boolean sel, boolean expanded, boolean leaf,
-		          int row, boolean hasFocus) {
-			        super.getTreeCellRendererComponent(tree, value, sel, expanded,
-				            leaf, row, hasFocus);
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		        if (node != m_treemodel.getRoot() && 
-		        		node.getParent() != m_treemodel.getRoot() && !node.toString().matches(m_sFilter)) {
-		          setForeground(Color.lightGray);
-		        }
-		        return this;
-		      }
-		    });
+		m_table = new JTable(m_model) {
+			private static final long serialVersionUID = 1L;
 
-		m_tree.setCellEditor(new DefaultTreeCellEditor(m_tree, (DefaultTreeCellRenderer) m_tree.getCellRenderer()) {
-			public boolean isCellEditable(EventObject event) {
-				boolean returnValue = super.isCellEditable(event);
-				if (returnValue) {
-					// don't edit if it is not a child
-					Object node = tree.getLastSelectedPathComponent();
-					if ((node != null) && (node instanceof TreeNode)) {
-						TreeNode treeNode = (TreeNode) node;
-						returnValue = treeNode.getParent() == m_treemodel.getRoot();
-						//!treeNode.isLeaf() && treeNode.getParent() != null;
-					}
+			// method that induces table row shading 
+			@Override
+			public Component prepareRenderer (TableCellRenderer renderer,int Index_row, int Index_col) {
+				Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+				//even index, selected or not selected
+				if (isCellSelected(Index_row, Index_col)) {
+					comp.setBackground(Color.gray);
+				} else 	if (Index_row % 2 == 0) {
+					comp.setBackground(new Color(237,243,255));
+				} else {
+					comp.setBackground(Color.white);
 				}
-				return returnValue;
+				return comp;
+			}
+		};
+		
+		// set up editor that makes sure only doubles are accepted as entry
+		// and only the Date column is editable.
+		m_table.setDefaultEditor(Object.class, new TableCellEditor() {
+			JTextField m_textField = new JTextField();
+			int m_iRow, m_iCol;
+			@Override
+			public boolean stopCellEditing() {
+				m_table.removeEditor();
+				String sText = m_textField.getText();
+				System.err.println(sText);
+				m_model.setValueAt(sText, m_iRow, m_iCol);
+//				try {
+//					Double.parseDouble(sText);
+//				} catch (Exception e) {
+//					return false;
+//				}
+				modelToTaxonset();
+				return true;
+			}
+		
+			@Override
+			public boolean isCellEditable(EventObject anEvent) {
+				return m_table.getSelectedColumn() == 1;
+			}
+			
+			
+			@Override
+			public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow, int iCol) {
+				if (!isSelected) {
+					return null;
+				}
+				m_iRow = iRow;
+				m_iCol = iCol;
+				m_textField.setText((String)value);
+				return m_textField; 			
 			}
 
-		});
+			@Override
+			public boolean shouldSelectCell(EventObject anEvent) {return false;}
+			@Override
+			public void removeCellEditorListener(CellEditorListener l) {}
+			@Override
+			public Object getCellEditorValue() {return null;}
+			@Override
+			public void cancelCellEditing() {}
+			@Override
+			public void addCellEditorListener(CellEditorListener l) {}
+		
+		});				
 
-		JScrollPane pane = new JScrollPane(m_tree);
+		JTableHeader header = m_table.getTableHeader();
+		header.addMouseListener(new ColumnHeaderListener());
+
+		JScrollPane pane = new JScrollPane(m_table);
 
 		Box box = Box.createVerticalBox();
 		box.add(createFilterBox());
@@ -107,17 +155,226 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 		return box;
 	}
 	
+	private Component createButtonBox() {
+		Box buttonBox = Box.createHorizontalBox();
+		
+		JButton fillDownButton = new JButton("Fill down");
+		fillDownButton.setToolTipText("replaces all taxons in selection with the one that is selected at the top");
+		fillDownButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int [] rows = m_table.getSelectedRows();
+				if (rows.length < 2) {
+					return;
+				}
+				String sTaxon = (String) ((Vector) m_model.getDataVector().elementAt(rows[0])).elementAt(1);
+				for (int i = 1; i < rows.length; i++) {
+					m_model.setValueAt(sTaxon, rows[i], 1);
+				}
+				modelToTaxonset();
+			}
+		});
+		
+		JButton guessButton = new JButton("Guess");
+		guessButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				guess();
+			}
+		});
+		
+		buttonBox.add(Box.createHorizontalGlue());
+		buttonBox.add(fillDownButton);
+		buttonBox.add(Box.createHorizontalGlue());
+		buttonBox.add(guessButton);
+		buttonBox.add(Box.createHorizontalGlue());
+		return buttonBox;
+	}
+	
+	
+
+	public class ColumnHeaderListener extends MouseAdapter {
+	    public void mouseClicked(MouseEvent evt) {
+	        // The index of the column whose header was clicked
+	        int vColIndex = m_table.getColumnModel().getColumnIndexAtX(evt.getX());
+	        if (vColIndex == -1) {
+	            return;
+	        }
+	        if (vColIndex != m_sortByColumn)
+	        	m_sortByColumn = vColIndex;
+	        else 
+	        	m_bIsAscending = !m_bIsAscending;
+	        taxonSetToModel();
+	    }
+	}
+
+	private void guess() {
+		GuessDlg dlg = new GuessDlg(this);
+		String sPattern = dlg.showDialog("Guess taxon sets");
+		if (sPattern != null) {
+			try {
+				((snap.Data)m_input.get()).guessTaxonSets(sPattern, 0);
+				for (Taxon taxonset2 : m_taxonset) {
+					for (Taxon taxon : ((TaxonSet)taxonset2).m_taxonset.get()) {
+						m_lineageset.add(taxon);
+						m_taxonMap.put(taxon.getID(), taxonset2.getID());
+					}
+				}
+				taxonSetToModel();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class GuessDlg extends JDialog {
+		String m_sPattern = "^(.+)[-_\\. ](.*)$";
+		Component m_parent;
+		Box guessPanel;
+		ButtonGroup group;
+        JRadioButton b1 = new JRadioButton("use everything");
+        JRadioButton b2 = new JRadioButton("use regular expression");
+		
+		int m_location = 0;
+		String m_sDelimiter = ".";
+		JTextField regexpEntry;
+		
+		GuessDlg(Component parent) {
+			m_parent = parent;
+	        guessPanel = Box.createVerticalBox();
+
+	        group = new ButtonGroup();
+	        group.add(b1);
+	        group.add(b2);
+	        group.setSelected(b1.getModel(), true);
+	        
+	        guessPanel.add(createDelimiterBox(b1));
+	        guessPanel.add(Box.createVerticalStrut(20));
+	        guessPanel.add(createRegExtpBox(b2));
+	        guessPanel.add(Box.createVerticalStrut(20));
+		}
+
+		
+		private Component createDelimiterBox(JRadioButton b) {
+			Box box = Box.createHorizontalBox();
+			box.add(b);
+			
+			JComboBox combo = new JComboBox(new String[]{"after first","after last","before first","before last"});
+			box.add(Box.createHorizontalGlue());
+			box.add(combo);
+			combo.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JComboBox combo = (JComboBox) e.getSource();
+					m_location = combo.getSelectedIndex();
+				}
+			});
+			
+			JComboBox combo2 = new JComboBox(new String[]{".",",","_","-"," ","/",":",";"});
+			box.add(Box.createHorizontalGlue());
+			box.add(combo2);
+			combo2.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JComboBox combo = (JComboBox) e.getSource();
+					m_sDelimiter = (String) combo.getSelectedItem();
+				}
+			});
+			box.add(Box.createHorizontalGlue());
+			return box;
+		}
+
+		
+		
+		public Component createRegExtpBox(JRadioButton b) {
+			Box box = Box.createHorizontalBox();
+			box.add(b);
+			regexpEntry = new JTextField();
+			regexpEntry.setText(m_sPattern);
+			regexpEntry.setColumns(30);
+			regexpEntry.setToolTipText("Enter regular expression to match taxa");
+			regexpEntry.setMaximumSize(new Dimension(1024, 20));
+			box.add(Box.createHorizontalGlue());
+			box.add(regexpEntry);
+			box.add(Box.createHorizontalGlue());
+			return box;
+		}
+
+		public String showDialog(String title) {
+
+	        JOptionPane optionPane = new JOptionPane(guessPanel,
+	                JOptionPane.PLAIN_MESSAGE,
+	                JOptionPane.OK_CANCEL_OPTION,
+	                null,
+	                new String[] { "Cancel", "OK" },
+	                "OK");
+	        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+
+	        final JDialog dialog = optionPane.createDialog(m_parent, title);
+	        //dialog.setResizable(true);
+	        dialog.pack();
+
+	        dialog.setVisible(true);
+
+//	        if (optionPane.getValue() == null) {
+//	        	System.exit(0);
+//	        }
+	        if (b1.getModel() == group.getSelection()) {
+	        	String sDelimiter = m_sDelimiter;
+	        	if (sDelimiter.equals(".") || sDelimiter.equals("/")) {
+	        		sDelimiter = "\\" + sDelimiter;
+	        	}
+	        	switch (m_location) {
+	        	case 0:
+	        		m_sPattern = "^[^"+sDelimiter+"]+" + sDelimiter + "(.*)$";
+	        		break;
+	        	case 1:
+	        		m_sPattern = "^.*" + sDelimiter + "(.*)$";
+	        		break;
+	        	case 2:
+	        		m_sPattern = "^([^"+sDelimiter+"]+)" + sDelimiter + ".*$";
+	        		break;
+	        	case 3:
+	        		m_sPattern = "^(.*)" + sDelimiter + ".*$";
+	        		break;
+	        	}
+	        }	        
+	        if (b2.getModel() == group.getSelection()) {
+	        	m_sPattern = regexpEntry.getText();
+	        }	        
+	        
+	        // sanity check
+	        try {
+				m_sPattern.matches(m_sPattern);
+			} catch (PatternSyntaxException e) {
+				JOptionPane.showMessageDialog(this, "This is not a valid regular expression");
+				return null;
+			}
+	        
+	        if (optionPane.getValue().equals("OK")) {
+	        	System.err.println("Pattern = " + m_sPattern);
+	        	return m_sPattern;
+	        } else {
+	        	return null;
+	        }
+	    }
+	}
+
 	private Component createFilterBox() {
 		Box filterBox = Box.createHorizontalBox();
 		filterBox.add(new JLabel("filter: "));
-		Dimension size = new Dimension(100,20);
+		//Dimension size = new Dimension(100,20);
 		filterEntry = new JTextField();
-		filterEntry.setMinimumSize(size);
-		filterEntry.setPreferredSize(size);
-		filterEntry.setSize(size);
+		filterEntry.setColumns(80);
+//		filterEntry.setMinimumSize(size);
+//		filterEntry.setPreferredSize(size);
+//		filterEntry.setSize(size);
 		filterEntry.setToolTipText("Enter regular expression to match taxa");
 		filterEntry.setMaximumSize(new Dimension(1024, 20));
 		filterBox.add(filterEntry);
+		filterBox.add(Box.createHorizontalGlue());
 		filterEntry.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
@@ -132,407 +389,118 @@ public class DataInputEditor extends InputEditor implements TreeModelListener {
 				processFilter();
 			}
 			private void processFilter() {
-				m_sFilter = ".*" + filterEntry.getText() + ".*";
-				m_tree.repaint();
+				String sFilter = ".*" + filterEntry.getText() + ".*";
+				try {
+					// sanity check: make sure the filter is legit
+					sFilter.matches(sFilter);
+					m_sFilter = sFilter;
+					taxonSetToModel();
+					m_table.repaint();
+				} catch (PatternSyntaxException e) {
+					// ignore
+				}
 			}
 		});
 		return filterBox;
 	}
 
-	/** for adding and deleting taxon sets **/
-	private Box createButtonBox() {
-		Box buttonBox = Box.createHorizontalBox();
-		
-		JButton delButton = new JButton("Delete");
-		delButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int[] selRows = m_tree.getSelectionRows();
-				if (selRows.length == 0) {
-					return;
-				}
-				TreePath path = m_tree.getPathForRow(selRows[0]);
-				DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-				if (firstNode.getChildCount() > 0) {
-					JOptionPane.showMessageDialog(m_tree, "Cannot delete " + firstNode.toString() + ":there are still children left");
-					return;
-				}
-				if (firstNode.getParent() == null) {
-					JOptionPane.showMessageDialog(m_tree, "Cannot delete root");
-					return;
-				}
-				if (firstNode.getParent().getParent() != null) {
-					JOptionPane.showMessageDialog(m_tree, "Cannot delete taxon");
-					return;
-				}
-				m_treemodel.removeNodeFromParent(firstNode);
-				modelToTaxonset();
-			}
-		});
-		buttonBox.add(Box.createHorizontalGlue());
-		buttonBox.add(delButton);
-		buttonBox.add(Box.createHorizontalGlue());
 
-		
-		JButton addButton = new JButton("New");
-		addButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DefaultMutableTreeNode root = (DefaultMutableTreeNode) m_treemodel.getRoot();
-				DefaultMutableTreeNode Kid = new DefaultMutableTreeNode("New taxonset");
-				m_treemodel.insertNodeInto(Kid, root, m_taxonset.size());
-				modelToTaxonset();
-			}
-		});
-		buttonBox.add(addButton);
-		buttonBox.add(Box.createHorizontalGlue());
-		return buttonBox;
-	}
+
 
 	/** for convert taxon sets to table model **/
 	private void taxonSetToModel() {
-		List<TaxonSet> taxonsets = m_taxonset;
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) m_treemodel.getRoot();
-		for (int i = root.getChildCount()-1; i >= 0 ; i--) {
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
-			m_treemodel.removeNodeFromParent(child);
-		}
-		
-		for (int i = 0; i < taxonsets.size(); i++) {
-			DefaultMutableTreeNode Kid = new DefaultMutableTreeNode(taxonsets.get(i).getID());
-			m_treemodel.insertNodeInto(Kid, root, i);
-			List<Taxon> taxa = ((TaxonSet) taxonsets.get(i)).m_taxonset.get();
-			for (int j = 0; j < taxa.size(); j++) {
-				DefaultMutableTreeNode GKid = new DefaultMutableTreeNode(taxa.get(j).getID());
-				GKid.setAllowsChildren(false);
-				m_treemodel.insertNodeInto(GKid, Kid, j);
+		// count number if lineages that match the filter
+		int i = 0;
+		for (String sLineageID : m_taxonMap.keySet()) {
+			if (sLineageID.matches(m_sFilter)) {
+				i++;
 			}
 		}
+		
+		// clear table model
+		while (m_model.getRowCount() > 0) {
+			m_model.removeRow(0);
+		}	
+		
+		// fill table model with lineages matching the filter
+		for (String sLineageID : m_taxonMap.keySet()) {
+			if (sLineageID.matches(m_sFilter)) {
+				Object [] rowData = new Object[2];
+				rowData[0] = sLineageID;
+				rowData[1] = m_taxonMap.get(sLineageID);
+				m_model.addRow(rowData);
+			}
+		}
+		
+	    Vector data = m_model.getDataVector();
+	    Collections.sort(data, new Comparator<Vector>() {
+			@Override
+			public int compare(Vector v1, Vector v2) {
+		        String o1 = (String) v1.get(m_sortByColumn);
+		        String o2 = (String) v2.get(m_sortByColumn);
+		        if (o1.equals(o2)) {
+			        o1 = (String) v1.get(1 - m_sortByColumn);
+			        o2 = (String) v2.get(1 - m_sortByColumn);
+		        }
+		        if (m_bIsAscending) {
+		        	return o1.compareTo(o2);
+		        } else {
+		        	return o2.compareTo(o1);
+		        }
+			}
+	    	
+		});
+//	    m_model.fireTableStructureChanged();
+
+	    m_model.fireTableRowsInserted(0, m_model.getRowCount());
 	}
 
 	/** for convert table model to taxon sets **/
 	private void modelToTaxonset() {
-		List<TaxonSet> taxonsets = m_taxonset;
-		taxonsets.clear();
+		// update map
+		for (int i = 0; i < m_model.getRowCount();i++) {
+			String sLineageID = (String) ((Vector)m_model.getDataVector().elementAt(i)).elementAt(0);
+			String sTaxonSetID = (String) ((Vector)m_model.getDataVector().elementAt(i)).elementAt(1);
+			
+			// new taxon set?
+			if (!m_taxonMap.containsValue(sTaxonSetID)) {
+				// create new taxon set
+				TaxonSet taxonset = new TaxonSet();
+				taxonset.setID(sTaxonSetID);
+				m_taxonset.add(taxonset);
+			}
+			m_taxonMap.put(sLineageID, sTaxonSetID);
+		}	
 		
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) m_treemodel.getRoot();
-		for (int i = 0; i < root.getChildCount(); i++) {
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
-			TaxonSet taxonset = new TaxonSet();
-			taxonset.setID(child.toString());
-			for (int j = 0; j < child.getChildCount(); j++) {
-				DefaultMutableTreeNode gchild = (DefaultMutableTreeNode) child.getChildAt(j);
-				Taxon taxon = m_taxonMap.get(gchild.toString());
-				try {
-					taxonset.m_taxonset.setValue(taxon, taxonset);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			taxonsets.add(taxonset);
+		// clear old taxon sets
+		for (TaxonSet set : m_taxonset) {
+			set.m_taxonset.get().clear();
 		}
-		//System.err.println(new XMLProducer().toXML(m_taxonset));
-
-	}
-	
-	
-	private void expandTree(JTree tree) {
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-		Enumeration<?> e = root.breadthFirstEnumeration();
-		while (e.hasMoreElements()) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
-			if (node.isLeaf())
-				continue;
-			int row = tree.getRowForPath(new TreePath(node.getPath()));
-			tree.expandRow(row);
-		}
-	}
-
-//	public static void main(String[] args) {
-//		JFrame f = new JFrame();
-//		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//		TaxonSet taxonset1 = newTaxonSet("animal", newTaxon("first"), newTaxon("second"), newTaxon("third"));
-//		TaxonSet taxonset2 = newTaxonSet("plant", newTaxon("firstA"), newTaxon("secondA"), newTaxon("thirdA"));
-//		TaxonSet taxonset3 = newTaxonSet("bacteria", newTaxon("firstB"), newTaxon("secondB"), newTaxon("thirdB"));
-//		TaxonSet taxonset = newTaxonSet("top", taxonset1, taxonset2, taxonset3);
-//
-//		f.add(new DataInputEditor().getContent(taxonset));
-//		f.setSize(400, 400);
-//		f.setLocation(200, 200);
-//		f.setVisible(true);
-//	}
-
-	private static TaxonSet newTaxonSet(String sID, Taxon newTaxon, Taxon newTaxon2, Taxon newTaxon3) {
-		TaxonSet taxonset = new TaxonSet();
-		taxonset.setID(sID);
-		try {
-			taxonset.m_taxonset.setValue(newTaxon, taxonset);
-			taxonset.m_taxonset.setValue(newTaxon2, taxonset);
-			taxonset.m_taxonset.setValue(newTaxon3, taxonset);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return taxonset;
-	}
-
-	private static Taxon newTaxon(String sID) {
-		Taxon taxon = new Taxon();
-		taxon.setID(sID);
-		return taxon;
-	}
-
-	public class TreeTransferHandler extends TransferHandler {
-		private static final long serialVersionUID = 1L;
-
-		DataFlavor nodesFlavor;
-		DataFlavor[] flavors = new DataFlavor[1];
-		DefaultMutableTreeNode[] nodesToRemove;
-
-		public TreeTransferHandler() {
-			try {
-				String mimeType = DataFlavor.javaJVMLocalObjectMimeType + ";class=\""
-						+ javax.swing.tree.DefaultMutableTreeNode[].class.getName() + "\"";
-				nodesFlavor = new DataFlavor(mimeType);
-				flavors[0] = nodesFlavor;
-			} catch (ClassNotFoundException e) {
-				System.out.println("ClassNotFound: " + e.getMessage());
-			}
-		}
-
 		
-		
-		public boolean canImport(TransferHandler.TransferSupport support) {
-			if (!support.isDrop()) {
-				return false;
-			}
-			support.setShowDropLocation(true);
-			if (!support.isDataFlavorSupported(nodesFlavor)) {
-				return false;
-			}
-			// Do not allow a drop on the drag source selections.
-			JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
-			JTree tree = (JTree) support.getComponent();
-			int dropRow = tree.getRowForPath(dl.getPath());
-			int[] selRows = tree.getSelectionRows();
-			for (int i = 0; i < selRows.length; i++) {
-				if (selRows[i] == dropRow) {
-					return false;
-				}
-			}
-			// Do not allow MOVE-action drops if a non-leaf node is
-			// selected unless all of its children are also selected.
-			int action = support.getDropAction();
-			if (action == MOVE) {
-				return haveCompleteNode(tree);
-			}
-			// Do not allow a non-leaf node to be copied to a level
-			// which is less than its source level.
-			TreePath dest = dl.getPath();
-			DefaultMutableTreeNode target = (DefaultMutableTreeNode) dest.getLastPathComponent();
-			TreePath path = tree.getPathForRow(selRows[0]);
-			DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			if (firstNode.getChildCount() > 0 && target.getLevel() < firstNode.getLevel()) {
-				return false;
-			}
-			return true;
-		}
-
-		private boolean haveCompleteNode(JTree tree) {
-			int[] selRows = tree.getSelectionRows();
-			TreePath path = tree.getPathForRow(selRows[0]);
-			DefaultMutableTreeNode first = (DefaultMutableTreeNode) path.getLastPathComponent();
-			int childCount = first.getChildCount();
-			// first has children and no children are selected.
-			if (childCount > 0 && selRows.length == 1)
-				return false;
-			// first may have children.
-			for (int i = 1; i < selRows.length; i++) {
-				path = tree.getPathForRow(selRows[i]);
-				DefaultMutableTreeNode next = (DefaultMutableTreeNode) path.getLastPathComponent();
-				if (first.isNodeChild(next)) {
-					// Found a child of first.
-					if (childCount > selRows.length - 1) {
-						// Not all children of first are selected.
-						return false;
+		// group lineages with their taxon sets
+		for (String sLineageID : m_taxonMap.keySet()) {
+			for (Taxon taxon : m_lineageset) {
+				if (taxon.getID().equals(sLineageID)) {
+					String sTaxonSet = m_taxonMap.get(sLineageID);
+					for (TaxonSet set : m_taxonset) {
+						if (set.getID().equals(sTaxonSet)) {
+							try {
+								set.m_taxonset.setValue(taxon, set);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
 					}
 				}
 			}
-			return true;
-		}
-
-		protected Transferable createTransferable(JComponent c) {
-			JTree tree = (JTree) c;
-			TreePath[] paths = tree.getSelectionPaths();
-			if (paths != null) {
-				// Make up a node array of copies for transfer and
-				// another for/of the nodes that will be removed in
-				// exportDone after a successful drop.
-				List<DefaultMutableTreeNode> copies = new ArrayList<DefaultMutableTreeNode>();
-				List<DefaultMutableTreeNode> toRemove = new ArrayList<DefaultMutableTreeNode>();
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
-				DefaultMutableTreeNode copy = copy(node);
-				copies.add(copy);
-				toRemove.add(node);
-				for (int i = 1; i < paths.length; i++) {
-					DefaultMutableTreeNode next = (DefaultMutableTreeNode) paths[i].getLastPathComponent();
-					// Do not allow higher level nodes to be added to list.
-					if (next.getLevel() < node.getLevel()) {
-						break;
-					} else if (next.getLevel() > node.getLevel()) { // child
-																	// node
-						copy.add(copy(next));
-						// node already contains child
-					} else { // sibling
-						copies.add(copy(next));
-						toRemove.add(next);
-					}
-				}
-				DefaultMutableTreeNode[] nodes = copies.toArray(new DefaultMutableTreeNode[copies.size()]);
-				nodesToRemove = toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
-				return new NodesTransferable(nodes);
-			}
-			return null;
-		}
-
-		/** Defensive copy used in createTransferable. */
-		private DefaultMutableTreeNode copy(TreeNode node) {
-			return new DefaultMutableTreeNode(node);
-		}
-
-		protected void exportDone(JComponent source, Transferable data, int action) {
-			if ((action & MOVE) == MOVE) {
-				JTree tree = (JTree) source;
-				DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-				// Remove nodes saved in nodesToRemove in createTransferable.
-				for (int i = 0; i < nodesToRemove.length; i++) {
-					model.removeNodeFromParent(nodesToRemove[i]);
-				}
-			}
-			modelToTaxonset();
 		}
 		
-
-		public int getSourceActions(JComponent c) {
-			return COPY_OR_MOVE;
-		}
-
-		public boolean importData(TransferHandler.TransferSupport support) {
-			if (!canImport(support)) {
-				return false;
-			}
-			// Extract transfer data.
-			DefaultMutableTreeNode[] nodes = null;
-			try {
-				Transferable t = support.getTransferable();
-				nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
-			} catch (UnsupportedFlavorException ufe) {
-				System.out.println("UnsupportedFlavor: " + ufe.getMessage());
-			} catch (java.io.IOException ioe) {
-				System.out.println("I/O error: " + ioe.getMessage());
-			}
-			// Get drop location info.
-			JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
-			int childIndex = dl.getChildIndex();
-			TreePath dest = dl.getPath();
-
-			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) dest.getLastPathComponent();
-			JTree tree = (JTree) support.getComponent();
-			DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-
-			// only drop into a first level entry
-			DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-			if (parent == root) {
-				for (int i = 0; i < nodes.length; i++) {
-					if (nodes[i].getParent() != root) {
-						return false;
-					}
-				}
-			} else {
-				if (parent.getParent() != root) {
-					parent = (DefaultMutableTreeNode) parent.getParent();
-				}
-				// only drop second level entries
-				for (int i = 0; i < nodes.length; i++) {
-					if (nodes[i].getParent() == root) {
-						return false;
-					}
-				}
-			}
-			// Configure for drop mode.
-			int index = childIndex; // DropMode.INSERT
-			if (childIndex == -1) { // DropMode.ON
-				index = parent.getChildCount();
-			}
-			// Add data to model.
-			for (int i = 0; i < nodes.length; i++) {
-				model.insertNodeInto(nodes[i], parent, index++);
-			}
-
-			return true;
-		}
-		
-
-		public String toString() {
-			return getClass().getName();
-		}
-
-		public class NodesTransferable implements Transferable {
-			DefaultMutableTreeNode[] nodes;
-
-			public NodesTransferable(DefaultMutableTreeNode[] nodes) {
-				this.nodes = nodes;
-			}
-
-			public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-				if (!isDataFlavorSupported(flavor))
-					throw new UnsupportedFlavorException(flavor);
-				return nodes;
-			}
-
-			public DataFlavor[] getTransferDataFlavors() {
-				return flavors;
-			}
-
-			public boolean isDataFlavorSupported(DataFlavor flavor) {
-				return nodesFlavor.equals(flavor);
+		// remove unused taxon sets
+		for (int i = m_taxonset.size()-1; i >= 0; i--) {
+			if (m_taxonset.get(i).m_taxonset.get().size() == 0) {
+				m_taxonset.remove(i);
 			}
 		}
 	}
-
-	@Override
-	public void treeNodesChanged(TreeModelEvent e) {
-		TreePath tp = e.getTreePath();
-		Object[] children = e.getChildren();
-		DefaultMutableTreeNode changedNode;
-		if (children != null)
-			changedNode = (DefaultMutableTreeNode) children[0];
-		else
-			changedNode = (DefaultMutableTreeNode) tp.getLastPathComponent();
-
-		System.out.println("Model change path: " + tp + "New data: " + changedNode.getUserObject());
-		modelToTaxonset();
-	}
-
-	@Override
-	public void treeNodesInserted(TreeModelEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void treeNodesRemoved(TreeModelEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void treeStructureChanged(TreeModelEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
 
 }
