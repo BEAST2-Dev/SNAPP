@@ -68,8 +68,8 @@ public class DataInputEditor extends InputEditor {
 		// special features: background shading of rows
 		// custom editor allowing only Date column to be edited.		
 		m_model = new DefaultTableModel();
-		m_model.addColumn("Lineage");
 		m_model.addColumn("Taxon");
+		m_model.addColumn("Species/Population");
 		taxonSetToModel();
 
 		m_table = new JTable(m_model) {
