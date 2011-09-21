@@ -233,8 +233,8 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 			//Write true value, posterior mean value, posterior std dev for each height and each theta.
 			
 			//Heights first.
-			System.err.print("\tPProb\t"+m_fTreeWeight[iTopology]);
-			System.err.print("\tH");
+			System.out.println("\tPProb\t"+m_fTreeWeight[iTopology]);
+			System.out.println("\tHeight \toriginal\tmean\tstderr of mean");
 			for(int node = m_sLabels.size(); node<nNodes;node++) {
 				List<Double> heights = m_heights[node];
 				int n = heights.size()-1;
@@ -255,11 +255,11 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				double fESS = beast.core.util.ESS.calcESS(heights);
 				
 				//System.err.print("\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.err.print("\tNode"+node+"\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
+				System.out.println("\tNode"+node+"\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
 			}
 			
 			//Now Thetas
-			System.err.print("\tTH");
+			System.out.println("\tTheta \toriginal\tmean\tstderr of mean");
 			for(int node = 0; node<nNodes;node++) {
 				List<Double> thetas = m_thetas[node];
 				int n = thetas.size()-1;
@@ -282,7 +282,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				double fESS = beast.core.util.ESS.calcESS(thetas);
 				
 				//System.err.print("\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.err.print("\ttheta"+node+"\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
+				System.out.println("\ttheta"+node+"\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
 			}
 			
 			System.err.println();
