@@ -75,6 +75,9 @@ public class TreeSetAnalyser {
 	}
 
 	double getTheta(String sMetaData) {
+		if (sMetaData == null) {
+			return 0;
+		}
 		if (sMetaData.contains("theta=")) {
 			String sStr = sMetaData.replaceAll("theta=", "");
 			double f = Double.parseDouble(sStr);
