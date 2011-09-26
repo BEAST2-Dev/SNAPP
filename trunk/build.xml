@@ -457,9 +457,9 @@
 	</target>
 	
 <!--
+	        depends="build_jar_all_SnAP_NoJUnitTest"
 -->
 	<target name="addon"
-	        depends="build_jar_all_SnAP_NoJUnitTest"
 	        description="release BEAST 2 add-on version of SNAPP">
 
 		<delete dir="${Add_on_dir}" />
@@ -469,10 +469,13 @@
 		<mkdir dir="${Add_on_dir}/templates" />
 
 		<copy todir="${Add_on_dir}/lib">
-			<fileset dir="${dist}" includes="snap.*.jar" />
+			<fileset dir="${dist}" includes="snap.addon.jar" />
+		</copy>
+		<copy todir="${Add_on_dir}">
+			<fileset dir="${dist}" includes="snap.src.jar" />
 		</copy>
 		<copy todir="${Add_on_dir}/templates">
-			<fileset dir="templates/" />
+			<fileset file="templates/SNAPP.xml" />
 		</copy>
 
 		<jar jarfile="${dist}/SNAPP.addon.zip">
