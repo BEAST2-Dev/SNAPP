@@ -475,7 +475,7 @@
 			<fileset dir="templates/" />
 		</copy>
 
-		<jar jarfile="${dist}/snap.addon.zip">
+		<jar jarfile="${dist}/SNAPP.addon.zip">
 			<fileset dir="${Add_on_dir}">
 				<include name="**/*" />
 			</fileset>
