@@ -4,7 +4,7 @@
 	    Build SnAP. 
             Also used by Hudson SnAP project. 
 	    JUnit test is available for this build.
-	    $Id: build_SnAP.xml $
+	    $Id: build_SNAPP.xml $
 	</description>
 
 	<!-- set global properties for this build -->
@@ -386,7 +386,7 @@
 		            icon="${common_dir}/icons/beauti.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
-		            arguments="-template templates/snap.xml"
+		            arguments="-template templates/SNAPP.xml"
 		            version="${version}"
 		            infostring="${BEAUti_name}, ${copyright}"
 		            bundleid="beast.app.beauti.Beauti">
