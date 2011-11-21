@@ -61,6 +61,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			"calculated for the likelihood.", false);
 	
 	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Conditioning on zero mutations, except at root (default false)", false);
+	public Input<Boolean> hasDominantMarkers = new Input<Boolean>("dominant", "indicate that alleles are dominant (default false)", false);
 	
 	public SnAPTreeLikelihood() throws Exception {
 		// suppress some validation rules
@@ -73,8 +74,11 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	int [] m_nSampleSizes;
 	/** likelihood core, doing the actual hard work of calculating the likelihood **/
 	SnAPLikelihoodCore m_core;
-	boolean m_bUsenNonPolymorphic;
 	
+	/** some variable for shadowing inputs **/
+	boolean m_bUsenNonPolymorphic;
+	boolean m_bMutationOnlyAtRoot;
+	boolean m_bHasDominantMarkers;
     
 	SnapSubstitutionModel m_substitutionmodel;
 	
@@ -86,6 +90,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	}
 
     	m_bUsenNonPolymorphic = m_usenNonPolymorphic.get();
+    	m_bMutationOnlyAtRoot = mutationOnlyAtRoot.get();
+    	m_bHasDominantMarkers = hasDominantMarkers.get();
+    	
     	m_siteModel = m_pSiteModel.get();
     	
     	Tree tree = m_tree.get();
@@ -164,8 +171,6 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			boolean useCache = true;
 			boolean dprint = false;
 			
-			boolean bMutationOnlyAtRoot = mutationOnlyAtRoot.get();
-			
 			
 			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
 			double [] fCategoryProportions = m_siteModel.getCategoryProportions(null);
@@ -180,7 +185,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		    			m_nSampleSizes, 
 		    			m_data2,
 		    			coalescenceRate,
-						bMutationOnlyAtRoot,
+		    			m_bMutationOnlyAtRoot,
 		    			useCache,
 		    			dprint /*= false*/);
 			}
