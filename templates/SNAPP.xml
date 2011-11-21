@@ -45,7 +45,16 @@
 	        beast.util.ClusterTree.estimate,
             beast.math.distributions.Prior.x,
             beast.core.Logger.model,
-            beast.core.Logger.mode'
+            beast.core.Logger.mode,
+            snap.likelihood.SnAPTreeLikelihood.data,
+            snap.likelihood.SnAPTreeLikelihood.siteModel,
+            snap.likelihood.SnAPTreeLikelihood.branchRateModel,
+            snap.likelihood.SnAPTreeLikelihood.initFromTree,
+            snap.likelihood.SnAPTreeLikelihood.pattern,
+            snap.likelihood.SnAPTreeLikelihood.useTipDates,
+            snap.likelihood.SnAPTreeLikelihood.useAmbiguities,
+            snap.likelihood.SnAPTreeLikelihood.tree
+'
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
             beast.app.beauti.BeautiInitDlg.Create new specification=Import alignment(s),
             beast.app.beauti.BeautiInitDlg.Load existing file=Open SNAP xml file,
@@ -62,11 +71,16 @@
             hasPartitions="none" icon='2.png' forceExpansion='FALSE'
 			type='snap.Data'
         />
-
+<!--
     	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets2" tiptext="Taxon sets2" 
             path='distribution/distribution[id="likelihood"]/distribution/data/taxonset'
             hasPartitions="none" icon='1.png' forceExpansion='FALSE'
             isVisible='false'
+        />
+-->
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Likelihood" tiptext="Likelihood calculation specification"
+            path='distribution/distribution[id="likelihood"]/distribution'
+            hasPartitions="none" icon='4.png' forceExpansion='TRUE'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel/substModel'
@@ -162,6 +176,8 @@
 
 ]]>
 
+            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution' if='isInitializing'/>
+
             <connect spec='BeautiConnector' srcID='NodeSwapper' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='NodeBudger' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='TreeScaler' targetID='mcmc' inputName='operator'/>
@@ -169,33 +185,32 @@
             <connect spec='BeautiConnector' srcID='RateMixer' targetID='mcmc' inputName='operator'/>
 
 
-            <connect spec='BeautiConnector' srcID='uScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='vScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='alphaScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='betaScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='lambdaScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='kappaScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='mutationRateScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='propInvariantScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='gammaShapeScaler' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='uScaler' targetID='mcmc' inputName='operator' if='u/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='vScaler' targetID='mcmc' inputName='operator' if='v/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='alphaScaler' targetID='mcmc' inputName='operator' if='alpha/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='betaScaler' targetID='mcmc' inputName='operator' if='beta/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='lambdaScaler' targetID='mcmc' inputName='operator' if='lambda/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='kappaScaler' targetID='mcmc' inputName='operator' if='kappa/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='mutationRateScaler' targetID='mcmc' inputName='operator' if='mutationRate/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='propInvariantScaler' targetID='mcmc' inputName='operator' if='proportionInvariant/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='gammaShapeScaler' targetID='mcmc' inputName='operator' if='shape/estimate=true'/>
 
             <connect spec='BeautiConnector' srcID='treelog' targetID='mcmc' inputName='logger'/>
 
-            <connect spec='BeautiConnector' srcID='u' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='v' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='u' targetID='tracelog' inputName='log' if='u/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='v' targetID='tracelog' inputName='log' if='v/estimate=true'/>
             <connect spec='BeautiConnector' srcID='coalescenceRate' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='ThetaLogger' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='TreeHeightLogger' targetID='tracelog' inputName='log'/>
 
             <connect spec='BeautiConnector' srcID='snapprior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='alphaPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='betaPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='lambdaPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='kappaPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='uPrior.$(n)' targetID='prior' inputName='distribution'/>
-            <connect spec='BeautiConnector' srcID='vPrior.$(n)' targetID='prior' inputName='distribution'/>
+            <connect spec='BeautiConnector' srcID='alphaPrior.$(n)' targetID='prior' inputName='distribution' if='alpha/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='betaPrior.$(n)' targetID='prior' inputName='distribution' if='beta/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='lambdaPrior.$(n)' targetID='prior' inputName='distribution' if='lambda/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='kappaPrior.$(n)' targetID='prior' inputName='distribution' if='kappa/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='uPrior.$(n)' targetID='prior' inputName='distribution' if='u/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='vPrior.$(n)' targetID='prior' inputName='distribution' if='v/estimate=true'/>
 
-            <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution'/>
         </partitiontemplate>
 
 
@@ -232,80 +247,7 @@
 ]]>
         </subtemplate>
 
-<!-- Uniform -->
-        <subtemplate id='Uniform' spec='BeautiSubTemplate' class='beast.math.distributions.Uniform' mainid='[top]'>
-<![CDATA[
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/>
-]]>
-        </subtemplate>
-
-<!-- Normal -->
-        <subtemplate id='Normal' spec='BeautiSubTemplate' class='beast.math.distributions.Normal' mainid='[top]'>
-<![CDATA[
-    <distr offset="0.0" spec="beast.math.distributions.Normal">
-        <parameter name='mean' value='0' estimate='false'/>
-        <parameter name='sigma' value='1' estimate='false'/>
-    </distr>
-]]>
-        </subtemplate>
-
-<!-- OneOnX -->
-        <subtemplate id='1/X' spec='BeautiSubTemplate' class='beast.math.distributions.OneOnX' mainid='[top]'>
-<![CDATA[
-        <distr spec="beast.math.distributions.OneOnX"/>
-]]>
-        </subtemplate>
-
-<!-- lognormal -->
-        <subtemplate id='LogNormal' spec='BeautiSubTemplate' class='beast.math.distributions.LogNormalDistributionModel' mainid='[top]'>
-<![CDATA[
-        <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
-            <parameter name='M' value="1" estimate='false'/>
-            <parameter name='S' value="1.25" lower="0" upper="5" estimate='false'/>
-        </distr>
-]]>
-        </subtemplate>
-
-<!-- Exponential -->
-        <subtemplate id='Exponential' spec='BeautiSubTemplate' class='beast.math.distributions.Exponential' mainid='[top]'>
-<![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.Exponential">
-            <parameter name='lambda' value="1" estimate='false'/>
-        </distr>
-]]>
-        </subtemplate>
-
-<!-- Gamma -->
-        <subtemplate id='Gamma' spec='BeautiSubTemplate' class='beast.math.distributions.Gamma' mainid='[top]'>
-<![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.Gamma">
-            <parameter name='alpha' value="2" estimate='false'/>
-            <parameter name='beta' value="2" estimate='false'/>
-        </distr>
-]]>
-        </subtemplate>
-
-<!-- Laplace -->
-<!-- TODO: IMPLEMENT beast.math.distributions.LaplaceDistribution.getDistribution() before uncommenting this
-        <subtemplate id='LaplaceDistribution' spec='BeautiSubTemplate' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
-<![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
-            <parameter name='mu' value="0" estimate='false'/>
-            <parameter name='scale' value="1" estimate='false'/>
-        </distr>
-]]>
-        </subtemplate>
--->
-
-<!-- InverseGamma -->
-        <subtemplate id='InverseGamma' spec='BeautiSubTemplate' class='beast.math.distributions.InverseGamma' mainid='[top]'>
-<![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.InverseGamma">
-            <parameter name='alpha' value="2" estimate='false'/>
-            <parameter name='beta' value="2" estimate='false'/>
-        </distr>
-]]>
-        </subtemplate>
+        <mergepoint id='parametricDistributions'/>
     </beauticonfig>
 
 

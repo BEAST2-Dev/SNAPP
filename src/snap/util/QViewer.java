@@ -28,7 +28,7 @@ public class QViewer extends JPanel implements ChangeListener {
 	private static final long serialVersionUID = 1L;
 	Box box;
 	JTextField m_entryNBottom;
-	int m_nBottom = 2;
+	int m_nBottom = 3;
 	JTextField m_entryNTop;
 	int m_nTop = 2;
 	JTextField m_entryU;
@@ -36,10 +36,10 @@ public class QViewer extends JPanel implements ChangeListener {
 	JTextField m_entryV;
 	double m_fV = 1;
 	JTextField m_entryGamma;
-	double m_fMaxGamma = 0.01;
+	double m_fMaxGamma = 0.1;
 	double m_fGamma = m_fMaxGamma;
 	JTextField m_entryT;
-	double m_fT = 1;
+	double m_fT = 100;
 	JTextField m_entryScale;
 	double m_fScale = 1;
 	JSlider m_slider;
@@ -108,6 +108,7 @@ public class QViewer extends JPanel implements ChangeListener {
 		m_slider = new JSlider(JSlider.HORIZONTAL, 0, 1000, 1000);
 		m_slider.setPreferredSize(new Dimension(100, 5));
 		m_slider.addChangeListener(this);
+		recalc();
 		
 		box = Box.createHorizontalBox();
 		box.add(new JLabel("#lineages at bottom"));
@@ -189,7 +190,7 @@ public class QViewer extends JPanel implements ChangeListener {
 						int y1 = nHeight-(int)(m_fP[iBottom][iTime-1][iTop] * nHeight * m_fScale);
 						int x2 = nWidth * iTime / NR_TIMES;
 						int y2 = nHeight-(int)(m_fP[iBottom][iTime][iTop] * nHeight * m_fScale);
-						g2.drawLine(x1, y1, x2, y2);
+						g2.drawLine(x1, y1+iBottom%2, x2, y2);
 					}
 				}
 			}
