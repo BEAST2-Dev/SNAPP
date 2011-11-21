@@ -23,6 +23,7 @@ class geneTreeNode : public basic_newick {
 public: 
 	int state;
 	int species;
+	double height;
 	double P[2][2]; //Transition probabilities.
 };
 
@@ -42,6 +43,7 @@ public:
 	simNodeData(int id, double len, double gamma_val): basic_newick(id, len), gamma(gamma_val), numberCoalescences(0) {}
 	simNodeData(const basic_newick& data) {
 		basic_newick::copy(data);
+		
 		
 		size_t equalPos = data.meta_data.find_first_of("=");
 		if (equalPos!=string::npos) {
@@ -94,16 +96,16 @@ phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vect
 /**
  Simulate a single SNP. if rejectConstant = true, a non-constant site (polymorphism) will be generated.
  **/
-void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool outputTree = false, int site=0);
-void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, uint& numberAttempts, bool outputTree = false, int site=0);
+void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool onlyRootMutation, bool outputTree = false, int site=0);
+void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool onlyRootMutation, uint& numberAttempts, bool outputTree = false, int site=0);
 /**
  Simulate multiple unlinked sites.
  
  If rejectConstant is true, only non Constant sites are returned. We use a simple rejection algorithm (any better ideas?)
  **/
 
-void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const vector<uint>& sampleSizes, int nSites, bool rejectConstant, vector<vector<uint> >& redCounts, bool outputTrees = false);
-void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const vector<uint>& sampleSizes, int nSites, bool rejectConstant, vector<vector<uint> >& redCounts, double& proportionConstant, bool outputTrees = false);
+void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const vector<uint>& sampleSizes, int nSites, bool rejectConstant, bool onlyRootMutation, vector<vector<uint> >& redCounts, bool outputTrees = false);
+void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const vector<uint>& sampleSizes, int nSites, bool rejectConstant, bool onlyRootMutation, vector<vector<uint> >& redCounts, double& proportionConstant, bool outputTrees = false);
 
 #endif
 
