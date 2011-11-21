@@ -115,11 +115,11 @@ public class FCache {
 		return g_nID++;
 	} // nextID
 
-	CacheObject getLeafF(NodeData node, int numReds, SiteProbabilityCalculator spc) {
+	CacheObject getLeafF(NodeData node, int numReds, boolean bHasDominantMarkers, SiteProbabilityCalculator spc) {
 		
 		if (m_leafCache[node.getNr()][numReds] == null) {
 			// it's not in the cache yet, so create the object
-			spc.doLeafLikelihood(node, numReds, false);
+			spc.doLeafLikelihood(node, numReds, bHasDominantMarkers, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			CacheObject o = new CacheObject(Fb, nextID());

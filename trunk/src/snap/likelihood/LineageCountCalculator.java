@@ -38,18 +38,21 @@ public class LineageCountCalculator {
 	 @param phylo<NodeData>& tree  The species tree
 	 @param const vector<uint>& sampleSizes Array of sample sizes (n_0) for each taxon id. 
 	 */
-	public void computeCountProbabilities(NodeData tree, int [] sampleSizes, Double [] coalescenceRate, boolean dprint /*= false*/) throws Exception {
+	public void computeCountProbabilities(NodeData tree, int [] sampleSizes, Double [] coalescenceRate, boolean bHasDominantMarkers, boolean dprint /*= false*/) throws Exception {
 		
 		//Post-order traversal
 		if (tree.isLeaf()) {
-			doCountProbabilitiesForLeaf(tree, sampleSizes[tree.getNr()], dprint);
+			if (!bHasDominantMarkers)
+				doCountProbabilitiesForLeaf(tree, sampleSizes[tree.getNr()], dprint);
+			else
+				doCountProbabilitiesForLeaf(tree, 2*sampleSizes[tree.getNr()], dprint);
 		} else if (tree.getNrOfChildren() == 1) {
 			NodeData p = tree.getChild(0);
-			computeCountProbabilities(p, sampleSizes, coalescenceRate, dprint);
+			computeCountProbabilities(p, sampleSizes, coalescenceRate, bHasDominantMarkers, dprint);
 			doCountProbabilitiesForInternal(tree, p, coalescenceRate, dprint);  //Node has a single child.
 		} else { // assume two children
-			computeCountProbabilities(tree.getChild(0), sampleSizes, coalescenceRate, dprint);
-			computeCountProbabilities(tree.getChild(1), sampleSizes, coalescenceRate, dprint);
+			computeCountProbabilities(tree.getChild(0), sampleSizes, coalescenceRate, bHasDominantMarkers, dprint);
+			computeCountProbabilities(tree.getChild(1), sampleSizes, coalescenceRate, bHasDominantMarkers, dprint);
 			doCountProbabilitiesForInternal(tree, tree.getChild(0), tree.getChild(1), coalescenceRate, dprint);
 		}
 	} // computeCountProbabilities
