@@ -19,10 +19,11 @@
 
 void printUsage(ostream& os) {
 	os<<"SimSnap\n\nSimulates SNPs on a species tree.\n";
-	os<<"Usage:\n\n\tSimSnap [-nc]  [nsites] filename\n\n";
+	os<<"Usage:\n\n\tSimSnap [-ncrtis]  [nsites] filename\n\n";
 	os<<"\tFlags are:\n";
 	os<<"\t-n \tOutput nexus file (default is to output snap .xml format)\n";
 	os<<"\t-c \tInclude constant sites (default is to simulate only polymorphic sites)\n";
+	os<<"\t-r \tCondition on all mutation occurring at the root\n";
 	os<<"\t-t \tOutput the gene trees used to generate each site\n";
 	os<<"\t-i \tStart chain at the values used for simulation\n";
 	os<<"\t-s \tUse the following strings instead of values (for simulations) \n";
@@ -56,6 +57,7 @@ public:
 	bool outputXML;
 	bool excludeConst;
 	bool outputTrees;
+	bool onlyRootMutation; 
 	bool simulationOutput;
 	bool initialiseAtTrue;
 	string inputfile;
@@ -67,6 +69,7 @@ public:
 		outputTrees = false;
 		simulationOutput = false;
 		initialiseAtTrue = false;
+		onlyRootMutation = false;
 		
 		nsites = 0;
 		inputfile = "";
@@ -79,11 +82,13 @@ public:
 		//First read in the flags.
 		string flags = string(argv[arg]);
 		if (flags[0]=='-') {
-			if (flags.find_first_not_of("-ncst")!=string::npos)
+			if (flags.find_first_not_of("-nircst")!=string::npos)
 				printUsage(cerr);
 			
 			if (flags.find_first_of('n')!=string::npos)
 				outputXML = false;
+			if (flags.find_first_of('r')!=string::npos)
+				onlyRootMutation = true;
 			if (flags.find_first_of('c')!=string::npos)
 				excludeConst = false;
 			if (flags.find_first_of('t')!=string::npos)
@@ -132,7 +137,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 			size_t equalPos = (*p).meta_data.find_first_of("=");
 			rate = 2.0/atof(((*p).meta_data.substr(equalPos+1)).c_str());
 			stringstream s;
-			s<<"coalesenceRate = "<<rate;;
+			s<<"rate="<<rate;;
 			(*p).meta_data = s.str();
 		}
 	}
@@ -157,7 +162,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os<<"\t</data>\n\n\n";
 	
 	double alpha=2;
-	double beta=200;
+	double beta=20;
     //lambda = 1/(n t) \sum_{k=1}^{n-1} k/(n-k) 
     double t = 0.005; // t = height(tree);
     int n = taxa.size();
@@ -184,27 +189,30 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	if (simulationOutput) {
 		
-		
-		os <<" <!--     <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
+	  if (!initialiseFromTruth) {
+		os <<"      <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
 		os <<"               <input name='taxa' idref='snapalignment'/>\n";
-		os <<"          </tree>  --> \n  ";
-		
+		os <<"          </tree>  \n  ";
+	  } else {
 		os <<"\n";
 		os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
 		os <<"			<input name='newick'>";
 		print_newick(os,tree,true,true);
 		os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>\n\n";
-		
+	  }
 	} else {
+	  if (!initialiseFromTruth) {
 		os <<"      <tree name='stateNode' spec='ClusterTree' id='tree' nodetype='snap.NodeData' clusterType='upgma'>\n";
 		os <<"               <input name='taxa' idref='snapalignment'/>\n";
 		os <<"      </tree>   \n  ";
-		
-		os <<"<!-- \n";
+	  }
+	  else{
+		os <<" \n";
 		os <<"		<tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' offset = '0'>\n";
 		os <<"			<input name='newick'>";
 		print_newick(os,ratetree,true,true);
-		os <<" </input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree> --> \n\n";
+		os <<" \t\t</input>\n			<input name='taxa' idref='snapalignment'/>\n		</tree>  \n\n";
+	  }
 	}
 	
 	
@@ -245,13 +253,13 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	if (!initialiseFromTruth)
 		os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false'";
 	else 
-		os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='true' pattern='coalesenceRate'";
+		os <<"            <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='true' ";
 
 	
 
 	if (!polymorphicOnly)
 		os<<" non-polymorphic='true'";
-	os<<" pattern='coalescenceRate' data='@snapalignment' tree='@tree'>\n";
+	os<<" pattern='rate' data='@snapalignment' tree='@tree'>\n";
 	os <<"                <siteModel spec='sitemodel.SiteModel' id='siteModel'>\n";
 	os <<"				      <substModel spec='snap.likelihood.SnapSubstitutionModel'\n";
 	os <<"                    mutationRateU='@u' mutationRateV='@v' coalescenceRate='@coalescenceRate'/>\n";
@@ -551,7 +559,7 @@ int main(int argc, char* argv[]) {
 			cout<<"\t ;\n\n";
 		}		
 		
-		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, alleleCounts, ap.outputTrees);
+		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, ap.onlyRootMutation, alleleCounts, ap.outputTrees);
 		
 		if (ap.outputTrees)
 			cout<<"END;"<<endl;
