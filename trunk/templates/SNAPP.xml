@@ -78,18 +78,21 @@
             isVisible='false'
         />
 -->
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Likelihood" tiptext="Likelihood calculation specification"
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
             path='distribution/distribution[id="likelihood"]/distribution'
             hasPartitions="none" icon='4.png' forceExpansion='TRUE'
+            buttonStatus='NONE' type='snap.likelihood.SnAPTreeLikelihood'
         />
+<!--
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel/substModel'
             hasPartitions="none" icon='3.png' forceExpansion='TRUE'
         />
+-->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="none" icon='7.png' forceExpansion='TRUE'
-            buttonStatus='NONE'
+            buttonStatus='NONE' type='snap.likelihood.SnAPPrior'
         />
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
