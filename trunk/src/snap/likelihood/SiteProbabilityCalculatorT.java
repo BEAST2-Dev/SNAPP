@@ -418,11 +418,18 @@ public class SiteProbabilityCalculatorT {
 		}
 	} // computeSiteLikelihood2
 	
-	public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean useCache, boolean dprint/*=false*/, int iThread) throws Exception {
+	public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean bMutationOnlyAtRoot, boolean useCache, boolean dprint/*=false*/, int iThread) throws Exception {
+
+		//For some models, we want to allow mutation at the root but not along the branches. 
+		double branch_u = u;
+		double branch_v = v;
+		if (bMutationOnlyAtRoot)
+			branch_u = branch_v = 0.0;
+		
 		if (useCache) {
-			computeCachedSiteLikelihood2(tree, u, v, coalescenceRate, redCount, dprint/*=false*/, iThread);
+			computeCachedSiteLikelihood2(tree, branch_u, branch_v, coalescenceRate, redCount, dprint/*=false*/, iThread);
 		} else {
-			computeSiteLikelihood2(tree, u, v, coalescenceRate, redCount, dprint/*=false*/);
+			computeSiteLikelihood2(tree, branch_u, branch_v, coalescenceRate, redCount, dprint/*=false*/);
 		}
 		
 		if (dprint)

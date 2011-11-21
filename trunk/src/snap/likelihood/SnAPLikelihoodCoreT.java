@@ -57,10 +57,11 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 		NodeData m_root;
 		double m_u;
 		double m_v;
+		boolean m_bMutationOnlyAtRoot;
 		boolean m_bUseCache;
 		Double [] m_coalescenceRate;
 		
-	  SSSRunnable(int iStart, int iStep, int iMax, Alignment data, Double [] coalescenceRate, NodeData root, double u, double v, boolean bUseCache) {
+	  SSSRunnable(int iStart, int iStep, int iMax, Alignment data, Double [] coalescenceRate, NodeData root, double u, double v, boolean bMutationOnlyAtRoot, boolean bUseCache) {
 	    m_iStart = iStart;
 	    m_iStep = iStep;
 	    m_iMax = iMax;
@@ -68,6 +69,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	    m_root = root;
 	    m_u = u;
 	    m_v = v;
+		m_bMutationOnlyAtRoot = bMutationOnlyAtRoot;
 	    m_bUseCache = bUseCache;
 	    m_coalescenceRate = coalescenceRate;
 	  }
@@ -82,7 +84,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			try {
 				int [] thisSite = m_data.getPattern(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
-				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, m_bUseCache, false, 0);
+				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, m_bMutationOnlyAtRoot, m_bUseCache, false, 0);
 
 			}
 			catch (Exception ex) {
@@ -116,6 +118,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			int [] sampleSizes, 
 			Alignment data, 
 			Double [] coalescenceRate,
+			boolean bMutationOnlyAtRoot,							  
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
@@ -137,7 +140,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			m_lock = new ReentrantLock[nThreads];
 			for (int i = 0; i < nThreads; i++) {
 				m_lock[i] = new ReentrantLock();
-				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, bUseCache));
+				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, bMutationOnlyAtRoot, bUseCache));
 			}
 
 			// correction for constant sites
