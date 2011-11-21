@@ -67,12 +67,13 @@ public class SnAPLikelihoodCore  {
 			int [] sampleSizes, 
 			Alignment data, 
 			Double [] coalescenceRate,
-			boolean bMutationOnlyAtRoot,							  
+			boolean bMutationOnlyAtRoot,	
+			boolean bHasDominantMarkers,							  
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
 		
-		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate, dprint);
+		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate, bHasDominantMarkers, dprint);
 			
 			//TODO: Partial subtree updates over all sites.
 			double forwardLogL = 0.0;
@@ -84,7 +85,7 @@ public class SnAPLikelihoodCore  {
 
 			for(int id = 0; id < numPatterns; id++) {
 				int [] thisSite = data.getPattern(id);
-				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bMutationOnlyAtRoot, bUseCache, dprint);
+				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
 			}
 			return patternProb;
 /*

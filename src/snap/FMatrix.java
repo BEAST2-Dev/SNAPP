@@ -37,7 +37,7 @@ public class FMatrix {
 		return m_n;
 	}
 	public double get(int n, int r) {return F[n*(n+1)/2-1+r];}
-	private void set(int n, int r, double f) {F[n*(n+1)/2-1+r] = f;}
+	public void set(int n, int r, double f) {F[n*(n+1)/2-1+r] = f;} //Needed to make this public to handle dominant markers. Could move that calculation here?
 //	private void mul(int n, int r, double f) {F[n*(n+1)/2-1+r] *= f;}
 //	private void add(int n, int r, double f) {F[n*(n+1)/2-1+r] += f;}
 //	private void setZero(int n) {Arrays.fill(F, n*(n+1)/2-1, (n+1)*(n+2)/2-1, 0.0);} 

@@ -186,6 +186,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		    			m_data2,
 		    			coalescenceRate,
 		    			m_bMutationOnlyAtRoot,
+						m_bHasDominantMarkers,											  
 		    			useCache,
 		    			dprint /*= false*/);
 			}

@@ -39,10 +39,10 @@ public class FCacheT extends FCache {
 		super(nNodeNrMax, nRedsMax);
 	} //c'tor
 
-	CacheObject getLeafF(NodeData node, int numReds, SiteProbabilityCalculatorT spc) {
+	CacheObject getLeafF(NodeData node, int numReds, boolean bHasDominantMarkers, SiteProbabilityCalculatorT spc) {
 		if (m_leafCache[node.getNr()][numReds] == null) {
 			// it's not in the cache yet, so create the object
-			spc.doLeafLikelihood(node, numReds, false);
+			spc.doLeafLikelihood(node, numReds, bHasDominantMarkers, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			synchronized(this) {
