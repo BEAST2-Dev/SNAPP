@@ -163,6 +163,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			boolean useCache = true;
 			boolean dprint = false;
 			
+			boolean bMutationOnlyAtRoot = false; //THIS VALUE NEEDS TO COME FROM SOMEWHERE
+			
+			
 			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
 			double [] fCategoryProportions = m_siteModel.getCategoryProportions(null);
 			double [][] patternProbs = new double[m_siteModel.getCategoryCount()][];
@@ -176,6 +179,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		    			m_nSampleSizes, 
 		    			m_data2,
 		    			coalescenceRate,
+						bMutationOnlyAtRoot,
 		    			useCache,
 		    			dprint /*= false*/);
 			}

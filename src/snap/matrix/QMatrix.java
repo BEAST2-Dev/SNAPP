@@ -253,8 +253,11 @@ public class QMatrix extends AbstractMatrix {
 				
 				double K = -(coalescenceRate*(n*(n-1.0)))/2.0 - n*v + offset;
 				
-				
-				if (u==0.0) {
+				if (u==0.0 && v == 0.0) { 
+					//Diagonal
+					for (int r=0;r<=n;r++)
+						x[r] = y[r]/K;
+				} else if (u==0.0) {
 					//Lower bidagonal.
 					double Mrr = K;
 					checkMrr(Mrr);
@@ -264,8 +267,9 @@ public class QMatrix extends AbstractMatrix {
 						checkMrr(Mrr);
 						x[r] = (y[r] - ((n-r+1.0)*v)*x[r-1])/Mrr;	
 					}
-				} //Upper bidiagonal
+				} 
 				else if (v==0.0) {
+					//Upper bidiagonal
 					double Mrr = K + n*(v-u);
 					checkMrr(Mrr);
 					x[n] = y[n] / Mrr;

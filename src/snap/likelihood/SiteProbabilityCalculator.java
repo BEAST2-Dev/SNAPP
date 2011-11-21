@@ -111,9 +111,13 @@ public class SiteProbabilityCalculator {
     double doRootLikelihood(NodeData rootData, double u, double v, Double [] coalescenceRate, boolean dprint) throws Exception
     {
         int N=rootData.m_n;
+		
+		//System.err.println("Coalescent Rate at Root = "+coalescenceRate[rootData.getNr()]);
+		
+		
         double[][] conditional = findRootProbabilities(N, u, v, coalescenceRate[rootData.getNr()], dprint);
 
-	//	System.err.println("Root theta = "+rootData.gamma());
+		//System.err.println("Root theta = "+rootData.gamma());
 		
 
 		if (dprint) {
@@ -351,7 +355,7 @@ public class SiteProbabilityCalculator {
             System.err.println(node.getFt().toString());
         }
 
-	//	System.err.println("node.t = "+node.t()+"\tnode.gamma = "+node.gamma()+"\t2/node.gamma = "+(2.0/node.gamma()));
+		//System.err.println("node.gamma = "+coalescenceRate[node.getNr()]+"\tnot t = "+node.t() + "\t2/node.gamma = "+(2.0/coalescenceRate[node.getNr()]));
 		
         FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, coalescenceRate[node.getNr()], node.t(), node.getFb());
         //TODO: What is the effect of the tolerance?
@@ -419,11 +423,18 @@ public class SiteProbabilityCalculator {
         }
     } // computeSiteLikelihood2
 
-    public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean useCache, boolean dprint/*=false*/) throws Exception {
-        if (useCache) {
-            computeCachedSiteLikelihood2(tree, u, v, coalescenceRate, redCount, dprint/*=false*/);
+    public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean bMutationOnlyAtRoot, boolean useCache, boolean dprint/*=false*/) throws Exception {
+  
+		//For some models, we want to allow mutation at the root but not along the branches. 
+		double branch_u = u;
+		double branch_v = v;
+		if (bMutationOnlyAtRoot)
+			branch_u = branch_v = 0.0;
+				
+		if (useCache) {
+            computeCachedSiteLikelihood2(tree, branch_u, branch_v, coalescenceRate, redCount, dprint/*=false*/);
         } else {
-            computeSiteLikelihood2(tree, u, v, coalescenceRate, redCount, dprint/*=false*/);
+            computeSiteLikelihood2(tree, branch_u, branch_v, coalescenceRate, redCount, dprint/*=false*/);
         }
 
         if (dprint)

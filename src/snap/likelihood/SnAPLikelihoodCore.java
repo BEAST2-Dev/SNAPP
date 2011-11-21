@@ -67,6 +67,7 @@ public class SnAPLikelihoodCore  {
 			int [] sampleSizes, 
 			Alignment data, 
 			Double [] coalescenceRate,
+			boolean bMutationOnlyAtRoot,							  
 			boolean bUseCache,
 			boolean dprint /*= false*/) throws Exception
 	{
@@ -83,7 +84,7 @@ public class SnAPLikelihoodCore  {
 
 			for(int id = 0; id < numPatterns; id++) {
 				int [] thisSite = data.getPattern(id);
-				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bUseCache, dprint);
+				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bMutationOnlyAtRoot, bUseCache, dprint);
 			}
 			return patternProb;
 /*
