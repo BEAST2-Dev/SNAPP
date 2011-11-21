@@ -58,6 +58,7 @@ public:
 	bool excludeConst;
 	bool outputTrees;
 	bool onlyRootMutation; 
+	bool hasDominantMarkers;
 	bool simulationOutput;
 	bool initialiseAtTrue;
 	string inputfile;
@@ -70,6 +71,7 @@ public:
 		simulationOutput = false;
 		initialiseAtTrue = false;
 		onlyRootMutation = false;
+		hasDominantMarkers = false;
 		
 		nsites = 0;
 		inputfile = "";
@@ -82,7 +84,7 @@ public:
 		//First read in the flags.
 		string flags = string(argv[arg]);
 		if (flags[0]=='-') {
-			if (flags.find_first_not_of("-nircst")!=string::npos)
+			if (flags.find_first_not_of("-nirdcst")!=string::npos)
 				printUsage(cerr);
 			
 			if (flags.find_first_of('n')!=string::npos)
@@ -97,7 +99,9 @@ public:
 				simulationOutput = true;
 			if (flags.find_first_of('i')!=string::npos)
 				initialiseAtTrue = true;
-			
+			if (flags.find_first_of('d')!=string::npos)
+				hasDominantMarkers = true;
+
 			
 			arg++;
 			if (argc < 4)
@@ -361,7 +365,7 @@ void output_nexus(ostream& os, const vector<string>& species, const vector<uint>
 	os<<"#NEXUS\n\n";
 	
 	os<<"[\nOutput from SimSnap\n\nMutation rates:\n\tu = "<<u<<"\tv = "<<v<<"\n]\n\n";
-	
+	os<<"[WARNING- output to NEXUS is no longer supported and is probably buggy]\n\n";
 	
 	os<<"begin taxa;\n";
 	os<<"\tdimensions ntax = "<<ntax<<";\n";
@@ -483,6 +487,11 @@ int main(int argc, char* argv[]) {
 	cerr<<"Output to "<<((ap.outputXML)?"XML":"nexus")<<"\n";
 	cerr<<((ap.excludeConst)?"Exclude":"Include")<<" constant characters\n\n";
 	cerr<<((ap.outputTrees)?"Output":"Don't output")<<" trees\n";
+	if (ap.onlyRootMutation)
+		cerr<<"Mutation only at root\n";
+	if (ap.hasDominantMarkers)
+		cerr<<"Simulate dominant markers\n";
+	
 	cerr<<"Species and sample sizes:\n";
 	for(int i=0;i<nspecies;i++)
 		cerr<<(i+1)<<" "<<species[i]<<"\t"<<sampleSizes[i]<<"\n";
@@ -559,68 +568,19 @@ int main(int argc, char* argv[]) {
 			cout<<"\t ;\n\n";
 		}		
 		
-		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, ap.onlyRootMutation, alleleCounts, ap.outputTrees);
+		simulateMultipleSites(tree, u, v, sampleSizes, ap.nsites, ap.excludeConst, ap.onlyRootMutation, ap.hasDominantMarkers, alleleCounts, ap.outputTrees);
 		
 		if (ap.outputTrees)
 			cout<<"END;"<<endl;
 		
 		
-#ifdef DEBUG_2_SPECIES
-		
-		if (species.size()==2) {
-			vector< vector< double > > F;
-			int n1 = sampleSizes[0];
-			int n2 = sampleSizes[1];
-			F.resize(n1+1);
-			for(int i=0;i<=n1;i++) {
-				F[i].resize(n2+1);
-				fill(F[i].begin(),F[i].end(),0.0);
-			}
-			
-			for(int j=0;j<ap.nsites;j++) 
-				F[alleleCounts[j][0]][alleleCounts[j][1]]++;
-			
-			cerr<<"\n\nTwo species frequencies\n";
-			cerr<<"F=[";
-			for(int i=0;i<F.size();i++) {
-				for(int j=0;j<F[0].size();j++) {
-					F[i][j]/=(double)ap.nsites;
-					cerr<<" "<<F[i][j];
-				}
-				if (i<F.size()-1)
-					cerr<<";\n";
-			}
-			cerr<<"\n\nlog frequencies\n";
-			cerr<<"F=[";
-			for(int i=0;i<F.size();i++) {
-				for(int j=0;j<F[0].size();j++) {
-					cerr<<" "<<setprecision(15)<<log(F[i][j]);
-				}
-				if (i<F.size()-1)
-					cerr<<";\n";
-			}
-			
-			
-			cerr<<"];"<<endl;
-		} else if (species.size()==1) {
-			vector<double> F(sampleSizes[0]+1);
-			fill(F.begin(),F.end(),0.0);
-			for(int j=0;j<ap.nsites;j++) 
-				F[alleleCounts[j][0]]++;
-			cerr<<"\n\nOne species frequencies\nF=[";
-			for(int i=0;i<F.size();i++)
-				cerr<<" "<<F[i]/(double)ap.nsites;
-			cerr<<"];"<<endl;
-		}
-		
-#else
 		if (ap.outputXML) {
         	
 			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
-#endif
+
         (*os).close();
 		
 		//Remove scaling from tree
