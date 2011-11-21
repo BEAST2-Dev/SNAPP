@@ -60,6 +60,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
 			"calculated for the likelihood.", false);
 	
+	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Conditioning on zero mutations, except at root (default false)", false);
 	
 	public SnAPTreeLikelihood() throws Exception {
 		// suppress some validation rules
@@ -163,7 +164,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			boolean useCache = true;
 			boolean dprint = false;
 			
-			boolean bMutationOnlyAtRoot = false; //THIS VALUE NEEDS TO COME FROM SOMEWHERE
+			boolean bMutationOnlyAtRoot = mutationOnlyAtRoot.get();
 			
 			
 			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
