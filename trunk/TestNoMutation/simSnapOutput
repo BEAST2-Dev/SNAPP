@@ -14,6 +14,6 @@ Species and sample sizes:
 4 D	5
 
 Fileroot = testNoMutation
-(((0[theta=0.06]:0.057,1[theta=0.06]:0.0057)[theta=0.05]:0.0045,2[theta=0.06]:0.0102)[theta=0.05]:0.0138,3[theta=0.06]:0.024)[theta=0.06]:0;
+(((0[theta=0.06]:0.0057,1[theta=0.06]:0.0057)[theta=0.05]:0.0045,2[theta=0.06]:0.0102)[theta=0.05]:0.0138,3[theta=0.06]:0.024)[theta=0.06]:0;
 Writing testNoMutation_tree_1.xml
-SimTree = (((0[theta = 0.06, nc = 3.6757]:0.057,1[theta = 0.06, nc = 1.3688]:0.0057)[theta = 0.05, nc = 1.3052]:0.0045,2[theta = 0.06, nc = 2.0002]:0.0102)[theta = 0.05, nc = 3.8716]:0.0138,3[theta = 0.06, nc = 2.9236]:0.024)[theta = 0.06, nc = 3.8549]:0;
+SimTree = (((0[theta = 0.06, nc = 1.3542]:0.0057,1[theta = 0.06, nc = 1.3713]:0.0057)[theta = 0.05, nc = 2.6343]:0.0045,2[theta = 0.06, nc = 1.9795]:0.0102)[theta = 0.05, nc = 4.7633]:0.0138,3[theta = 0.06, nc = 2.8884]:0.024)[theta = 0.06, nc = 4.009]:0;
