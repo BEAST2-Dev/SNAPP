@@ -1,0 +1,19 @@
+Simulating data from 1 species trees
+Mutation rates u = 1 v = 1
+Number of sites = 10000
+Number of trees = 1
+Output to XML
+Exclude constant characters
+
+Don't output trees
+Mutation only at root
+Species and sample sizes:
+1 A	5
+2 B	5
+3 C	5
+4 D	5
+
+Fileroot = testNoMutation
+(((0[theta=0.006]:0.0057,1[theta=0.006]:0.0057)[theta=0.005]:0.0045,2[theta=0.006]:0.0102)[theta=0.005]:0.0138,3[theta=0.006]:0.024)[theta=0.006]:0;
+Writing testNoMutation_tree_1.xml
+SimTree = (((0[theta = 0.006, nc = 3.6849]:0.0057,1[theta = 0.006, nc = 3.6921]:0.0057)[theta = 0.005, nc = 1.4086]:0.0045,2[theta = 0.006, nc = 3.9266]:0.0102)[theta = 0.005, nc = 1.2816]:0.0138,3[theta = 0.006, nc = 3.9991]:0.024)[theta = 0.006, nc = 1.0071]:0;

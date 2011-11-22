@@ -31,7 +31,12 @@
  *  Copyright 2009 David Bryant
  *
  
+ Here we code the matrix Q^t, where Q is the matrix
+ described in Bryant et al. 
+ Inferring Species Trees Directly from Biallelic Genetic Markers: Bypassing Gene Trees in a Full Coalescent Analysis
  
+ 
+
  The matrix Q^t is block upper-bidiagonal. 
  On the diagonal are matrices M_n,  n=1...N
  
