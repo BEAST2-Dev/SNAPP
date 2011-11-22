@@ -349,9 +349,10 @@ public class SiteProbabilityCalculator {
 			//Now p_r_k_n = p(r,r,n)
 			
 			for(int k=nReds;k<=2*nReds;k++) {
-				node.getFb().set(node.m_n,k,p_r_k_n);
-				if (k<2*nReds)
+				if (k>nReds)
 					p_r_k_n = (p_r_k_n * (2.0*nReds-k+1)*k) / (2.0*(k-nReds)*(2.0*n-k+1.0));
+				node.getFb().set(node.m_n,k,p_r_k_n);
+					
 			}
 		}
 		else
