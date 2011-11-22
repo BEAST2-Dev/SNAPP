@@ -187,6 +187,19 @@
             <connect spec='BeautiConnector' srcID='GammaMover' targetID='mcmc' inputName='operator'/>
             <connect spec='BeautiConnector' srcID='RateMixer' targetID='mcmc' inputName='operator'/>
 
+            <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>
+            <connect spec='BeautiConnector' srcID='u' targetID='state' inputName='stateNode' if='u/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='u' targetID='state' inputName='stateNode' if='u/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='v' targetID='state' inputName='stateNode' if='v/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='alpha' targetID='state' inputName='stateNode' if='alpha/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='beta' targetID='state' inputName='stateNode' if='beta/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='lambda' targetID='state' inputName='stateNode' if='lambda/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='kappa' targetID='state' inputName='stateNode' if='kappa/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='mutationRate' targetID='state' inputName='stateNode' if='mutationRate/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='proportionInvariant' targetID='state' inputName='stateNode' if='proportionInvariant/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='shape' targetID='state' inputName='stateNode' if='shape/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='coalescenceRate' targetID='state' inputName='stateNode' if='coalescenceRate/estimate=true'/>
+
 
             <connect spec='BeautiConnector' srcID='uScaler' targetID='mcmc' inputName='operator' if='u/estimate=true'/>
             <connect spec='BeautiConnector' srcID='vScaler' targetID='mcmc' inputName='operator' if='v/estimate=true'/>
