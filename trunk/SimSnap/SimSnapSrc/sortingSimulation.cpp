@@ -18,11 +18,11 @@ using namespace Phylib;
  **/
 phylo<simNodeData> initialiseSimTree(phylo<basic_newick>& tree, double rate) {
 	typedef phylo<simNodeData>::iterator S_ITER;
-
+	
 	
 	phylo<simNodeData> simTree;
 	Phylib::copy(tree,simTree);
-		
+	
 	//Convert the theta values into gamma values
 	// The expected divergence between two individuals is 
 	// theta = 2*rate/gamma.
@@ -114,12 +114,12 @@ phylo<geneTreeNode> simulateGeneTree(phylo<simNodeData>& speciesTree, const vect
 			
 			height_in_branch+=wait;
 			
-		/*	for(L_ITER node = s->lineages.begin();node!=s->lineages.end();node++) {
-				print_newick(cerr,(*node),true,true);
-				cerr<<"\t";
-			}
-			cerr<<endl;
-			*/
+			/*	for(L_ITER node = s->lineages.begin();node!=s->lineages.end();node++) {
+			 print_newick(cerr,(*node),true,true);
+			 cerr<<"\t";
+			 }
+			 cerr<<endl;
+			 */
 			
 			
 			//Choose a random pair (a,b),  a<b, to coalesce.
@@ -167,7 +167,7 @@ typedef phylo<geneTreeNode>::iterator G_ITER;
  Pre-compute the mutation probabilities using the 2-state model
  **/
 static void computeTransitionProbs(phylo<geneTreeNode>& G, double u, double v) {
-	double pi_0 = v/(u+v), pi_1 = 1.0-pi_0;
+	double pi_0 = u/(u+v), pi_1 = 1.0-pi_0;  //0 = green, 1 = red.
 	
 	for(G_ITER p = G.leftmost_leaf();p!=G.root();p=p.next_post()) {
 		double t = p->length;
@@ -216,46 +216,46 @@ static bool checkIfConstant(const vector<uint>& redCount, const vector<uint>& sa
  **/
 void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool onlyRootMutation, bool hasDominantMarkers, bool outputTree, int site) {
 	uint numberAttempts;
-	simulateSingleSite(speciesTree,u,v,sampleSizes,redCounts, rejectConstant,  onlyRootMutation, numberAttempts, outputTree,site);
+	simulateSingleSite(speciesTree,u,v,sampleSizes,redCounts, rejectConstant,  onlyRootMutation, hasDominantMarkers, numberAttempts, outputTree,site);
 }
-	
+
 /**
  Simulate a gene tree and then simulate a single binary character on it. Returns allele counts for each species.
  Uses a rejection algorithm to simulate non-constant characters. The numberAttempts is the number of characters we had to simulate to a polymorphic one.
  **/
- void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool onlyRootMutation, bool hasDominantMarkers, uint& numberAttempts, bool outputTree, int site) {
+void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, const vector<uint>& sampleSizes, vector<uint>& redCounts, bool rejectConstant, bool onlyRootMutation, bool hasDominantMarkers, uint& numberAttempts, bool outputTree, int site) {
 	
-			
+	
 	//Now evolve the markers.
-	double pi_0 = v/(u+v);
+	double pi_0 = u/(u+v);
 	uint nSpecies = sampleSizes.size();
 	numberAttempts = 0;
-	 
+	
 	bool allConstant = true;
-
-	 vector<uint> effectiveSampleSizes(nSpecies);
-	 for(uint i=0;i<nSpecies;i++)
-		 if (hasDominantMarkers)
-			 effectiveSampleSizes[i] = 2*sampleSizes[i];
-		 else
-			 effectiveSampleSizes[i] = sampleSizes[i];
-	 
-	 
-	 
+	
+	vector<uint> effectiveSampleSizes(nSpecies);
+		
+	for(uint i=0;i<nSpecies;i++)
+		if (hasDominantMarkers)
+			effectiveSampleSizes[i] = 2*sampleSizes[i];
+		else
+			effectiveSampleSizes[i] = sampleSizes[i];
+	
+		
 	do {
 		numberAttempts++;
 		//First generate the species tree
 		for(phylo<simNodeData>::iterator p = speciesTree.root();!p.null();p=p.next_pre() ) {
 			p->numberCoalescences=0;			
 		}		
-		phylo<geneTreeNode> G = simulateGeneTree(speciesTree, sampleSizes);
+		phylo<geneTreeNode> G = simulateGeneTree(speciesTree, effectiveSampleSizes);
 		
 		
 		if (onlyRootMutation) {
 			//In this model we condition on there being no mutation below the root of the species tree.
 			//To simulate this lazily, we generate a gene tree, and then draw a line across it at height speciesRootHeight
 			//Any branches (or parts of branches) below that line are contracted to 0.
-						
+			
 			//Compute height of the root.
 			double speciesRootHeight = 0.0;
 			for(phylo<simNodeData>:: iterator p = speciesTree.root().left();!p.null();p=p.left()) 
@@ -274,7 +274,7 @@ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, con
 					p->length = max(0.0,p->height + p->length - speciesRootHeight);
 			}
 		}
-			
+		
 		
 		
 		computeTransitionProbs(G,u,v);
@@ -285,25 +285,29 @@ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, con
 		vector<int> lastAllele(nSpecies);
 		std::fill(lastAllele.begin(),lastAllele.end(),-1);
 		
-				
+		
 		
 		
 		for(G_ITER p = G.root();!p.null();p=p.next_pre()) {
-			if (hasDominantMarkers) {
-				uint species = p->species;
-				if (lastAllele[species]<0)
-					lastAllele[species] = (int)p->state;
-				else {
-					if (lastAllele[species]==1 || p->state == 1)
+			if (p.leaf()) {
+				if (hasDominantMarkers) {
+					uint species = p->species;
+					if (lastAllele[species]<0)
+						lastAllele[species] = (int)p->state;
+					else {
+						if (lastAllele[species]==1 || p->state == 1)
+							redCounts[p->species]++;
+						lastAllele[species]=-1;
+					}
+				} else {
+					if (p->state==1) {
 						redCounts[p->species]++;
-					lastAllele[species]=-1;
-				}
-			} else {
-				if (p.leaf() && p->state==1) {
-					redCounts[p->species]++;
+					}
 				}
 			}
 		}
+		
+				
 		
 		if (rejectConstant) 
 			allConstant = checkIfConstant(redCounts, sampleSizes);	
@@ -315,11 +319,11 @@ void simulateSingleSite(phylo<simNodeData>& speciesTree, double u, double v, con
 		}
 		
 		G.clear();
-
+		
 	} while(allConstant && rejectConstant);	
-	 for(phylo<simNodeData>::iterator p = speciesTree.root();!p.null();p=p.next_pre() ) {
-		 p->numberCoalescencesTotal+=p->numberCoalescences;
-	 }
+	for(phylo<simNodeData>::iterator p = speciesTree.root();!p.null();p=p.next_pre() ) {
+		p->numberCoalescencesTotal+=p->numberCoalescences;
+	}
 }
 
 /**
@@ -339,19 +343,19 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 
 void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const vector<uint>& sampleSizes, int nSites, bool rejectConstant, bool onlyRootMutation, bool hasDominantMarkers, vector<vector<uint> >& redCounts, double& proportionConstant, bool outputTrees) {
 	typedef phylo<simNodeData>::iterator S_ITER;
-
+	
 	
 	redCounts.resize(nSites);
 	double rate = 2.0*u*v/(u+v);
 	
 	phylo<simNodeData> simTree = initialiseSimTree(tree,rate);
 	
-		
+	
 	uint numberAttempts, numberAttemptsTotal;
 	numberAttemptsTotal = 0;
 	
 	for(int i=0;i<nSites;i++) {
-		simulateSingleSite(simTree, u, v, sampleSizes, redCounts[i], rejectConstant,onlyRootMutation,numberAttempts, outputTrees,i+1);
+		simulateSingleSite(simTree, u, v, sampleSizes, redCounts[i], rejectConstant,onlyRootMutation,hasDominantMarkers,numberAttempts, outputTrees,i+1);
 		numberAttemptsTotal+=numberAttempts;
 	}
 	
@@ -367,13 +371,13 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 	cerr<<"SimTree = ";
 	print_newick(cerr,simTree,true,true);
 	cerr<<endl;
-
+	
 	stringstream s;
 	s<<"SimTree = ";
 	print_newick(s,simTree,true,true);
 	s<<endl;
-    g_simtree = s.str();
-
+	g_simtree = s.str();
+	
 	
 	simTree.clear();
 	if (rejectConstant)
