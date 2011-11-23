@@ -166,7 +166,19 @@ public class SiteProbabilityCalculator {
         FCache.CacheObject o = m_cache.getLeafF(node, numReds, bHasDominantMarkers, this);
         node.setCacheIDB(o.m_nCacheID);
         //node.assignFb(o.getF());
+		
+		
+		
+		
+		
         node.initFb(o.getF());
+		
+		/* System.err.print(">>>>Leaf = "+node.getNr());
+		System.err.print(" ["+numReds+","+node.m_n+"::");
+		for(int k=0;k<=node.m_n;k++)
+			System.err.print(""+node.getFb().get(node.m_n,k)+", ");
+		System.err.println(); */
+		
     }
 
     void doCachedTopOfBranchLikelihood(NodeData node, double u, double v, Double [] coalescenceRate) throws Exception {
@@ -352,11 +364,19 @@ public class SiteProbabilityCalculator {
 				if (k>nReds)
 					p_r_k_n = (p_r_k_n * (2.0*nReds-k+1)*k) / (2.0*(k-nReds)*(2.0*n-k+1.0));
 				node.getFb().set(node.m_n,k,p_r_k_n);
-					
 			}
+			
 		}
 		else
 			node.initFb(node.m_n, nReds);
+		/*
+		System.err.print("Leaf = "+node.getNr());
+		System.err.print(" ["+nReds+","+node.m_n+"::");
+		for(int k=0;k<=node.m_n;k++)
+			System.err.print(""+node.getFb().get(node.m_n,k)+", ");
+		System.err.println();
+		*/
+		
         //node.resizeF(node.n);
         //node.getFb().set(node.n,numReds,1.0);
     } // doLeafLikelihood
