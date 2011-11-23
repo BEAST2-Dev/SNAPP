@@ -1,0 +1,32 @@
+
+#model:
+#
+#<?xml version="1.0" encoding="UTF-8" standalone="no"?><distribution id="posterior" spec="beast.core.util.CompoundDistribution" useThreads="false">
+#    <distribution id="prior" spec="beast.core.util.CompoundDistribution" useThreads="false">
+#        <distribution id="snapprior.aflp_25" rateprior="gamma" spec="snap.likelihood.SnAPPrior">
+#            <parameter dimension="1" estimate="false" id="alpha" lower="0.0" name="alpha" value="11.750"/>
+#            <parameter dimension="1" estimate="false" id="beta" lower="0.0" name="beta" value="109.73"/>
+#            <parameter dimension="1" estimate="false" id="kappa" lower="0.0" name="kappa" value="1.0"/>
+#            <parameter dimension="1" estimate="true" id="coalescenceRate" name="coalescenceRate" value="10"/>
+#            <parameter dimension="1" estimate="false" id="lambda" lower="0.0" name="lambda" value="0.00765"/>
+#            <tree clusterType="upgma" estimate="true" id="Tree.aflp_25" nodetype="snap.NodeData" spec="beast.util.ClusterTree">
+#            </tree>
+#        </distribution>
+#    </distribution>
+#    <distribution id="likelihood" spec="beast.core.util.CompoundDistribution" useThreads="false">
+#        <distribution data="@snap.aflp_25" dominant="true" id="treeLikelihood.aflp_25" initFromTree="false" mutationOnlyAtRoot="false" non-polymorphic="false" pattern="coalescenceRate" spec="snap.likelihood.SnAPTreeLikelihood" tree="@Tree.aflp_25" useAmbiguities="false">
+#            <input gammaCategoryCount="0" id="MutationSiteModel.aflp_25" name="siteModel" spec="beast.evolution.sitemodel.SiteModel">
+#                <parameter dimension="1" estimate="false" id="mutationRate" name="mutationRate" value="1.0"/>
+#                <parameter dimension="1" estimate="false" id="shape" name="shape" value="2.0"/>
+#                <parameter dimension="1" estimate="false" id="proportionInvariant" name="proportionInvariant" value="0.0"/>
+#                <input coalescenceRate="@coalescenceRate" id="MutationModel" name="substModel" spec="snap.likelihood.SnapSubstitutionModel">
+#                    <parameter dimension="1" estimate="false" id="u" lower="0.0" name="mutationRateU" value="3.33333"/>
+#                    <parameter dimension="1" estimate="false" id="v" lower="0.0" name="mutationRateV" value="0.588235"/>
+#                </input>
+#            </input>
+#        </distribution>
+#    </distribution>
+#</distribution>
+#
+Sample	posterior	likelihood	prior	coalescenceRate1	coalescenceRate2	coalescenceRate3	coalescenceRate4	coalescenceRate5	coalescenceRate6	coalescenceRate7	coalescenceRate8	coalescenceRate9	coalescenceRate10	coalescenceRate11	coalescenceRate12	coalescenceRate13	coalescenceRate14	coalescenceRate15	coalescenceRate16	coalescenceRate17	theta0	theta1	theta2	theta3	theta4	theta5	theta6	theta7	theta8	theta9	theta10	theta11	theta12	theta13	theta14	theta15	theta16	TreeHeightLogger	
+0	-1.0E101	-1.0E101	-924.1787300202781	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	9.267286300373431	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.2158129073793057	0.5469285313821303	

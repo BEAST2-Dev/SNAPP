@@ -1,0 +1,29 @@
+
+#model:
+#
+#<?xml version="1.0" encoding="UTF-8" standalone="no"?><distribution id="posterior" spec="beast.core.util.CompoundDistribution" useThreads="false">
+#    <distribution id="prior" spec="beast.core.util.CompoundDistribution" useThreads="false">
+#        <distribution id="lambdaPrior" spec="beast.math.distributions.Prior">
+#            <parameter dimension="1" estimate="true" id="lambda" lower="0.0" name="x" value="216.667"/>
+#            <input name="distr" offset="0.0" spec="beast.math.distributions.OneOnX"/>
+#        </distribution>
+#        <distribution id="snapprior" lambda="@lambda" rateprior="gamma" spec="snap.likelihood.SnAPPrior">
+#            <parameter dimension="1" estimate="true" id="alpha" lower="0.0" name="alpha" value="2"/>
+#            <parameter dimension="1" estimate="true" id="beta" lower="0.0" name="beta" value="20"/>
+#            <parameter dimension="1" estimate="true" id="kappa" lower="0.0" name="kappa" value="138.629"/>
+#            <parameter dimension="1" estimate="true" id="coalescenceRate" name="coalescenceRate" value="10"/>
+#            <tree clusterType="upgma" estimate="true" id="tree" nodetype="snap.NodeData" spec="beast.util.ClusterTree">
+#            </tree>
+#        </distribution>
+#    </distribution>
+#    <distribution data="@snapalignment" dominant="true" id="treeLikelihood" initFromTree="false" mutationOnlyAtRoot="false" non-polymorphic="false" pattern="rate" spec="snap.likelihood.SnAPTreeLikelihood" tree="@tree" useAmbiguities="false">
+#        <input gammaCategoryCount="0" id="siteModel" name="siteModel" spec="beast.evolution.sitemodel.SiteModel">
+#            <input coalescenceRate="@coalescenceRate" name="substModel" spec="snap.likelihood.SnapSubstitutionModel">
+#                <parameter dimension="1" estimate="true" id="u" lower="0.0" name="mutationRateU" value="1"/>
+#                <parameter dimension="1" estimate="true" id="v" lower="0.0" name="mutationRateV" value="1"/>
+#            </input>
+#        </input>
+#    </distribution>
+#</distribution>
+#
+Sample	u	v	prior	lambdaPrior	treeLikelihood	posterior	lambda	coalescenceRate1	coalescenceRate2	coalescenceRate3	coalescenceRate4	coalescenceRate5	coalescenceRate6	coalescenceRate7	theta0	theta1	theta2	theta3	theta4	theta5	theta6	tree.height	tree.length	
