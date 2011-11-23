@@ -119,12 +119,19 @@ public class FCache {
 		
 		if (m_leafCache[node.getNr()][numReds] == null) {
 			// it's not in the cache yet, so create the object
+			//System.err.println("CACHE leaf = "+node.getNr()+ " nReds = "+numReds);
+			
+			
 			spc.doLeafLikelihood(node, numReds, bHasDominantMarkers, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			CacheObject o = new CacheObject(Fb, nextID());
-			m_leafCache[node.getNr()][numReds] = o;
-		}
+			m_leafCache[node.getNr()][numReds] = o; 
+							   } else {
+								  //System.err.println("RETRIEVE leaf = "+node.getNr()+ " nReds = "+numReds);
+
+							   }
+							   
 		return m_leafCache[node.getNr()][numReds];
 	} // getLeafF
 	
