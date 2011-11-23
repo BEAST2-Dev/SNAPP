@@ -86,12 +86,6 @@ public class SnAPLikelihoodCore  {
 			for(int id = 0; id < numPatterns; id++) {
 				int [] thisSite = data.getPattern(id);
 				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
-				System.err.print("pattern "+id+" log likelihood = "+patternProb[id]);
-				for(int i=0;i<thisSite.length;i++)
-					System.err.print("\t"+thisSite[i]);
-				System.err.println();
-				
-				
 			}
 			return patternProb;
 /*

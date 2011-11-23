@@ -351,7 +351,8 @@ public class SiteProbabilityCalculator {
 			
 			//Need to account for the fact that the markers are dominant.
 			
-			node.resizeF(node.m_n);
+			node.initFb(node.m_n, nReds);
+			node.getFb().set(node.m_n, nReds, 0);
 			int n = node.m_n/2; //Sample size in # individuals (rather than number of gametes)
 			//Compute p(r,k,n), which is the probability of r individuals having at least one copy of the 1 allele, 
 			// given that k of their gameters carry the allele.
