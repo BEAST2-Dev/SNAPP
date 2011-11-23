@@ -25,19 +25,17 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
-<run id="mcmc" spec='snap.MCMC' chainLength="10000" preBurnin="0" stateBurnin='0' killAfter='0'>
-        <state>
+<run id="mcmc" spec='snap.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='0' killAfter='0'>
+        <state storeEvery='1000'>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
-          
+
+		  <!-- the following values may or may not be appropriate. Read the manual for further directions -->          
           <parameter name='stateNode' id='v' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='u' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='alpha'  value='2' lower='0.0'/>
           <parameter name='stateNode' id='beta'   value='200' lower='0.0'/>
           <parameter name='stateNode' id='lambda' value='10' lower='0.0'/>
-          <tree name='stateNode' spec='TreeParser' id='tree' nodetype='snap.NodeData' >
-                <input name='newick'>((A[theta=7.87E-3]:0.015,B[theta=7.87E-3]:0.015)[theta=7.87E-3]:0.015,(C[theta=7.87E-3]:0.015,D[theta=7.87E-3]:0.015)[theta=7.87E-3]:0.015)[theta=7.87E-3]</input>
-                <input name='taxa' idref='alignment'/>
-          </tree>
+		  <stateNode clusterType="upgma" estimate="true" id="tree" nodetype="snap.NodeData" spec="beast.util.ClusterTree" taxa='@alignment'/>
         </state>
 
         <distribution id="posterior" spec='CompoundDistribution'>
@@ -61,8 +59,11 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
         <operator spec='operators.GammaMover' scale='0.5' weight='0.5' coalescenceRate='@coalescenceRate'/>
         <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' tree='@tree'  coalescenceRate='@coalescenceRate'/>
 
+<!-- estimate u and v -->
+	    <operator spec='operators.MutationMover' window='0.1' weight='0.25' u='@u' v='@v'/>
 
-        <logger logEvery="100">
+
+        <logger logEvery="1000">
             <log idref="u"/>
             <log idref="v"/>
             <log idref="prior"/>
@@ -71,7 +72,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
 	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="100" fileName="test.$(seed).log">
+        <logger logEvery="1000" fileName="test.$(seed).log">
 	        <model idref='posterior'/>
             <log idref="u"/>
             <log idref="v"/>
