@@ -173,11 +173,11 @@ public class SiteProbabilityCalculator {
 		
         node.initFb(o.getF());
 		
-		/* System.err.print(">>>>Leaf = "+node.getNr());
-		System.err.print(" ["+numReds+","+node.m_n+"::");
-		for(int k=0;k<=node.m_n;k++)
-			System.err.print(""+node.getFb().get(node.m_n,k)+", ");
-		System.err.println(); */
+		//System.err.print(">>>>Leaf = "+node.getNr());
+		//System.err.print(" ["+numReds+","+node.m_n+"::");
+		//for(int k=0;k<=node.m_n;k++)
+		//	System.err.print(""+node.getFb().get(node.m_n,k)+", ");
+		//System.err.println(); 
 		
     }
 
@@ -370,13 +370,13 @@ public class SiteProbabilityCalculator {
 		}
 		else
 			node.initFb(node.m_n, nReds);
-		/*
-		System.err.print("Leaf = "+node.getNr());
-		System.err.print(" ["+nReds+","+node.m_n+"::");
-		for(int k=0;k<=node.m_n;k++)
-			System.err.print(""+node.getFb().get(node.m_n,k)+", ");
-		System.err.println();
-		*/
+		
+		//System.err.print("Leaf = "+node.getNr());
+		//System.err.print(" ["+nReds+","+node.m_n+"::");
+		//for(int k=0;k<=node.m_n;k++)
+		//	System.err.print(""+node.getFb().get(node.m_n,k)+", ");
+		//System.err.println();
+		
 		
         //node.resizeF(node.n);
         //node.getFb().set(node.n,numReds,1.0);
