@@ -27,6 +27,7 @@ void printUsage(ostream& os) {
 	os<<"\t-t \tOutput the gene trees used to generate each site\n";
 	os<<"\t-i \tStart chain at the values used for simulation\n";
 	os<<"\t-s \tUse the following strings instead of values (for simulations) \n";
+	os<<"\t-d \tSimulate dominant markers \n";
 	os<<"\t\tLENGTH\tChain length\n";
 	os<<"\t\tPRIORBURN\tNumber of iterations with prior only\n";
 	os<<"\t\tALPHA BETA\tParameters of gamma prior\n";
@@ -61,6 +62,9 @@ public:
 	bool hasDominantMarkers;
 	bool simulationOutput;
 	bool initialiseAtTrue;
+	bool snappDominant;
+	bool snappNoMutation;
+	
 	string inputfile;
 	int nsites;
 	ArgumentParser(int argc, char* argv[]) {
@@ -72,6 +76,8 @@ public:
 		initialiseAtTrue = false;
 		onlyRootMutation = false;
 		hasDominantMarkers = false;
+		snappDominant = false;
+		snappNoMutation = false;
 		
 		nsites = 0;
 		inputfile = "";
@@ -84,7 +90,7 @@ public:
 		//First read in the flags.
 		string flags = string(argv[arg]);
 		if (flags[0]=='-') {
-			if (flags.find_first_not_of("-nirdcst")!=string::npos)
+			if (flags.find_first_not_of("-nirdcstMD")!=string::npos)
 				printUsage(cerr);
 			
 			if (flags.find_first_of('n')!=string::npos)
@@ -101,6 +107,10 @@ public:
 				initialiseAtTrue = true;
 			if (flags.find_first_of('d')!=string::npos)
 				hasDominantMarkers = true;
+			if (flags.find_first_of('D')!=string::npos)
+				snappDominant = true;
+			if (flags.find_first_of('M')!=string::npos)
+				snappNoMutation = true;
 
 			
 			arg++;
@@ -117,8 +127,8 @@ public:
 
 
 
-
-void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, bool initialiseFromTruth, const string fileroot="test") {
+//TODO: Pass the ArgumentParser instead of all these parameters
+void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, bool initialiseFromTruth, bool snappDominant, bool snappNoMutation, const string fileroot="test") {
 	
 	os<<"<!-- Generated with SimSnap -->\n";
 	os<<"<!-- -->\n";
@@ -263,6 +273,11 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 
 	if (!polymorphicOnly)
 		os<<" non-polymorphic='true'";
+	if (snappDominant)
+		os<<" dominant = 'true'";
+	if (snappNoMutation)
+		os<<" mutationOnlyAtRoot = 'true'";
+		
 	os<<" pattern='rate' data='@snapalignment' tree='@tree'>\n";
 	os <<"                <siteModel spec='sitemodel.SiteModel' id='siteModel'>\n";
 	os <<"				      <substModel spec='snap.likelihood.SnapSubstitutionModel'\n";
@@ -576,7 +591,7 @@ int main(int argc, char* argv[]) {
 		
 		if (ap.outputXML) {
         	
-			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,shortFileName);
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,ap.snappDominant,ap.snappNoMutation,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
