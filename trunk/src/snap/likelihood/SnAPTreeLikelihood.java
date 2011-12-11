@@ -142,7 +142,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     		m_nSampleSizes[i] = nSampleSizes[i];
     	}
     	if (!(m_tree.get().getRoot() instanceof NodeData)) {
-    		throw new Exception("Tree has no nodes of the wront type. NodeData expected, but found " + 
+    		throw new Exception("Tree has no nodes of the wrong type. NodeData expected, but found " + 
     				m_tree.get().getRoot().getClass().getName());
     	}
 
