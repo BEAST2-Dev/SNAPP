@@ -1,6 +1,10 @@
 <beast version='2.0' 
 	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution:beast.math.distributions:beast.app.beauti'>
 
+<map name='connect'>beast.app.beauti.BeautiConnector</map>
+<map name='subtemplate'>beast.app.beauti.BeautiSubTemplate</map>
+
+
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='snap.MCMC.operator=Operators,
 	        snap.MCMC.logger=Loggers,
