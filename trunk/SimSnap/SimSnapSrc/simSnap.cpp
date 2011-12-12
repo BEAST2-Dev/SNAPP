@@ -301,8 +301,14 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	os <<"        <operator spec='operators.NodeBudger' weight='4' size='0.5' tree='@tree'/>\n";
 	os <<"        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@tree'/>\n";
-	os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4' coalescenceRate='@coalescenceRate'/>\n";
-	os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
+	if (snappNoMutation) {
+		os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='0' coalescenceRate='@coalescenceRate'/>\n";
+		os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='0' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
+	}
+	else {
+		os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4' coalescenceRate='@coalescenceRate'/>\n";
+		os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
+	}
 	os <<"\n";
 	//Settings for output of MCMC chain
 	os <<"        <logger logEvery='1000'>\n";
