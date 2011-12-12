@@ -234,7 +234,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"\n";
 
 	if (snappNoMutation) 
-	  os <<"			<parameter name='stateNode' id='coalescenceRate' value='0.5'/>\n";
+	  os <<"			<parameter name='stateNode' id='coalescenceRate' value='1.0'/>\n";
 	else
 	  os <<"			<parameter name='stateNode' id='coalescenceRate' value='10'/>\n";
 	os <<"          <parameter name='stateNode' id='v' value='"<<v<<"' lower='0.0'/>\n";
