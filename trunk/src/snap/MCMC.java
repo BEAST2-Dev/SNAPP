@@ -27,6 +27,7 @@ package snap;
 
 
 import beast.core.*;
+import beast.evolution.tree.Tree;
 import beast.util.*;
 
 @Description("Allow sampling from the prior.")
@@ -84,8 +85,12 @@ public class MCMC extends beast.core.MCMC {
 			System.err.println("Sampling state from prior for " + nStateBurnin + " samples...");
 			//prepare();
 			
-			
+	        state.store(-1);
+	        state.setEverythingDirty(true);
+	        state.checkCalculationNodesDirtiness();
 			double fOldLogLikelihood = m_stateDistribution.get().calculateLogP();
+	        state.setEverythingDirty(false);
+	        state.acceptCalculationNodes();
 			
 			for (int iSample = -nBurnIn - nStateBurnin; iSample <= -nBurnIn; iSample++) {
 				
@@ -96,7 +101,8 @@ public class MCMC extends beast.core.MCMC {
 				double fLogHastingsRatio = operator.proposal();
 				if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 					state.storeCalculationNodes();
-					m_stateDistribution.get().store();
+	                state.checkCalculationNodesDirtiness();
+					//m_stateDistribution.get().store();
 					
 					//prepare();
 					double fNewLogLikelihood = m_stateDistribution.get().calculateLogP();
@@ -105,15 +111,26 @@ public class MCMC extends beast.core.MCMC {
 		            if (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 						// accept
 						fOldLogLikelihood = fNewLogLikelihood;
+	                    state.acceptCalculationNodes();
 						//state = proposedState;
 						state.setEverythingDirty(false);
 					} else {
-						m_stateDistribution.get().restore();
+						//m_stateDistribution.get().restore();
+			        	//posteriorInput.get().restore();
 			        	state.restore();
-			        	posteriorInput.get().restore();
 			        	state.restoreCalculationNodes();
 					}
+		            
+		            Tree tree = (Tree)state.stateNodeInput.get().get(0);
+		            if (tree.getRoot().getHeight() > 2) {
+		            	int k = 3;
+		            	k++;
+		            }
+		            
+				} else {
+	                state.restore();
 				}
+				
 			}
 			// store initial state
 			System.err.println("Post Start state:");
@@ -220,7 +237,7 @@ public class MCMC extends beast.core.MCMC {
         System.err.println("End likelihood: " + fOldLogLikelihood);
         System.err.println("End state:");
 		System.err.println(state.toString());
-		state.storeToFile();
+		state.storeToFile(nChainLength);
 	} // run;
 
 } // class MCMC
