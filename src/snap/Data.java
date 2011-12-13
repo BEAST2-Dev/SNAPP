@@ -115,7 +115,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {
 			Taxon taxon = new Taxon();
 			// ensure sequence and taxon do not get same ID
-			if (sequence.getID().equals(sequence.m_sTaxon.get())) {
+			if (sequence.getID() == null || sequence.getID().equals(sequence.m_sTaxon.get())) {
 				sequence.setID("_"+sequence.getID());
 			}
 			taxon.setID(sequence.m_sTaxon.get());
