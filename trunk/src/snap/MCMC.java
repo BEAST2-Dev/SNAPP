@@ -57,7 +57,7 @@ public class MCMC extends beast.core.MCMC {
     	// StateNodes, e.g. set up bounds or dimensions
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
-    	state.setStateFileName(m_sStateFile);
+    	state.setStateFileName(m_sStateFile + "." + Randomizer.getSeed());
 		int nBurnIn = m_oBurnIn.get();
 		int nChainLength = m_oChainLength.get();
 		int nStateBurnin = m_oStateBurnIn.get();
