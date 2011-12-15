@@ -385,7 +385,7 @@
 		            mainclass="beast.app.beauti.Beauti"
 		            icon="${common_dir}/icons/beauti.icns"
 		            jvmversion="1.6+"
-		            vmoptions="-Xmx1024M"
+		            vmoptions="-Xmx1024M -Xdock:name=&quot;BEAUti 2&quot;"
 		            arguments="-template templates/SNAPP.xml"
 		            version="${version}"
 		            infostring="${BEAUti_name}, ${copyright}"
@@ -468,6 +468,9 @@
 		<mkdir dir="${Add_on_dir}/lib" />
 		<mkdir dir="${Add_on_dir}/templates" />
 
+		<copy todir="${Add_on_dir}">
+			<fileset file="version.xml"/>
+		</copy>
 		<copy todir="${Add_on_dir}/lib">
 			<fileset dir="${dist}" includes="snap.addon.jar" />
 		</copy>
