@@ -308,6 +308,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	if (snappNoMutation) {
 		os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='0' coalescenceRate='@coalescenceRate'/>\n";
 		os <<"        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='0' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
+		os <<"        <operator spec='operators.RootGammaMover' scale='0.5' weight='0.5' coalescenceRate='@coalescenceRate' tree='@tree'/>\n";
 	}
 	else {
 		os <<"        <operator spec='operators.GammaMover' scale='0.5' weight='4' coalescenceRate='@coalescenceRate'/>\n";
