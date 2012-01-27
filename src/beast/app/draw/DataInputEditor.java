@@ -1,5 +1,6 @@
 package beast.app.draw;
 
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -26,6 +27,10 @@ import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
 public class DataInputEditor extends InputEditor {
+//	public DataInputEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
 	private static final long serialVersionUID = 1L;
 	List<TaxonSet> m_taxonset;
 	List<Taxon> m_lineageset;
@@ -45,7 +50,7 @@ public class DataInputEditor extends InputEditor {
 
 	
 	@Override
-	public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, ExpandOption bExpand, boolean bAddButtons) {
 		m_input = input;
 		m_plugin = plugin;
 		List<TaxonSet> taxonset = ((snap.Data)input.get()).m_taxonsets.get(); 

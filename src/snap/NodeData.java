@@ -232,7 +232,8 @@ public class NodeData extends Node implements Serializable  {
 		//super.setMetaData(sPattern, fValue);
 	}
 	
-	public double getMetaData(String sPattern) {
+	@Override
+	public Object getMetaData(String sPattern) {
 		if (m_sMetaData != null && m_sMetaData.indexOf(sPattern+"=")>=0) {
 			int i = m_sMetaData.indexOf(sPattern+"=") + sPattern.length() + 1;
 			String sStr = m_sMetaData.substring(i, m_sMetaData.length());

@@ -37,7 +37,7 @@ public class ExampleXmlParsingTest extends TestCase {
 				System.out.println("Processing " + sFileName);
 				XMLParser parser = new XMLParser();
 				try {
-					parser.parseFile(sDir + "/" + sFileName);
+					parser.parseFile(new File(sDir + "/" + sFileName));
 				} catch (Exception e) {
 					System.out.println("ExampleXmlParsing::Failed for " + sFileName
 							+ ": " + e.getMessage());
@@ -78,7 +78,7 @@ public class ExampleXmlParsingTest extends TestCase {
 				System.out.println("Processing " + sFileName);
 				XMLParser parser = new XMLParser();
 				try {
-					beast.core.Runnable runable = parser.parseFile(sDir + "/" + sFileName);
+					beast.core.Runnable runable = parser.parseFile(new File(sDir + "/" + sFileName));
 					if (runable instanceof MCMC) {
 						MCMC mcmc = (MCMC) runable;
 						mcmc.setInputValue("preBurnin", 0);

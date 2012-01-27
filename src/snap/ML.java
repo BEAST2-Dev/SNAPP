@@ -122,7 +122,7 @@ public class ML extends beast.core.MCMC {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);
-			Operator operator = operatorSet.selectOperator();
+			Operator operator = operatorSchedule.selectOperator();
 			if (iSample == 24) {
 				int h = 3;
 				h++;
@@ -185,7 +185,7 @@ public class ML extends beast.core.MCMC {
 				operator.optimize(logAlpha);
 			}
 		}
-		operatorSet.showOperatorRates(System.out);
+		operatorSchedule.showOperatorRates(System.out);
 		long tEnd = System.currentTimeMillis();
 		System.out.println("Total calculation time: " + (tEnd - tStart)/1000.0 + " seconds");
 		close();

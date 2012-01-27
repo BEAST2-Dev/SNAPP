@@ -97,7 +97,7 @@ public class MCMC extends beast.core.MCMC {
 				//State proposedState = state.copy();
 	        	state.store(iSample);
 	        	posteriorInput.get().store();
-				Operator operator = operatorSet.selectOperator();
+				Operator operator = operatorSchedule.selectOperator();
 				double fLogHastingsRatio = operator.proposal();
 				if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
 					state.storeCalculationNodes();
@@ -163,7 +163,7 @@ public class MCMC extends beast.core.MCMC {
 			//State proposedState = state.copy();
         	state.store(iSample);
 
-			Operator operator = operatorSet.selectOperator();
+			Operator operator = operatorSchedule.selectOperator();
 			//System.err.println(operator.getClass().getName() + " " + operator.getID());
 			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
@@ -227,7 +227,7 @@ public class MCMC extends beast.core.MCMC {
 				}
 			}
 		}
-		operatorSet.showOperatorRates(System.out);
+		operatorSchedule.showOperatorRates(System.out);
 		long tEnd = System.currentTimeMillis();
 		System.out.println("Total calculation time: " + (tEnd - tStart)/1000.0 + " seconds");
 		close();

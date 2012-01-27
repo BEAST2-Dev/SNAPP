@@ -1,5 +1,7 @@
 package test.snap.integration;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -23,7 +25,7 @@ public class ResumeTest  extends TestCase {
 
 		System.out.println("Processing " + sFileName);
 		XMLParser parser = new XMLParser();
-		beast.core.Runnable runable = parser.parseFile(sFileName);
+		beast.core.Runnable runable = parser.parseFile(new File(sFileName));
 		runable.setStateFile("tmp.state", false);
 		if (runable instanceof MCMC) {
 			MCMC mcmc = (MCMC) runable;
@@ -36,7 +38,7 @@ public class ResumeTest  extends TestCase {
 		System.out.println("Resuming " + sFileName);
 		Logger.FILE_MODE = Logger.FILE_APPEND;
 		parser = new XMLParser();
-		runable = parser.parseFile(sFileName);
+		runable = parser.parseFile(new File(sFileName));
 		runable.setStateFile("tmp.state", true);
 		if (runable instanceof MCMC) {
 			MCMC mcmc = (MCMC) runable;

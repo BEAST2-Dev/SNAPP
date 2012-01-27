@@ -3,21 +3,27 @@ package beast.app.draw;
 import java.util.List;
 
 import javax.swing.Box;
+
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 import snap.likelihood.SnAPTreeLikelihood;
 
 public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
-    private static final long serialVersionUID = 1L;
+//    public SNAPPTreeLikelihoodEditor(BeautiDoc doc) {
+//		super(doc);
+//	}
+
+	private static final long serialVersionUID = 1L;
 
     public Class<?> baseType() {
         return SnAPTreeLikelihood.class;
     }
     
     @Override
-    public void init(Input<?> input, Plugin plugin, EXPAND bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, ExpandOption bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
-    	m_bExpand = bExpand;
+		m_bExpandOption = bExpand;
         m_input = input;
         m_plugin = plugin;
 
@@ -27,8 +33,8 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
             if (o instanceof SnAPTreeLikelihood) {
             	SnAPTreeLikelihood plugin2 = (SnAPTreeLikelihood) o;
             	Plugin substModel = plugin2.m_pSiteModel.get().m_pSubstModel.get();
-            	PluginPanel.addInputs(m_listBox, substModel, this, null);
-            	PluginPanel.addInputs(m_listBox, plugin2, this, null);
+            	PluginPanel.addInputs(m_listBox, substModel, this, null, doc);
+            	PluginPanel.addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
 		add(m_listBox);
