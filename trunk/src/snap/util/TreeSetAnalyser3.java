@@ -282,7 +282,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				double fESS = beast.core.util.ESS.calcESS(thetas);
 				
 				//System.err.print("\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
-				System.out.println("\ttheta"+node+"\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
+				System.out.println("\ttheta"+node+"\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS) + "\t" + var);
 			}
 			
 			System.err.println();
