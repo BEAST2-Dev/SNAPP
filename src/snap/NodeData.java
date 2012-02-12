@@ -82,17 +82,17 @@ public class NodeData extends Node implements Serializable  {
 	//SSSTreeLikelihood m_tree;
 	public NodeData getChild(int i) {
 		if (i == 0) {
-			return (NodeData) m_left;
+			return (NodeData) getLeft();
 		} else if (i== 1) {
-			return (NodeData) m_right;
+			return (NodeData) getRight();
 		}
 		return null;
 	}
 	public int getNrOfChildren() {
-		if (m_left == null) {
+		if (getLeft() == null) {
 			return 0;
 		}
-		if (m_right == null) {
+		if (getRight() == null) {
 			return 1;
 		}
 		return 2;
@@ -141,11 +141,11 @@ public class NodeData extends Node implements Serializable  {
 		node.m_iLabel = m_iLabel;
 		node.m_sMetaData = m_sMetaData;
 		node.setParent(null);
-		if (m_left != null) {
-			node.m_left = ((NodeData)m_left).copyx();
-			node.m_right = ((NodeData)m_right).copyx();
-			node.m_left.setParent(node);
-			node.m_right.setParent(node);
+		if (getLeft() != null) {
+			node.setLeft(((NodeData)getLeft()).copyx());
+			node.setRight(((NodeData)getRight()).copyx());
+			node.getLeft().setParent(node);
+			node.getRight().setParent(node);
 		}
 		node.m_n = m_n;
 		return node;
@@ -169,13 +169,13 @@ public class NodeData extends Node implements Serializable  {
 //		node.Fb = new FMatrix(Fb);
 
 		node.setParent(null);
-		if (m_left != null) {
-			NodeData left = ((NodeData)m_left).copy(); 
-			node.m_left = left;
+		if (getLeft() != null) {
+			NodeData left = ((NodeData)getLeft()).copy(); 
+			node.setLeft(left);
 			left.setParent(node);
-			if (m_right != null) {
-				NodeData right = ((NodeData)m_right).copy();
-				node.m_right = right;
+			if (getRight() != null) {
+				NodeData right = ((NodeData)getRight()).copy();
+				node.setRight(right);
 				right.setParent(node);
 			}
 		}

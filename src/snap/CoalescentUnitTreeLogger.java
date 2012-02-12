@@ -45,12 +45,12 @@ public class CoalescentUnitTreeLogger extends Plugin implements Loggable {
 	
 	String toNewick(Node node) {
 		StringBuffer buf = new StringBuffer();
-		if (node.m_left != null) {
+		if (node.getLeft() != null) {
 			buf.append("(");
-			buf.append(toNewick(node.m_left));
-			if (node.m_right != null) {
+			buf.append(toNewick(node.getLeft()));
+			if (node.getRight() != null) {
 				buf.append(',');
-				buf.append(toNewick(node.m_right));
+				buf.append(toNewick(node.getRight()));
 			}
 			buf.append(")");
 		} else {
