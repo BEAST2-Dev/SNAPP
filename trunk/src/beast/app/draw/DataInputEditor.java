@@ -21,6 +21,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;

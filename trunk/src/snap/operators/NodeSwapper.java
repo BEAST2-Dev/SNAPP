@@ -121,7 +121,7 @@ public class NodeSwapper extends Operator {
 		double mheight = mrca.getHeight();
 		double xheight = x.getHeight();
 		double yheight = y.getHeight();
-		double minb = Math.min(mrca.m_left.getLength(), mrca.m_right.getLength());
+		double minb = Math.min(mrca.getLeft().getLength(), mrca.getRight().getLength());
 		double cutheight = Randomizer.nextDouble()*(mheight - minb - Math.max(xheight,yheight)) + Math.max(xheight,yheight);
 		
 		
@@ -159,15 +159,15 @@ public class NodeSwapper extends Operator {
 		int iy = y.getNr();
 		int ixp = x.getParent().getNr();
 		int iyp = y.getParent().getNr();
-		if (nodes[ixp].m_left.getNr() == ix) {
-			nodes[ixp].m_left = y;
+		if (nodes[ixp].getLeft().getNr() == ix) {
+			nodes[ixp].setLeft(y);
 		} else {
-			nodes[ixp].m_right = y;
+			nodes[ixp].setRight(y);
 		}
-		if (nodes[iyp].m_left.getNr() == iy) {
-			nodes[iyp].m_left = x;
+		if (nodes[iyp].getLeft().getNr() == iy) {
+			nodes[iyp].setLeft(x);
 		} else {
-			nodes[iyp].m_right = x;
+			nodes[iyp].setRight(x);
 		}
 		y.setParent(nodes[ixp]);
 		x.setParent(nodes[iyp]);

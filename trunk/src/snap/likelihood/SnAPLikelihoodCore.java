@@ -162,8 +162,8 @@ public class SnAPLikelihoodCore  {
 	int traverse(Node node) {
 		int nState = Tree.IS_CLEAN;
 		if (node.isLeaf()) {
-			nState |= traverse(node.m_left);
-			nState |= traverse(node.m_right);
+			nState |= traverse(node.getLeft());
+			nState |= traverse(node.getRight());
 		}
 		if (node.isDirty() != Tree.IS_CLEAN || nState != Tree.IS_CLEAN) {
 			SiteProbabilityCalculator.m_cache.clearNode(node.getNr());

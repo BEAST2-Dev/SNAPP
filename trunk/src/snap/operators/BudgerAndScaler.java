@@ -68,7 +68,7 @@ public class BudgerAndScaler extends NodeSwapper {
 
 		//Find shortest branch to any child.
 		double minb = 10e10;
-		minb = Math.max(p.m_left.getHeight(), p.m_right.getHeight());
+		minb = Math.max(p.getLeft().getHeight(), p.getRight().getHeight());
 
 		double range = p.getParent().getHeight() - minb;
 
@@ -99,10 +99,10 @@ public class BudgerAndScaler extends NodeSwapper {
 		
 		double h = p.getHeight();
 		int iNode = p.getNr();
-		int iLeft = p.m_left.getNr();
-		int iRight = p.m_right.getNr();
-		NodeData left = (NodeData)p.m_left; 
-		NodeData right = (NodeData)p.m_right;
+		int iLeft = p.getLeft().getNr();
+		int iRight = p.getRight().getNr();
+		NodeData left = (NodeData)p.getLeft(); 
+		NodeData right = (NodeData)p.getRight();
 		
 		double g1 = gamma.getValue(iLeft);
 		double h1 = left.getHeight();

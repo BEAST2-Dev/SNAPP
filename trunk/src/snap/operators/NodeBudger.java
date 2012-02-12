@@ -80,9 +80,9 @@ public class NodeBudger extends NodeSwapper {
 			
 			if (beta==1.0) //No move possible, return a reject. 
 				return Double.NEGATIVE_INFINITY;
-			double maxc = p.m_left.getHeight();
-			if (p.m_right != null) {
-				maxc = Math.max(maxc, p.m_right.getHeight());
+			double maxc = p.getLeft().getHeight();
+			if (p.getRight() != null) {
+				maxc = Math.max(maxc, p.getRight().getHeight());
 			}
 			
 			/**
@@ -112,9 +112,9 @@ public class NodeBudger extends NodeSwapper {
 		}
 
 		//Find shortest branch to any child.
-		double minb = p.m_left.getHeight();
-		if (p.m_right != null) {
-			minb = Math.max(minb, p.m_right.getHeight());
+		double minb = p.getLeft().getHeight();
+		if (p.getRight() != null) {
+			minb = Math.max(minb, p.getRight().getHeight());
 		}
 
 		double range = p.getParent().getHeight() - minb;

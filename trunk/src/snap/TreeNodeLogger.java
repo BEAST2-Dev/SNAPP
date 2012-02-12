@@ -30,8 +30,8 @@ public class TreeNodeLogger extends Plugin implements Loggable, Valuable {
 	void initLog(PrintStream out, Node node) {
 		if (!node.isLeaf()) {
 			out.print("node." +node.getNr()+ ".height\t");
-			initLog(out, node.m_right);
-			initLog(out, node.m_left);
+			initLog(out, node.getRight());
+			initLog(out, node.getLeft());
 		}
 	}
 
@@ -44,8 +44,8 @@ public class TreeNodeLogger extends Plugin implements Loggable, Valuable {
 	void logTree(PrintStream out, Node node) {
 		if (!node.isLeaf()) {
 			out.print(node.getHeight()+ "\t");
-			logTree(out, node.m_right);
-			logTree(out, node.m_left);
+			logTree(out, node.getRight());
+			logTree(out, node.getLeft());
 		}
 	}
 	
