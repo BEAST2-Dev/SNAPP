@@ -54,7 +54,7 @@ public class CoalescentUnitTreeLogger extends Plugin implements Loggable {
 			}
 			buf.append(")");
 		} else {
-			buf.append(node.getNr());
+			buf.append(node.getNr() + 1);
 		}
 	    buf.append(":").append(node.getLength() * coalescenceRate.getValue(node.getNr()));
 		return buf.toString();
