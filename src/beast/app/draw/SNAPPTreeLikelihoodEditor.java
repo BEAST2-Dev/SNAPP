@@ -10,9 +10,9 @@ import beast.core.Plugin;
 import snap.likelihood.SnAPTreeLikelihood;
 
 public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
-//    public SNAPPTreeLikelihoodEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+    public SNAPPTreeLikelihoodEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -33,8 +33,8 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
             if (o instanceof SnAPTreeLikelihood) {
             	SnAPTreeLikelihood plugin2 = (SnAPTreeLikelihood) o;
             	Plugin substModel = plugin2.m_pSiteModel.get().m_pSubstModel.get();
-            	PluginPanel.addInputs(m_listBox, substModel, this, null, doc);
-            	PluginPanel.addInputs(m_listBox, plugin2, this, null, doc);
+            	doc.getInpuEditorFactory().addInputs(m_listBox, substModel, this, null, doc);
+            	doc.getInpuEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
 		add(m_listBox);

@@ -10,9 +10,9 @@ import beast.core.Input;
 import beast.core.Plugin;
 
 public class SNAPPPriorListEditor extends ListInputEditor {
-//    public SNAPPPriorListEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+    public SNAPPPriorListEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -32,7 +32,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
         for (Object o : (List<?>) input.get()) {
             if (o instanceof SnAPPrior) {
             	SnAPPrior plugin2 = (SnAPPrior) o;
-            	PluginPanel.addInputs(m_listBox, plugin2, this, null, doc);
+            	doc.getInpuEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
 		add(m_listBox);
