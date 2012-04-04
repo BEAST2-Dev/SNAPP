@@ -27,10 +27,10 @@ import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
-public class DataInputEditor extends InputEditor {
-//	public DataInputEditor(BeautiDoc doc) {
-//		super(doc);
-//	}
+public class DataInputEditor extends InputEditor.Base {
+	public DataInputEditor(BeautiDoc doc) {
+		super(doc);
+	}
 
 	private static final long serialVersionUID = 1L;
 	List<TaxonSet> m_taxonset;
