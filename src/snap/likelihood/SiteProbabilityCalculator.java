@@ -466,7 +466,7 @@ public class SiteProbabilityCalculator {
         }
     } // computeSiteLikelihood2
 
-    public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean useCache, boolean dprint/*=false*/) throws Exception {
+    public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, int [] totalCount, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean useCache, boolean dprint/*=false*/) throws Exception {
   
 		//For some models, we want to allow mutation at the root but not along the branches. 
 		double branch_u = u;

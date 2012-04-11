@@ -42,6 +42,7 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.tree.Tree;
 
+import snap.Data;
 import snap.NodeData;
 import snap.likelihood.SnAPLikelihoodCore;
 
@@ -69,7 +70,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	}
 	
 	/** shadow variable of m_pData input */
-	Alignment m_data2;
+	Data m_data2;
 	/** SampleSizes = #lineages per taxon **/
 	int [] m_nSampleSizes;
 	/** likelihood core, doing the actual hard work of calculating the likelihood **/
@@ -85,6 +86,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     @Override
     public void initAndValidate() throws Exception {
     	// check that alignment has same taxa as tree
+    	if (!(m_data.get() instanceof Data)) {
+    		throw new Exception("The data input should be a snap.Data object");
+    	}
     	if (m_data.get().getNrTaxa() != m_tree.get().getLeafNodeCount()) {
     		throw new Exception("The number of nodes in the tree does not match the number of sequences");
     	}
@@ -128,7 +132,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	
     	
     	
-    	m_data2 = m_data.get();
+    	m_data2 = (Data) m_data.get();
     	if ( BeastMCMC.m_nThreads == 1) {
     		// single threaded likelihood core
     		m_core = new SnAPLikelihoodCore(m_tree.get().getRoot(), m_data.get());
