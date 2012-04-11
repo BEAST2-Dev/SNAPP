@@ -45,7 +45,10 @@ public class NodeData extends Node implements Serializable  {
 	//private	double m_fCoalescenceRate = 1;
 	
 	//Number of individuals at or below this node.
-	public	int m_n;
+//	public	int m_n;
+	public int getSize() {
+		return m_Fb.getSize();
+	}
 	//Number of species at or below this node
 	//public int nspecies;
 	//public int mintaxa; //Minimum id taxa below this node.
@@ -99,7 +102,7 @@ public class NodeData extends Node implements Serializable  {
 	}
 
 	public NodeData() {
-		m_n = -1;
+		//m_n = -1;
 		//cerr<<"YYY\t\tallocating\t"<<this<<endl;
 		//m_children = new Vector<NodeData>();
 		m_Fb = new FMatrix();
@@ -108,22 +111,22 @@ public class NodeData extends Node implements Serializable  {
 	}
 
 	public NodeData(int nmax) {
-		m_n = nmax;
+		//m_n = nmax;
 		//cerr<<"YYY\t\tallocating\t"<<this<<endl;
 		//m_children = new Vector<NodeData>();
 		m_Fb = new FMatrix();
 		m_Ft = new FMatrix();
-		resize(m_n);
+		resize(nmax);
 //		m_nTaxonID = 0;
 	}
 
 	public void resize(int nmax) {
-			m_n = nmax;
+			//m_n = nmax;
 			if (nmax>=1) {
 				//m_Nt = new double[m_n+1];
 				//m_Nb = new double[m_n+1];
-				m_Ft.resize(m_n);
-				m_Fb.resize(m_n);
+				m_Ft.resize(nmax);
+				m_Fb.resize(nmax);
 			}
 		}
 
@@ -147,7 +150,7 @@ public class NodeData extends Node implements Serializable  {
 			node.getLeft().setParent(node);
 			node.getRight().setParent(node);
 		}
-		node.m_n = m_n;
+		//node.m_n = m_n;
 		return node;
 	}
 
@@ -158,7 +161,7 @@ public class NodeData extends Node implements Serializable  {
 		node.m_sMetaData = m_sMetaData;
 
 //		node.set_coalescenceRate(m_fCoalescenceRate);
-		node.m_n = m_n;
+		//node.m_n = m_n;
 		//if (m_Nt != null) {
 			//node.m_Nt = new double[m_Nt.length];
 			//System.arraycopy(m_Nt, 0, node.m_Nt, 0, m_Nt.length);

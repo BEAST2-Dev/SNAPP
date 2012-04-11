@@ -56,7 +56,7 @@ public class FCache {
 	}
 		
 	/** matrix for storing leaf F-matrices **/
-	CacheObject [][] m_leafCache;
+	CacheObject [][][] m_leafCache;
 	/** vector for storing top-of-branch F-matrices **/
 	Vector<CacheObject> m_TopOfBranche;
 	Vector<CacheObject>[] m_TopOfBrancheID;
@@ -66,7 +66,7 @@ public class FCache {
 	
 	@SuppressWarnings("unchecked")
 	public FCache(int nNodeNrMax, int nRedsMax) {
-		m_leafCache = new CacheObject[nNodeNrMax][nRedsMax];
+		m_leafCache = new CacheObject[nNodeNrMax][nRedsMax][nRedsMax];
 		m_TopOfBranche = new Vector<CacheObject>(1024,128);
 		m_TopOfBrancheID = new Vector[nNodeNrMax];
 		for (int i = 0; i < nNodeNrMax; i++) {
@@ -115,24 +115,24 @@ public class FCache {
 		return g_nID++;
 	} // nextID
 
-	CacheObject getLeafF(NodeData node, int numReds, boolean bHasDominantMarkers, SiteProbabilityCalculator spc) {
+	CacheObject getLeafF(NodeData node, int numReds, int totalCount, boolean bHasDominantMarkers, SiteProbabilityCalculator spc) {
 		
-		if (m_leafCache[node.getNr()][numReds] == null) {
+		if (m_leafCache[node.getNr()][numReds][totalCount] == null) {
 			// it's not in the cache yet, so create the object
 			//System.err.println("CACHE leaf = "+node.getNr()+ " nReds = "+numReds);
 			
 			
-			spc.doLeafLikelihood(node, numReds, bHasDominantMarkers, false);
+			spc.doLeafLikelihood(node, numReds, totalCount, bHasDominantMarkers, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			CacheObject o = new CacheObject(Fb, nextID());
-			m_leafCache[node.getNr()][numReds] = o; 
+			m_leafCache[node.getNr()][numReds][totalCount] = o; 
 							   } else {
 								  //System.err.println("RETRIEVE leaf = "+node.getNr()+ " nReds = "+numReds);
 
 							   }
 							   
-		return m_leafCache[node.getNr()][numReds];
+		return m_leafCache[node.getNr()][numReds][totalCount];
 	} // getLeafF
 	
 	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, Double [] coalescenceRate, SiteProbabilityCalculator spc) throws Exception {

@@ -39,21 +39,21 @@ public class FCacheT extends FCache {
 		super(nNodeNrMax, nRedsMax);
 	} //c'tor
 
-	CacheObject getLeafF(NodeData node, int numReds, boolean bHasDominantMarkers, SiteProbabilityCalculatorT spc) {
-		if (m_leafCache[node.getNr()][numReds] == null) {
+	CacheObject getLeafF(NodeData node, int numReds, int totalCount, boolean bHasDominantMarkers, SiteProbabilityCalculatorT spc) {
+		if (m_leafCache[node.getNr()][numReds][totalCount] == null) {
 			// it's not in the cache yet, so create the object
-			spc.doLeafLikelihood(node, numReds, bHasDominantMarkers, false);
+			spc.doLeafLikelihood(node, numReds, totalCount, bHasDominantMarkers, false);
 			//FMatrix Fb = node.cloneFb();
 			FMatrix Fb = node.getFb();
 			synchronized(this) {
-				if (m_leafCache[node.getNr()][numReds] != null) {
-					return m_leafCache[node.getNr()][numReds];
+				if (m_leafCache[node.getNr()][numReds][totalCount] != null) {
+					return m_leafCache[node.getNr()][numReds][totalCount];
 				}
 				CacheObject o = new CacheObject(Fb, nextID());
-				m_leafCache[node.getNr()][numReds] = o;
+				m_leafCache[node.getNr()][numReds][totalCount] = o;
 			}
 		}
-		return m_leafCache[node.getNr()][numReds];
+		return m_leafCache[node.getNr()][numReds][totalCount];
 	} // getLeafF
 	
 	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, Double [] coalescenceRate, SiteProbabilityCalculatorT spc) throws Exception {

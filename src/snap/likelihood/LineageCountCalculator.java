@@ -75,7 +75,7 @@ public class LineageCountCalculator {
 		
 		}
 		*/
-		node.m_n = nSamples;
+		//node.m_n = nSamples;
 		node.resize(nSamples);
 //		node.m_Nb[nSamples] = 1.0;
 //		if( dprint ) {
@@ -87,7 +87,8 @@ public class LineageCountCalculator {
 	 Compute probabilities for the numbers of lineages at a node with a single child.
 	 **/
 	void doCountProbabilitiesForInternal(NodeData v, NodeData child, Double [] coalescenceRate, boolean dprint) throws Exception {
-		v.resize(child.m_n);
+		//v.resize(child.m_n);
+		v.resize(child.getSize());
 		double g1 = coalescenceRate[child.getNr()];//child.gamma();
 		double t1 = child.t();
 
@@ -106,8 +107,10 @@ public class LineageCountCalculator {
 	 Compute probabilities for the numbers of lineages at a node with two children.
 	 **/
 	void doCountProbabilitiesForInternal(NodeData node, NodeData u1, NodeData u2, Double [] coalescenceRate, boolean dprint)throws Exception {
-		int n1 = u1.m_n;
-		int n2 = u2.m_n;
+//		int n1 = u1.m_n;
+//		int n2 = u2.m_n;
+		int n1 = u1.getSize();
+		int n2 = u2.getSize();
 		int n = n1+n2;
 		node.resize(n);
 
