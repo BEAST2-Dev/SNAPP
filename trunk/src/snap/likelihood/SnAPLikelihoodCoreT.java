@@ -28,6 +28,7 @@ package snap.likelihood;
 
 
 
+import snap.Data;
 import snap.NodeData;
 
 import java.util.Arrays;
@@ -53,7 +54,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 		int m_iStart;
 		int m_iStep;
 		int m_iMax; 
-		Alignment m_data;
+		Data m_data;
 		NodeData m_root;
 		double m_u;
 		double m_v;
@@ -62,7 +63,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 		boolean m_bUseCache;
 		Double [] m_coalescenceRate;
 		
-	  SSSRunnable(int iStart, int iStep, int iMax, Alignment data, Double [] coalescenceRate, NodeData root, double u, double v, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean bUseCache) {
+	  SSSRunnable(int iStart, int iStep, int iMax, Data data, Double [] coalescenceRate, NodeData root, double u, double v, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean bUseCache) {
 	    m_iStart = iStart;
 	    m_iStep = iStep;
 	    m_iMax = iMax;
@@ -85,8 +86,9 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 
 			try {
 				int [] thisSite = m_data.getPattern(id);
+				int [] thisCounts = m_data.getPatternLineagCounts(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
-				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, m_bUseCache, false, 0);
+				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, thisCounts, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, m_bUseCache, false, 0);
 
 			}
 			catch (Exception ex) {
@@ -118,7 +120,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	@Override
 	public double [] computeLogLikelihood(NodeData root, double u, double v, 
 			int [] sampleSizes, 
-			Alignment data, 
+			Data data, 
 			Double [] coalescenceRate,
 			boolean bMutationOnlyAtRoot,	
 			boolean bHasDominantMarkers,							  

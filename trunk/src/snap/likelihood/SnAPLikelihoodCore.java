@@ -37,6 +37,7 @@ sys	0m0.308s
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import snap.Data;
 import snap.NodeData;
 
 public class SnAPLikelihoodCore  {
@@ -65,7 +66,7 @@ public class SnAPLikelihoodCore  {
 	
 	public double [] computeLogLikelihood(NodeData root, double u, double v, 
 			int [] sampleSizes, 
-			Alignment data, 
+			Data data, 
 			Double [] coalescenceRate,
 			boolean bMutationOnlyAtRoot,	
 			boolean bHasDominantMarkers,							  
@@ -85,7 +86,8 @@ public class SnAPLikelihoodCore  {
 
 			for(int id = 0; id < numPatterns; id++) {
 				int [] thisSite = data.getPattern(id);
-				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
+				int [] thisCounts = data.getPatternLineagCounts(id);
+				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, thisCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
 			}
 			return patternProb;
 /*
