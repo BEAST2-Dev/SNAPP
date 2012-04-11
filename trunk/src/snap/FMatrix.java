@@ -55,6 +55,7 @@ public class FMatrix {
 	}
 	public double [] asVector() {return F;}
 	public FMatrix() {
+		m_n = 0;
 	}
 
 	public FMatrix(int n) {
