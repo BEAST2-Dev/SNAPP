@@ -343,8 +343,8 @@ public class SiteProbabilityCalculatorT {
 //			node.getFb().set(node.m_n, nReds, 0);
 //			int n = node.m_n/2; //Sample size in # individuals (rather than number of gametes)
 
-			node.initFb(node.getSize(), nReds);
-			node.getFb().set(node.getSize(), nReds, 0);
+			node.initFb(nTotalCount, nReds);
+			node.getFb().set(nTotalCount, nReds, 0);
 			int n = node.getSize()/2; //Sample size in # individuals (rather than number of gametes)
 			
 			//Compute p(r,k,n), which is the probability of r individuals having at least one copy of the 1 allele, 
@@ -358,13 +358,13 @@ public class SiteProbabilityCalculatorT {
 				if (k>nReds)
 					p_r_k_n = (p_r_k_n * (2.0*nReds-k+1)*k) / (2.0*(k-nReds)*(2.0*n-k+1.0));
 //				node.getFb().set(node.m_n,k,p_r_k_n);
-				node.getFb().set(node.getSize(), k, p_r_k_n);
+				node.getFb().set(nTotalCount, k, p_r_k_n);
 				
 			}
 		}
 		else
 //			node.initFb(node.m_n, nReds);
-			node.initFb(node.getSize(), nReds);
+			node.initFb(nTotalCount, nReds);
 				//node.resizeF(node.n);
 		//node.getFb().set(node.n,numReds,1.0);
 	} // doLeafLikelihood

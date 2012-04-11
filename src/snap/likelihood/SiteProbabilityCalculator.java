@@ -348,7 +348,7 @@ public class SiteProbabilityCalculator {
     /**
      Computes likelihood at a leaf. That is, one for the correct number of lineages and zero otherwise.
      **/
-    void doLeafLikelihood(NodeData node, int nReds, int nTotal, boolean bHasDominantMarkers, boolean dprint)
+    void doLeafLikelihood(NodeData node, int nReds, int nTotalCount, boolean bHasDominantMarkers, boolean dprint)
     {
         
 		if (bHasDominantMarkers && nReds>0) {
@@ -359,13 +359,13 @@ public class SiteProbabilityCalculator {
 //			node.getFb().set(node.m_n, nReds, 0);
 //			int n = node.m_n/2; //Sample size in # individuals (rather than number of gametes)
 
-			node.initFb(node.getSize(), nReds);
-			node.getFb().set(node.getSize(), nReds, 0);
-			int n = node.getSize()/2; //Sample size in # individuals (rather than number of gametes)
+			node.initFb(nTotalCount, nReds);
+			node.getFb().set(nTotalCount, nReds, 0);
+			int n = nTotalCount/2; //Sample size in # individuals (rather than number of gametes)
 			//Compute p(r,k,n), which is the probability of r individuals having at least one copy of the 1 allele, 
 			// given that k of their gameters carry the allele.
 			double p_r_k_n = 1.0; //p(0,0,n)=1
-			for (int r = 1;r<=nReds;r++)
+			for (int r = 1; r <= nReds; r++)
 				p_r_k_n = (p_r_k_n*2.0*(n-r+1.0))/(2.0*n-r+1.0);
 			//Now p_r_k_n = p(r,r,n)
 			
@@ -373,13 +373,13 @@ public class SiteProbabilityCalculator {
 				if (k>nReds)
 					p_r_k_n = (p_r_k_n * (2.0*nReds-k+1)*k) / (2.0*(k-nReds)*(2.0*n-k+1.0));
 //				node.getFb().set(node.m_n,k,p_r_k_n);
-				node.getFb().set(node.getSize(), k, p_r_k_n);
+				node.getFb().set(nTotalCount, k, p_r_k_n);
 			}
 			
 		}
 		else
 //			node.initFb(node.m_n, nReds);
-			node.initFb(node.getSize(), nReds);
+			node.initFb(nTotalCount, nReds);
 		
 		//System.err.print("Leaf = "+node.getNr());
 		//System.err.print(" ["+nReds+","+node.m_n+"::");
