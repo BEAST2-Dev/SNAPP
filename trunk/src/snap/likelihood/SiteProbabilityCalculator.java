@@ -111,7 +111,7 @@ public class SiteProbabilityCalculator {
     double doRootLikelihood(NodeData rootData, double u, double v, Double [] coalescenceRate, boolean dprint) throws Exception
     {
         //int N=rootData.m_n;
-        int N=rootData.getSize();
+        int N = rootData.getSize();
 		
 		//System.err.println("Coalescent Rate at Root = "+coalescenceRate[rootData.getNr()]);
 		

@@ -127,10 +127,9 @@ public class FCache {
 			FMatrix Fb = node.getFb();
 			CacheObject o = new CacheObject(Fb, nextID());
 			m_leafCache[node.getNr()][numReds][totalCount] = o; 
-							   } else {
-								  //System.err.println("RETRIEVE leaf = "+node.getNr()+ " nReds = "+numReds);
-
-							   }
+	    } else {
+		    //System.err.println("RETRIEVE leaf = "+node.getNr()+ " nReds = "+numReds);
+	    }
 							   
 		return m_leafCache[node.getNr()][numReds][totalCount];
 	} // getLeafF
@@ -200,7 +199,7 @@ public class FCache {
 		m_BottomOfBrancheID[parent.getNr()].add(o);
 		nodeCache2.add(o);
 		return o;
-	} // getNodeF
+	} // getBottomOfBrancheF
 	
 	/** print F matrix, for debugging purposes **/
 	void printF(double[][]F) {
