@@ -218,6 +218,18 @@ public class SiteProbabilityCalculatorT {
 
 		 where conv means a 2D convolution.
 		 **/
+		
+        if (u1.getSize() == 0) {
+        	// degenerate case
+            parent.assignFb(u2.getFt());
+            return;
+        }    	
+        if (u2.getSize() == 0) {
+        	// degenerate case
+            parent.assignFb(u1.getFt());
+            return;
+        }    	
+		
 		// binom(n,r+1) = n! / (r+1)! / (n-r-1)! = binom(n,r) * (n-r)/(r+1)
 
 		//Construct table of binomials
@@ -385,6 +397,12 @@ public class SiteProbabilityCalculatorT {
 			System.err.println(node.getFt().toString());
 		}
 
+        if (node.getSize() == 0) {
+        	// degenerate case
+            node.initFt(node.getFb());
+            return;
+        }
+        
 		//FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, coalescenceRate[node.getNr()], node.t(), node.getFb()); 
 		FMatrix tmp = MatrixExponentiator.expQTtx(node.getSize(), u, v, coalescenceRate[node.getNr()], node.t(), node.getFb()); 
 		//TODO: What is the effect of the tolerance?

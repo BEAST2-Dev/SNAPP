@@ -199,7 +199,7 @@ public class NodeData extends Node implements Serializable  {
 	public FMatrix cloneFtx() {
 		return new FMatrix(m_Ft);
 	} // cloneF
-	public void assignFbx(FMatrix _F) {
+	public void assignFb(FMatrix _F) {
 		m_Fb.assign(_F);
 	} // cloneF
 	public void assignFt(FMatrix _F) {

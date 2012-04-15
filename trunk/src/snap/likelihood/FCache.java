@@ -119,7 +119,7 @@ public class FCache {
 		
 		if (m_leafCache[node.getNr()][numReds][totalCount] == null) {
 			// it's not in the cache yet, so create the object
-			//System.err.println("CACHE leaf = "+node.getNr()+ " nReds = "+numReds);
+			System.err.println("CACHE leaf = " + node.getNr() + " nReds = " + numReds + " total = " + totalCount);
 			
 			
 			spc.doLeafLikelihood(node, numReds, totalCount, bHasDominantMarkers, false);
@@ -128,7 +128,7 @@ public class FCache {
 			CacheObject o = new CacheObject(Fb, nextID());
 			m_leafCache[node.getNr()][numReds][totalCount] = o; 
 	    } else {
-		    //System.err.println("RETRIEVE leaf = "+node.getNr()+ " nReds = "+numReds);
+		    System.err.println("RETRIEVE leaf = " + node.getNr() + " nReds = " + numReds + " total = " + totalCount);
 	    }
 							   
 		return m_leafCache[node.getNr()][numReds][totalCount];
@@ -138,6 +138,7 @@ public class FCache {
 		while (nCacheID >= m_TopOfBranche.size()) {
 			m_TopOfBranche.add(null);
 		}
+		System.err.println("Fetch nCacheID = " + nCacheID);
 		CacheObject o = m_TopOfBranche.elementAt(nCacheID);//m_TopOfBrancheMap.get(nCacheID);
 		if (o == null) {
 			// it's not in the cache yet, so create the object
@@ -146,6 +147,7 @@ public class FCache {
 			FMatrix Ft = node.getFt(); 
 			o = new CacheObject(Ft, nextID());
 			m_TopOfBrancheID[node.getNr()].add(o);
+			System.err.println("Set TOB nCacheID = " + nCacheID);
 			m_TopOfBranche.set(nCacheID, o);
 		} else if (o.m_F == null) {
 			// it's removed from the cache, so recalculate the F matrix
@@ -169,6 +171,7 @@ public class FCache {
 		if (nodeCache2 == null) {
 			nodeCache2 = new Vector<CacheObject2>(1024,128);
 			m_BottomOfBranche.set(nCacheID1, nodeCache2);
+			System.err.println("try to fetch from cache with IDs swapped " + nCacheID1 + "," + nCacheID2 );
 			// not in cache, try to fetch from cache with IDs swapped
 			// TODO: this does not get any hits as long as branch lengths (=t*gamma) are not part of the Key.
 			// TODO: Fix this!
@@ -185,6 +188,7 @@ public class FCache {
 			if (o.m_nCacheID2 == nCacheID2) {
 				if (o.m_F == null) {
 					// it was removed from the cache, so recalculate it
+					System.err.println("it was removed from the cache, so recalculate it " + nCacheID1 + "," + nCacheID2 );
 					spc.doInternalLikelihood(u1, u2, parent, false);
 					o.m_F = parent.getFb();
 				}
@@ -192,6 +196,7 @@ public class FCache {
 			}
 		}
 		// it's not in the cache yet, so create the object
+		System.err.println("it's not in the cache yet, so create the object " + nCacheID1 + "," + nCacheID2 );
 		spc.doInternalLikelihood(u1, u2, parent, false);
 		//FMatrix Fb = parent.cloneFb();
 		FMatrix Fb = parent.getFb();

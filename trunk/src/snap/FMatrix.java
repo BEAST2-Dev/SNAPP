@@ -69,7 +69,9 @@ public class FMatrix {
 	/** construct a leaf likelihood **/
 	public FMatrix(int n, int nReds) {
 		resize(n);
-		set(n, nReds, 1.0);
+		if (n > 0) {
+			set(n, nReds, 1.0);
+		}
 	} // c'tor
 
 	/** construct a top-of-branch likelihood **/
