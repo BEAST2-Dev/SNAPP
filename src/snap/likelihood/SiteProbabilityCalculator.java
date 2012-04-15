@@ -233,6 +233,21 @@ public class SiteProbabilityCalculator {
 
          where conv means a 2D convolution.
          **/
+    	
+    	
+        if (u1.getSize() == 0) {
+        	// degenerate case
+            parent.assignFb(u2.getFt());
+            return;
+        }    	
+        if (u2.getSize() == 0) {
+        	// degenerate case
+            parent.assignFb(u1.getFt());
+            return;
+        }    	
+    	
+    	
+    	
         // binom(n,r+1) = n! / (r+1)! / (n-r-1)! = binom(n,r) * (n-r)/(r+1)
 
         //Construct table of binomials
@@ -402,12 +417,17 @@ public class SiteProbabilityCalculator {
     void doTopOfBranchLikelihood(NodeData node, double u, double v, Double [] coalescenceRate, boolean dprint) throws Exception {
 
         //int N = node.m_n;
-
         if (dprint) {
             System.err.print("BEFORE\t");
             System.err.println(node.getFt().toString());
         }
 
+        
+        if (node.getSize() == 0) {
+        	// degenerate case
+            node.initFt(node.getFb());
+            return;
+        }
 		//System.err.println("node.gamma = "+coalescenceRate[node.getNr()]+"\tnot t = "+node.t() + "\t2/node.gamma = "+(2.0/coalescenceRate[node.getNr()]));
 		
         //FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, coalescenceRate[node.getNr()], node.t(), node.getFb());
