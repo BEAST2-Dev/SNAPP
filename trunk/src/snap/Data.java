@@ -211,7 +211,8 @@ public class Data extends beast.evolution.alignment.Alignment {
         		// it is constant over all sites 
         		List<Integer> statecounts = new ArrayList<Integer>();
         		int statecount = m_nStateCounts.get(nrOfLineages.size());
-        		for (int i = 0; i < getSiteCount(); i++) {
+        		int nSites = m_counts.get(0).size();
+        		for (int i = 0; i < nSites; i++) {
         			statecounts.add(statecount);
         		}
         		nrOfLineages.add(statecounts);
