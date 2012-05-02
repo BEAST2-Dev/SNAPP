@@ -51,9 +51,10 @@ public class DataInputEditor extends InputEditor.Base {
 
 	
 	@Override
-	public void init(Input<?> input, Plugin plugin, ExpandOption bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_input = input;
 		m_plugin = plugin;
+		this.itemNr = itemNr;
 		List<TaxonSet> taxonset = ((snap.Data)input.get()).m_taxonsets.get(); 
 		add(getContent(taxonset));
 	}

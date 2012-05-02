@@ -21,11 +21,12 @@ public class SNAPPPriorListEditor extends ListInputEditor {
     }
     
     @Override
-    public void init(Input<?> input, Plugin plugin, ExpandOption bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
     	m_bExpandOption = bExpand;
         m_input = input;
         m_plugin = plugin;
+		this.itemNr = itemNr;
 
         m_listBox = Box.createVerticalBox();
         // list of inputs 
