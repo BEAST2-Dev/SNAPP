@@ -1,0 +1,88 @@
+<!-- Simulation test 1: species = 4, lineages/species = 2, samples = 1000 
+u=v=1.0 alpha=2, beta=0.2 lambda=10
+--> 
+
+<beast version='2.0' namespace='snap:beast.util:beast.core.util:beast.evolution'>
+
+<map name='snapprior'>snap.likelihood.SnAPPrior</map>
+<map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
+
+	<!-- n = 1000 -->
+	<data spec='snap.WeightedData' id='alignment' dataType='integerdata' statecount='3'>
+ 		             <input name='weights'>1,1,1,1,1,1,1,1,1,1,1,1,1</input>
+		<sequence taxon='A' totalcount='2'>2,1,2,2,2,1,0,0,1,2,2,2,0</sequence>
+		<sequence taxon='B' totalcount='2'>2,2,1,2,2,0,1,0,2,1,2,0,1</sequence>
+		<sequence taxon='C' totalcount='2'>1,2,2,2,0,0,0,1,2,2,1,2,1</sequence>
+		<sequence taxon='D' totalcount='2'>2,2,2,1,0,0,0,0,2,2,2,2,1</sequence>
+	</data>
+
+<run id="mcmc" spec='snap.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='0' killAfter='0'>
+        <state storeEvery='1000'>
+          <parameter name='stateNode' id='coalescenceRate' value='10'/>
+
+		  <!-- the following values may or may not be appropriate. Read the manual for further directions -->          
+          <parameter name='stateNode' id='v' value='1.0' lower='0.0'/>
+          <parameter name='stateNode' id='u' value='1.0' lower='0.0'/>
+          <parameter name='stateNode' id='alpha'  value='2' lower='0.0'/>
+          <parameter name='stateNode' id='beta'   value='200' lower='0.0'/>
+          <parameter name='stateNode' id='lambda' value='10' lower='0.0'/>
+		  <stateNode clusterType="upgma" estimate="true" id="tree" nodetype="snap.NodeData" spec="beast.util.ClusterTree" taxa='@alignment'/>
+        </state>
+
+        <distribution id="posterior" spec='CompoundDistribution'>
+     	     <snapprior name='distribution' id='prior' alpha='@alpha' beta='@beta' lambda='@lambda' tree='@tree' coalescenceRate='@coalescenceRate'/>
+             <snaptreelikelihood name='distribution' id='treeLikelihood' initFromTree='false' 
+				pattern='theta' data='@alignment' tree='@tree'>
+                <siteModel spec='sitemodel.SiteModel' id="siteModel">
+                    <substModel spec='snap.likelihood.SnapSubstitutionModel'
+                        mutationRateU='@u' mutationRateV='@v'
+            	        coalescenceRate='@coalescenceRate'/>
+                </siteModel>
+            </snaptreelikelihood>
+        </distribution>
+
+        <stateDistribution idref='prior'/>
+
+
+        <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>
+        <operator spec='operators.NodeBudger' weight='5' size='0.5' tree='@tree'/>
+        <operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='1' tree='@tree'/>
+        <operator spec='operators.GammaMover' scale='0.5' weight='0.5' coalescenceRate='@coalescenceRate'/>
+        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' tree='@tree'  coalescenceRate='@coalescenceRate'/>
+
+<!-- estimate u and v -->
+	    <operator spec='operators.MutationMover' window='0.1' weight='0.25' u='@u' v='@v'/>
+
+
+        <logger logEvery="1000">
+            <log idref="u"/>
+            <log idref="v"/>
+            <log idref="prior"/>
+            <log idref="treeLikelihood"/>
+            <log idref="posterior"/>
+    	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
+	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+        </logger>
+        <logger logEvery="1000" fileName="test.$(seed).log">
+	        <model idref='posterior'/>
+            <log idref="u"/>
+            <log idref="v"/>
+            <log idref="prior"/>
+            <log idref="treeLikelihood"/>
+            <log idref="posterior"/>
+    	    <log idref='coalescenceRate'/>
+    	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
+	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+    	    <log spec='TreeLengthLogger' tree='@tree'/>
+        </logger>
+        <logger logEvery="1000" fileName="test.$(seed).trees" mode='tree'>
+            <log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
+        </logger>
+        
+        <logger logEvery="1000" fileName="test2.$(seed).trees" mode='tree'>
+            <log spec='snap.CoalescentUnitTreeLogger' tree="@tree" coalescenceRate='@coalescenceRate'/>
+        </logger>
+</run>
+
+</beast>
+
