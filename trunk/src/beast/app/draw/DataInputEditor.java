@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -22,6 +21,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.GuessPatternDialog;
 import beast.core.Input;
 import beast.core.Plugin;
 import beast.evolution.alignment.Taxon;
@@ -223,9 +223,11 @@ public class DataInputEditor extends InputEditor.Base {
 	    }
 	}
 
+
+	String m_sPattern = "^(.+)[-_\\. ](.*)$";
 	private void guess() {
-		GuessDlg dlg = new GuessDlg(this);
-		String sPattern = dlg.showDialog("Guess taxon sets");
+        GuessPatternDialog dlg = new GuessPatternDialog(this, m_sPattern);
+        String sPattern = dlg.showDialog("Guess taxon sets");
 		if (sPattern != null) {
 			try {
 				((snap.Data)m_input.get()).guessTaxonSets(sPattern, 0);
@@ -242,141 +244,6 @@ public class DataInputEditor extends InputEditor.Base {
 		}
 	}
 	
-	class GuessDlg extends JDialog {
-		private static final long serialVersionUID = 1L;
-
-		String m_sPattern = "^(.+)[-_\\. ](.*)$";
-		Component m_parent;
-		Box guessPanel;
-		ButtonGroup group;
-        JRadioButton b1 = new JRadioButton("use everything");
-        JRadioButton b2 = new JRadioButton("use regular expression");
-		
-		int m_location = 0;
-		String m_sDelimiter = ".";
-		JTextField regexpEntry;
-		
-		GuessDlg(Component parent) {
-			m_parent = parent;
-	        guessPanel = Box.createVerticalBox();
-
-	        group = new ButtonGroup();
-	        group.add(b1);
-	        group.add(b2);
-	        group.setSelected(b1.getModel(), true);
-	        
-	        guessPanel.add(createDelimiterBox(b1));
-	        guessPanel.add(Box.createVerticalStrut(20));
-	        guessPanel.add(createRegExtpBox(b2));
-	        guessPanel.add(Box.createVerticalStrut(20));
-		}
-
-		
-		private Component createDelimiterBox(JRadioButton b) {
-			Box box = Box.createHorizontalBox();
-			box.add(b);
-			
-			JComboBox combo = new JComboBox(new String[]{"after first","after last","before first","before last"});
-			box.add(Box.createHorizontalGlue());
-			box.add(combo);
-			combo.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JComboBox combo = (JComboBox) e.getSource();
-					m_location = combo.getSelectedIndex();
-				}
-			});
-			
-			JComboBox combo2 = new JComboBox(new String[]{".",",","_","-"," ","/",":",";"});
-			box.add(Box.createHorizontalGlue());
-			box.add(combo2);
-			combo2.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JComboBox combo = (JComboBox) e.getSource();
-					m_sDelimiter = (String) combo.getSelectedItem();
-				}
-			});
-			box.add(Box.createHorizontalGlue());
-			return box;
-		}
-
-		
-		
-		public Component createRegExtpBox(JRadioButton b) {
-			Box box = Box.createHorizontalBox();
-			box.add(b);
-			regexpEntry = new JTextField();
-			regexpEntry.setText(m_sPattern);
-			regexpEntry.setColumns(30);
-			regexpEntry.setToolTipText("Enter regular expression to match taxa");
-			regexpEntry.setMaximumSize(new Dimension(1024, 20));
-			box.add(Box.createHorizontalGlue());
-			box.add(regexpEntry);
-			box.add(Box.createHorizontalGlue());
-			return box;
-		}
-
-		public String showDialog(String title) {
-
-	        JOptionPane optionPane = new JOptionPane(guessPanel,
-	                JOptionPane.PLAIN_MESSAGE,
-	                JOptionPane.OK_CANCEL_OPTION,
-	                null,
-	                new String[] { "Cancel", "OK" },
-	                "OK");
-	        optionPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-
-	        final JDialog dialog = optionPane.createDialog(m_parent, title);
-	        //dialog.setResizable(true);
-	        dialog.pack();
-
-	        dialog.setVisible(true);
-
-//	        if (optionPane.getValue() == null) {
-//	        	System.exit(0);
-//	        }
-	        if (b1.getModel() == group.getSelection()) {
-	        	String sDelimiter = m_sDelimiter;
-	        	if (sDelimiter.equals(".") || sDelimiter.equals("/")) {
-	        		sDelimiter = "\\" + sDelimiter;
-	        	}
-	        	switch (m_location) {
-	        	case 0:
-	        		m_sPattern = "^[^"+sDelimiter+"]+" + sDelimiter + "(.*)$";
-	        		break;
-	        	case 1:
-	        		m_sPattern = "^.*" + sDelimiter + "(.*)$";
-	        		break;
-	        	case 2:
-	        		m_sPattern = "^([^"+sDelimiter+"]+)" + sDelimiter + ".*$";
-	        		break;
-	        	case 3:
-	        		m_sPattern = "^(.*)" + sDelimiter + ".*$";
-	        		break;
-	        	}
-	        }	        
-	        if (b2.getModel() == group.getSelection()) {
-	        	m_sPattern = regexpEntry.getText();
-	        }	        
-	        
-	        // sanity check
-	        try {
-				m_sPattern.matches(m_sPattern);
-			} catch (PatternSyntaxException e) {
-				JOptionPane.showMessageDialog(this, "This is not a valid regular expression");
-				return null;
-			}
-	        
-	        if (optionPane.getValue().equals("OK")) {
-	        	System.err.println("Pattern = " + m_sPattern);
-	        	return m_sPattern;
-	        } else {
-	        	return null;
-	        }
-	    }
-	}
-
 	private Component createFilterBox() {
 		Box filterBox = Box.createHorizontalBox();
 		filterBox.add(new JLabel("filter: "));

@@ -27,8 +27,9 @@ public class WeightedData extends Data {
 		}
 		Arrays.fill(m_nWeight, 0);
 		for (int i = 0; i < sStr.length; i++) {
-			int userWeight = Integer.parseInt(sStr[i]);;
-			m_nWeight[getPatternIndex(i)] += userWeight;
+			int userWeight = Integer.parseInt(sStr[i]);
+			int pattern = getPatternIndex(i);
+			m_nWeight[pattern] += userWeight;
 		}
 		if (balance.get()) {
 			attemptToBalance();

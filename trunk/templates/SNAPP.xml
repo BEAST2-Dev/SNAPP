@@ -27,8 +27,11 @@
 	        snap.MCMC.stateDistribution,
 	        snap.MCMC.init,
 	        snap.MCMC.sampleFromPrior,
+	        snap.MCMC.operatorschedule,
 	        snap.likelihood.SnAPPrior.tree,
 	        snap.likelihood.SnapSubstitutionModel.frequencies,
+			beast.core.Logger.sanitiseHeaders,
+			beast.core.Logger.sort,
             beast.evolution.sitemodel.SiteModel.mutationRate,
             beast.evolution.sitemodel.SiteModel.gammaCategoryCount,
             beast.evolution.sitemodel.SiteModel.proportionInvariant,
@@ -175,7 +178,7 @@
         <log id='ThetaLogger' spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
         <log id='TreeHeightLogger' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-        <logger spec='Logger' logEvery='100' fileName='snap.$(seed).trees' mode='tree'  id='treelog'>  
+        <logger spec='Logger' logEvery='1000' fileName='snap.$(seed).trees' mode='tree'  id='treelog'>  
 	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
 	            <metadata spec='snap.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
 	        </log>
@@ -279,9 +282,9 @@
 
 <!-- framework for main model -->
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" chainLength="10000000" storeEvery='1000'>
 
-        <state storeEvery='100000' id='state'>
+        <state id='state'>
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
@@ -294,14 +297,14 @@
         <stateDistribution idref='prior'/>
 
 
-        <logger id='tracelog' logEvery="10000" fileName="snap.$(seed).log">
+        <logger id='tracelog' logEvery="1000" fileName="snap.$(seed).log">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
         </logger>
 
-        <logger id='screenlog' logEvery="10000">
+        <logger id='screenlog' logEvery="1000">
 	        <!--model idref='posterior'/-->
             <log idref="posterior"/>
       	    <ESS spec='ESS' name='log' arg="@posterior"/>
