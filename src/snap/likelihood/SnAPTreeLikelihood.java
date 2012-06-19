@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Random;
 
 import beast.app.BeastMCMC;
-import beast.evolution.alignment.Alignment;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -48,7 +47,9 @@ import snap.likelihood.SnAPLikelihoodCore;
 
 
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
-@Citation("David Bryant, Remco Bouckaert, Noah Rosenberg. Inferring species trees directly from SNP and AFLP data: full coalescent analysis without those pesky gene trees. arXiv:0910.4193v1. http://arxiv.org/abs/0910.4193")
+//@Citation("David Bryant, Remco Bouckaert, Noah Rosenberg. Inferring species trees directly from SNP and AFLP data: full coalescent analysis without those pesky gene trees. arXiv:0910.4193v1. http://arxiv.org/abs/0910.4193")
+@Citation(value="David Bryant, Remco Bouckaert, Joseph Felsenstein, Noah Rosenberg, Arindam RoyChoudhury. Inferring Species Trees Directly from Biallelic Genetic Markers: Bypassing Gene Trees in a Full Coalescent Analysis. Mol. Biol. Evol. 2012", 
+	DOI="10.1016/j.ympev.2011.10.01")
 public class SnAPTreeLikelihood extends TreeLikelihood {
 //	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
 //	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
@@ -80,7 +81,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	boolean m_bUsenNonPolymorphic;
 	boolean m_bMutationOnlyAtRoot;
 	boolean m_bHasDominantMarkers;
-    
+	double [] fSiteProbs;
+	double [] fStoredSiteProbs;
+	
 	SnapSubstitutionModel m_substitutionmodel;
 	
     @Override
@@ -150,7 +153,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     				m_tree.get().getRoot().getClass().getName());
     	}
 
-    
+		int numPatterns = m_data2.getPatternCount();
+		fSiteProbs = new double[numPatterns];
+		fStoredSiteProbs = new double[numPatterns];
+
     }
 
     /**
@@ -198,18 +204,18 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			
 			// amalgamate site probabilities over categories
 			int numPatterns = m_data2.getPatternCount();
-			double [] fProbs = new double[numPatterns];
+			fSiteProbs = new double[numPatterns];
 			for (int i = 0; i < nCategories; i++) {
 				double[] patternProb = patternProbs[i]; 
 				for(int id = 0; id < numPatterns; id++) {
-					fProbs[id] += patternProb[id] * fCategoryProportions[i];
+					fSiteProbs[id] += patternProb[id] * fCategoryProportions[i];
 				}
 			}
 			// claculate log prob
 			logP = 0;
 			for(int id = 0; id < numPatterns - (m_bUsenNonPolymorphic ? 0 : 2); id++) {
 				double freq = m_data2.getPatternWeight(id);
-				double siteL = fProbs[id];
+				double siteL = fSiteProbs[id];
 				if (siteL==0.0) {
 					logP = -10e100;
 					break;
@@ -218,8 +224,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			}
 			// correction for constant sites
 			if (!m_bUsenNonPolymorphic) {
-				double P0 =  fProbs[numPatterns - 2];
-				double P1 =  fProbs[numPatterns - 1];
+				double P0 =  fSiteProbs[numPatterns - 2];
+				double P1 =  fSiteProbs[numPatterns - 1];
 				logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - P0 - P1);
 			}				
 			
@@ -245,6 +251,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	public void store() {
         storedLogP = logP;
     	m_core.m_bReuseCache = true;
+    	System.arraycopy(fSiteProbs, 0, fStoredSiteProbs, 0, fStoredSiteProbs.length);
     	// DO NOT CALL super.store, since the super class TreeLikelihood has nothing to store
     	//super.store();
     }
@@ -253,6 +260,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     public void restore() {
         logP = storedLogP;
     	m_core.m_bReuseCache = false;
+    	double [] tmp = fStoredSiteProbs;
+    	fStoredSiteProbs = fSiteProbs;
+    	fSiteProbs = tmp;
     	// DO NOT CALL super.restore, since the super class TreeLikelihood has nothing to store
     	//super.restore();
     }
