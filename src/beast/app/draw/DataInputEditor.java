@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.*;
@@ -24,6 +26,8 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.GuessPatternDialog;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
@@ -223,24 +227,79 @@ public class DataInputEditor extends InputEditor.Base {
 	    }
 	}
 
+	void parseTrait(String trait) {
+    	Map<String,String> traitmap = new HashMap<String, String>();
+    	for (String line : trait.split(",")) {
+    		String [] strs = line.split("=");
+    		if (strs.length == 2) {
+    			traitmap.put(strs[0].trim(), strs[1].trim());
+    		}
+    	}
+
+    	m_taxonset.clear();
+		List<Taxon> taxa = new ArrayList<Taxon>();
+        for (Alignment alignment : getDoc().alignments) {
+            for (Sequence sequence : alignment.m_pSequences.get()) {
+				Taxon taxon = new Taxon();
+				// ensure sequence and taxon do not get same ID
+				if (sequence.getID() == null || sequence.getID().equals(sequence.m_sTaxon.get())) {
+					sequence.setID("_"+sequence.getID());
+				}
+				taxon.setID(sequence.m_sTaxon.get());
+				taxa.add(taxon);
+            }
+		}
+		HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
+        for (Taxon taxon : taxa) {
+            if (!(taxon instanceof TaxonSet)) {
+                String sMatch = traitmap.get(taxon.getID());
+                if (sMatch != null) {
+                    try {
+                        if (map.containsKey(sMatch)) {
+                            TaxonSet set = map.get(sMatch);
+                            set.m_taxonset.setValue(taxon, set);
+                        } else {
+                            TaxonSet set = new TaxonSet();
+                            set.setID(sMatch);
+                            set.m_taxonset.setValue(taxon, set);
+                            map.put(sMatch, set);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+    	// add taxon sets
+    	for (TaxonSet set : map.values()) {
+            m_taxonset.add(set);
+    	}
+	}
+
 
 	String m_sPattern = "^(.+)[-_\\. ](.*)$";
 	private void guess() {
         GuessPatternDialog dlg = new GuessPatternDialog(this, m_sPattern);
-        String sPattern = dlg.showDialog("Guess taxon sets");
-		if (sPattern != null) {
-			try {
-				((snap.Data)m_input.get()).guessTaxonSets(sPattern, 0);
-				for (Taxon taxonset2 : m_taxonset) {
-					for (Taxon taxon : ((TaxonSet)taxonset2).m_taxonset.get()) {
-						m_lineageset.add(taxon);
-						m_taxonMap.put(taxon.getID(), taxonset2.getID());
-					}
+		try {
+	        switch (dlg.showDialog("Guess taxon sets")) {
+	        case canceled: return;
+	        case trait: parseTrait(dlg.getTrait());
+	        	break;
+	        case pattern:
+	            m_sPattern = dlg.getPattern(); 
+				((snap.Data)m_input.get()).guessTaxonSets(m_sPattern, 0);
+				
+				break;
+	        }
+			for (Taxon taxonset2 : m_taxonset) {
+				for (Taxon taxon : ((TaxonSet)taxonset2).m_taxonset.get()) {
+					m_lineageset.add(taxon);
+					m_taxonMap.put(taxon.getID(), taxonset2.getID());
 				}
-				taxonSetToModel();
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+			taxonSetToModel();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
