@@ -121,12 +121,6 @@ public class MCMC extends beast.core.MCMC {
 			        	state.restoreCalculationNodes();
 					}
 		            
-		            Tree tree = (Tree)state.stateNodeInput.get().get(0);
-		            if (tree.getRoot().getHeight() > 2) {
-		            	int k = 3;
-		            	k++;
-		            }
-		            
 				} else {
 	                state.restore();
 				}
