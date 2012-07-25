@@ -126,6 +126,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 		}
 		HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
     	Pattern m_pattern = Pattern.compile(sRegexp);
+    	int nIgnored = 0;
     	for (Taxon taxon : taxa) {
     		Matcher matcher = m_pattern.matcher(taxon.getID());
 			if (matcher.find()) {
@@ -136,17 +137,22 @@ public class Data extends beast.evolution.alignment.Alignment {
 						set.m_taxonset.setValue(taxon, set);
 					} else {
 						TaxonSet set = new TaxonSet();
-						set.setID(sMatch);
+						if (sMatch.equals(taxon.getID())) {
+							set.setID(sMatch + "_");
+						} else {
+							set.setID(sMatch);
+						}
 						set.m_taxonset.setValue(taxon, set);
 						map.put(sMatch, set);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
+			} else {
+		    	nIgnored++;
 			}
     	}
     	// add taxon sets
-    	int nIgnored = 0;
     	for (TaxonSet set : map.values()) {
     		if (set.m_taxonset.get().size() > nMinSize) {
                 m_taxonsets.setValue(set, this);

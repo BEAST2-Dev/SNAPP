@@ -116,7 +116,10 @@
         />
 
 
-        <partitiontemplate id='xxx' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@SNAPPPartitionTemplate'/>
+
+
+        <partitiontemplate id='SNAPPPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
         <data spec='snap.Data' id='snap.$(n)' dataType='integerdata'>
