@@ -20,7 +20,13 @@ public class SNPSequence extends Sequence {
 	
 	@Override
 	public void initAndValidate() throws Exception {
-		m_nTotalCount.setValue(m_sequences.get().size(), this);
+		int totalCount = 0;
+		for (Sequence s : m_sequences.get()) {
+			// remove one for zero state
+			totalCount += s.m_nTotalCount.get() - 1;
+		}
+		// add one for zero state
+		m_nTotalCount.setValue(totalCount + 1, this);
 	}
 
 	@Override
@@ -65,13 +71,15 @@ public class SNPSequence extends Sequence {
         // grab info from sub sequences and add them up
         for (Sequence sequence: m_sequences.get()) {
         	if (statecounts == null) {
+        		int maxStateCount = sequence.m_nTotalCount.get();
         		// start with first sequence
         		Integer[] sequence0 = sequence.getSequence(dataType).toArray(new Integer[0]);
         		statecounts = new int[sequence0.length];
                 for (int i = 0; i < statecounts.length; i++) {
-                	statecounts[i] = (dataType.isAmbiguousState(sequence0[i])? 0 : 1);
+                	statecounts[i] = (dataType.isAmbiguousState(sequence0[i])? 0 : maxStateCount - 1);
                 }
         	} else {
+        		int maxStateCount = sequence.m_nTotalCount.get();
                 List<Integer> sequence2 = sequence.getSequence(dataType);
                 // sanity check: make sure sequence2 is of same length as rest
                 if (sequence2.size() != statecounts.length) {
@@ -80,7 +88,7 @@ public class SNPSequence extends Sequence {
                 }
                 // add instances from sequence2 to sequences
                 for (int i = 0; i < statecounts.length; i++) {
-                	statecounts[i] += (dataType.isAmbiguousState(sequence2.get(i))? 0 : 1);
+                	statecounts[i] += (dataType.isAmbiguousState(sequence2.get(i))? 0 : maxStateCount - 1);
                 }
         	}
         }
