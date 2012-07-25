@@ -54,13 +54,15 @@
             beast.core.Logger.model,
             beast.core.Logger.mode,
             snap.likelihood.SnAPTreeLikelihood.data,
+            snap.likelihood.SnAPTreeLikelihood.scaling,
             snap.likelihood.SnAPTreeLikelihood.siteModel,
             snap.likelihood.SnAPTreeLikelihood.branchRateModel,
             snap.likelihood.SnAPTreeLikelihood.initFromTree,
             snap.likelihood.SnAPTreeLikelihood.pattern,
             snap.likelihood.SnAPTreeLikelihood.useTipDates,
             snap.likelihood.SnAPTreeLikelihood.useAmbiguities,
-            snap.likelihood.SnAPTreeLikelihood.tree
+            snap.likelihood.SnAPTreeLikelihood.tree,
+            snap.likelihood.SnAPPrior.coalescenceRate
 '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
             beast.app.beauti.BeautiInitDlg.Create new specification=Import alignment(s),
@@ -99,8 +101,9 @@
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="none" icon='7.png' forceExpansion='TRUE'
-            buttonStatus='NONE' type='snap.likelihood.SnAPPrior'
+            buttonStatus='NONE' 
         />
+<!--type='snap.likelihood.SnAPPrior'-->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
             hasPartitions="none" icon='8.png' forceExpansion='FALSE'
@@ -162,8 +165,11 @@
         <!--operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="3" parameter='@birthRate'/-->
 
 
+        <operator id='MutationMover' spec='snap.operators.MutationMover' window="0.1" weight="1" u='@u' v='@v'/>
+<!--
         <operator id='uScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@u'/>
         <operator id='vScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@v'/>
+-->
 
         <operator id='alphaScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@alpha'/>
         <operator id='betaScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@beta'/>
@@ -188,16 +194,15 @@
 
             <connect spec='BeautiConnector' srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution' if='isInitializing'/>
 
-            <connect spec='BeautiConnector' srcID='NodeSwapper' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='NodeBudger' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='TreeScaler' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='GammaMover' targetID='mcmc' inputName='operator'/>
-            <connect spec='BeautiConnector' srcID='RateMixer' targetID='mcmc' inputName='operator'/>
+            <connect spec='BeautiConnector' srcID='NodeSwapper' targetID='mcmc' inputName='operator'>swaps nodes in tree</connect>
+            <connect spec='BeautiConnector' srcID='NodeBudger' targetID='mcmc' inputName='operator'>moves node in tree</connect>
+            <connect spec='BeautiConnector' srcID='TreeScaler' targetID='mcmc' inputName='operator'>scale the tree</connect>
+            <connect spec='BeautiConnector' srcID='GammaMover' targetID='mcmc' inputName='operator' if='coalescenceRate/estimate=true'>moves a coalescent rate</connect>
+            <connect spec='BeautiConnector' srcID='RateMixer' targetID='mcmc' inputName='operator' if='coalescenceRate/estimate=true'>moves both coalescent rates and tree</connect>
 
             <connect spec='BeautiConnector' srcID='Tree.$(n)' targetID='state' inputName='stateNode'/>
             <connect spec='BeautiConnector' srcID='u' targetID='state' inputName='stateNode' if='u/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='u' targetID='state' inputName='stateNode' if='u/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='v' targetID='state' inputName='stateNode' if='v/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='v' targetID='state' inputName='stateNode' if='u/estimate=true'/>
             <connect spec='BeautiConnector' srcID='alpha' targetID='state' inputName='stateNode' if='alpha/estimate=true'/>
             <connect spec='BeautiConnector' srcID='beta' targetID='state' inputName='stateNode' if='beta/estimate=true'/>
             <connect spec='BeautiConnector' srcID='lambda' targetID='state' inputName='stateNode' if='lambda/estimate=true'/>
@@ -207,21 +212,25 @@
             <connect spec='BeautiConnector' srcID='shape' targetID='state' inputName='stateNode' if='shape/estimate=true'/>
             <connect spec='BeautiConnector' srcID='coalescenceRate' targetID='state' inputName='stateNode' if='coalescenceRate/estimate=true'/>
 
-
+<!--
             <connect spec='BeautiConnector' srcID='uScaler' targetID='mcmc' inputName='operator' if='u/estimate=true'/>
             <connect spec='BeautiConnector' srcID='vScaler' targetID='mcmc' inputName='operator' if='v/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='alphaScaler' targetID='mcmc' inputName='operator' if='alpha/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='betaScaler' targetID='mcmc' inputName='operator' if='beta/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='lambdaScaler' targetID='mcmc' inputName='operator' if='lambda/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='kappaScaler' targetID='mcmc' inputName='operator' if='kappa/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='mutationRateScaler' targetID='mcmc' inputName='operator' if='mutationRate/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='propInvariantScaler' targetID='mcmc' inputName='operator' if='proportionInvariant/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='gammaShapeScaler' targetID='mcmc' inputName='operator' if='shape/estimate=true'/>
+-->
+            <connect spec='BeautiConnector' srcID='MutationMover' targetID='mcmc' inputName='operator' if='u/estimate=true'>moves u and v parameters such that 2uv=u+v</connect>
+
+
+            <connect spec='BeautiConnector' srcID='alphaScaler' targetID='mcmc' inputName='operator' if='alpha/estimate=true'>scales alpha parameter of prior</connect>
+            <connect spec='BeautiConnector' srcID='betaScaler' targetID='mcmc' inputName='operator' if='beta/estimate=true'>scales beta parameter of prior</connect>
+            <connect spec='BeautiConnector' srcID='lambdaScaler' targetID='mcmc' inputName='operator' if='lambda/estimate=true'>scales lambda parameter of prior</connect>
+            <connect spec='BeautiConnector' srcID='kappaScaler' targetID='mcmc' inputName='operator' if='kappa/estimate=true'>scales kappa parameter of prior</connect>
+            <connect spec='BeautiConnector' srcID='mutationRateScaler' targetID='mcmc' inputName='operator' if='mutationRate/estimate=true'>scales mutation rate</connect>
+            <connect spec='BeautiConnector' srcID='propInvariantScaler' targetID='mcmc' inputName='operator' if='proportionInvariant/estimate=true'>scales proportion invariant</connect>
+            <connect spec='BeautiConnector' srcID='gammaShapeScaler' targetID='mcmc' inputName='operator' if='shape/estimate=true'>scales gamma parameter for gamma categories</connect>
 
             <connect spec='BeautiConnector' srcID='treelog' targetID='mcmc' inputName='logger'/>
 
             <connect spec='BeautiConnector' srcID='u' targetID='tracelog' inputName='log' if='u/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='v' targetID='tracelog' inputName='log' if='v/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='v' targetID='tracelog' inputName='log' if='u/estimate=true'/>
             <connect spec='BeautiConnector' srcID='coalescenceRate' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='ThetaLogger' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='TreeHeightLogger' targetID='tracelog' inputName='log'/>
@@ -232,7 +241,7 @@
             <connect spec='BeautiConnector' srcID='lambdaPrior.$(n)' targetID='prior' inputName='distribution' if='lambda/estimate=true'/>
             <connect spec='BeautiConnector' srcID='kappaPrior.$(n)' targetID='prior' inputName='distribution' if='kappa/estimate=true'/>
             <connect spec='BeautiConnector' srcID='uPrior.$(n)' targetID='prior' inputName='distribution' if='u/estimate=true'/>
-            <connect spec='BeautiConnector' srcID='vPrior.$(n)' targetID='prior' inputName='distribution' if='v/estimate=true'/>
+            <connect spec='BeautiConnector' srcID='vPrior.$(n)' targetID='prior' inputName='distribution' if='u/estimate=true'/>
 
         </partitiontemplate>
 

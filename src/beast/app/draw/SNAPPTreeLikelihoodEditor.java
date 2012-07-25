@@ -8,6 +8,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.core.Input;
 import beast.core.Plugin;
 import snap.likelihood.SnAPTreeLikelihood;
+import snap.likelihood.SnapSubstitutionModel;
 
 public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     public SNAPPTreeLikelihoodEditor(BeautiDoc doc) {
@@ -19,6 +20,8 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     public Class<?> baseType() {
         return SnAPTreeLikelihood.class;
     }
+    
+    SnapSubstitutionModel substModel;
     
     @Override
     public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
@@ -33,13 +36,20 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
         for (Object o : (List<?>) input.get()) {
             if (o instanceof SnAPTreeLikelihood) {
             	SnAPTreeLikelihood plugin2 = (SnAPTreeLikelihood) o;
-            	Plugin substModel = plugin2.m_pSiteModel.get().m_pSubstModel.get();
+            	substModel = (SnapSubstitutionModel) plugin2.m_pSiteModel.get().m_pSubstModel.get();
             	doc.getInpuEditorFactory().addInputs(m_listBox, substModel, this, null, doc);
             	doc.getInpuEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
 		add(m_listBox);
         updateState();
+    }
+    
+
+    public InputEditor createMutationRateVEditor() throws Exception {
+    	ParameterInputEditor editor = (ParameterInputEditor) doc.getInpuEditorFactory().createInputEditor(substModel.m_pV, substModel, doc);
+    	editor.m_isEstimatedBox.setVisible(false);
+    	return editor;
     }
 
 }
