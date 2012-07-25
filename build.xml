@@ -42,7 +42,7 @@
 	</target>
 
 	<!-- No JUnit Test, clean previous build, compile Java source code, and make the snap.jar -->
-	<target name="build_jar_all_SnAP_NoJUnitTest" depends="clean,compile-all,dist_all_SnAP,doc"
+	<target name="build_jar_all_SnAP_NoJUnitTest" depends="clean,compile-all,dist_all_SnAP"
         description="Clean and Build all run-time stuff">
 	</target>
 
@@ -157,10 +157,10 @@
 	
 	
 	<!-- Release -->
-	<property name="version" value="1.0.a" />
-	<property name="version_number" value="1.0.0" />
+	<property name="version" value="1.1.a" />
+	<property name="version_number" value="1.1.0" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="SNAPP development team 2011" />
+	<property name="copyright" value="SNAPP development team 2011-2012" />
 
 	<property name="SNAPP_name" value="SNAPP" />
 	<property name="BEAUti_name" value="BEAUti" />
@@ -180,7 +180,7 @@
 	<!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
 	<target name="windows"
-	        depends="build_jar_all_SnAP_NoJUnitTest"
+	        depends="build_jar_all_SnAP_NoJUnitTest,doc"
 	        description="release Windows version of SNAPP, BEAUTI, DensiTree, TreeSetAnalyser">
 
 		<delete dir="${Windows_package_dir}" />
@@ -253,7 +253,7 @@
 	</target>
 
 	<target name="linux"
-	        depends="build_jar_all_SnAP_NoJUnitTest"
+	        depends="build_jar_all_SnAP_NoJUnitTest,doc"
 	        description="release Linux/Unix version of SNAPP, BEAUTI, TreeSetAnalyser, DensiTree">
 		<delete dir="${Linux_package_dir}" />
 		<!-- Create the release directory -->
