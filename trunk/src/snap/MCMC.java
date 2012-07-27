@@ -156,6 +156,10 @@ public class MCMC extends beast.core.MCMC {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);
+            if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
+                state.storeToFile(iSample);
+            	operatorSchedule.storeToFile();
+            }
 
 			Operator operator = operatorSchedule.selectOperator();
 			//System.err.println(operator.getClass().getName() + " " + operator.getID());
