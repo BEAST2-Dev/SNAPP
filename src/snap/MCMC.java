@@ -27,7 +27,6 @@ package snap;
 
 
 import beast.core.*;
-import beast.evolution.tree.Tree;
 import beast.util.*;
 
 @Description("Allow sampling from the prior.")
@@ -58,7 +57,9 @@ public class MCMC extends beast.core.MCMC {
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
     	state.setStateFileName(m_sStateFile + "." + Randomizer.getSeed());
-		int nBurnIn = m_oBurnIn.get();
+        operatorSchedule.setStateFileName(m_sStateFile);
+
+        int nBurnIn = m_oBurnIn.get();
 		int nChainLength = m_oChainLength.get();
 		int nStateBurnin = m_oStateBurnIn.get();
         if (m_bRestoreFromFile) {
