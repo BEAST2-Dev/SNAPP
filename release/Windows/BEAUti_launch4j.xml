@@ -1,6 +1,7 @@
 <launch4jConfig>
   <headerType>gui</headerType>
   <icon>../common/icons/beauti.ico</icon>
+    <cmdLine>-template templates/SNAPP.xml</cmdLine>
   <classPath>
   	<mainClass>beast.app.beauti.Beauti</mainClass>
   	<cp>./lib/beast.jar</cp>
