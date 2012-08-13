@@ -2,6 +2,10 @@
   <headerType>gui</headerType>
   <icon>../common/icons/tsa.ico</icon>
   <cmdLine>-window -working -options</cmdLine>
+  <classPath>
+  	<mainClass>snap.app.analysis.TreeSetAnalyser</mainClass>
+  	<cp>./lib/beast.jar</cp>
+  </classPath>
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>

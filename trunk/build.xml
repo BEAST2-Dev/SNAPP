@@ -202,14 +202,14 @@
 				<exclude name="benchmark/**" />
 			</fileset>
 		</copy>
-		<copy file="${dist}/snap" todir="${Windows_package_dir}/lib" />
+		<copy file="${dist}/snap.jar" todir="${Windows_package_dir}/lib" />
 		<copy file="${dist}/snap.src.jar" todir="${Windows_package_dir}/lib" />
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Windows_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Windows_package_dir}" />
 
 		<!-- BEAUTi v?.?.?.exe -->
 		<launch4j configFile="${Windows_dir}/BEAUti_launch4j.xml"
-		          jar="${dist}/snap"
+		          jar="${dist}/snap.jar"
 		          outfile="${Windows_package_dir}/${BEAUti_name}.exe"
 		          fileVersion="${version_number}.0"
 		          txtFileVersion="${version}"
@@ -430,6 +430,7 @@
 		<echo message="Mac version release is finished." />
 	</target>
 	
+
 <!--
 	        depends="build_jar_all_SnAP_NoJUnitTest"
 -->
