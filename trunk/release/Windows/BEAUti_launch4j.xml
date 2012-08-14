@@ -4,7 +4,7 @@
     <cmdLine>-template templates/SNAPP.xml</cmdLine>
   <classPath>
   	<mainClass>beast.app.beauti.Beauti</mainClass>
-  	<cp>./lib/beast.jar</cp>
+  	<cp>./lib/snap.jar</cp>
   </classPath>
   <jre>
     <minVersion>1.6.0</minVersion>

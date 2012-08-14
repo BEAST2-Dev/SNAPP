@@ -4,7 +4,7 @@
   <cmdLine>-window -working -options</cmdLine>
   <classPath>
   	<mainClass>snap.app.analysis.TreeSetAnalyser</mainClass>
-  	<cp>./lib/beast.jar</cp>
+  	<cp>./lib/snap.jar</cp>
   </classPath>
   <jre>
     <minVersion>1.6.0</minVersion>
