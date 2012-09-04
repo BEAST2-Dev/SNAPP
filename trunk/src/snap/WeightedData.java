@@ -108,4 +108,26 @@ public class WeightedData extends Data {
 		System.out.println(Arrays.toString(m_nWeight));
 	} // attemptToBalance
 	
+
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		if (m_nPatterns != null) {
+			int nTaxa = m_nPatterns[0].length;
+			int nPatterns = m_nPatterns.length;
+			for (int i = 0; i < nTaxa; i++) {
+				for (int j = 0; j < nPatterns; j++) {
+					buf.append(m_nPatterns[j][i]);
+				}
+				buf.append("\n");
+			}
+			if (m_nWeight != null) {
+				for (int j = 0; j < nPatterns; j++) {
+					buf.append(m_nWeight[j] + ",");
+				}
+				buf.append("\n");
+			}
+		}
+		return buf.toString();
+	}
 }
