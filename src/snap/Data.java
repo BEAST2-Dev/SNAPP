@@ -26,6 +26,8 @@
 package snap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -283,7 +285,31 @@ public class Data extends beast.evolution.alignment.Alignment {
 				}
 				nPatterns++;
 			}
-		}		
+		}
+        
+        Arrays.fill(m_nPatternIndex, -1);
+        for (int i = 0; i < nSites; i++) {
+            int[] sites = new int[nTaxa];
+            for (int j = 0; j < nTaxa; j++) {
+                sites[j] = m_counts.get(j).get(i);
+            }
+            for (int j = 0; j < nPatterns; j++) {
+            	boolean found = true;
+            	for (int k = 0; k < nTaxa; k++) {
+            		if (sites[k] != m_counts.get(k).get(j)) {
+            			found = false;
+            			break;
+            		}
+            	}
+            	if (found) {
+            		m_nPatternIndex[i] = j;
+            		j = nPatterns;
+            	}
+            }
+        }
+		
+		
+		
 		m_nMaxStateCount = 0;
 		for (int i = 0; i < m_nStateCounts.size(); i++) {
 			m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCounts.get(i));
