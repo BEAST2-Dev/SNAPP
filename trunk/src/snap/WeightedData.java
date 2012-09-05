@@ -29,7 +29,11 @@ public class WeightedData extends Data {
 		for (int i = 0; i < sStr.length; i++) {
 			int userWeight = Integer.parseInt(sStr[i]);
 			int pattern = getPatternIndex(i);
-			m_nWeight[pattern] += userWeight;
+			if (pattern >= m_nWeight.length - 2) {
+				System.err.println("WARNING: Constant pattern detected. This will be ignored.");
+			} else {
+				m_nWeight[pattern] += userWeight;
+			}
 		}
 		if (balance.get()) {
 			attemptToBalance();
