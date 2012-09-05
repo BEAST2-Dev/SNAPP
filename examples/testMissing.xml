@@ -141,9 +141,11 @@ Start likelihood: = -136.37703731926786 for no missing data
             <log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
         </logger>
         
+<!--
         <logger logEvery="1000" fileName="test2.$(seed).trees" mode='tree'>
             <log spec='snap.CoalescentUnitTreeLogger' tree="@tree" coalescenceRate='@coalescenceRate'/>
         </logger>
+-->
 </run>
 
 </beast>
