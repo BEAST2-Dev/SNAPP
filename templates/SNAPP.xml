@@ -234,7 +234,9 @@
 
             <connect spec='BeautiConnector' srcID='u' targetID='tracelog' inputName='log' if='u/estimate=true'/>
             <connect spec='BeautiConnector' srcID='v' targetID='tracelog' inputName='log' if='u/estimate=true'/>
+<!--
             <connect spec='BeautiConnector' srcID='coalescenceRate' targetID='tracelog' inputName='log'/>
+-->
             <connect spec='BeautiConnector' srcID='ThetaLogger' targetID='tracelog' inputName='log'/>
             <connect spec='BeautiConnector' srcID='TreeHeightLogger' targetID='tracelog' inputName='log'/>
 
