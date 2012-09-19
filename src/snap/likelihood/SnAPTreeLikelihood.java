@@ -28,6 +28,7 @@ package snap.likelihood;
 
 
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
@@ -83,6 +84,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	boolean m_bHasDominantMarkers;
 	double [] fSiteProbs;
 	double [] fStoredSiteProbs;
+	
+	double m_fP0 = 0.0, m_fP1 = 0.0;
 	
 	SnapSubstitutionModel m_substitutionmodel;
 	
@@ -224,9 +227,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			}
 			// correction for constant sites
 			if (!m_bUsenNonPolymorphic) {
-				double P0 =  fSiteProbs[numPatterns - 2];
-				double P1 =  fSiteProbs[numPatterns - 1];
-				logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - P0 - P1);
+				m_fP0 =  fSiteProbs[numPatterns - 2];
+				m_fP1 =  fSiteProbs[numPatterns - 1];
+				logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
 			}				
 			
 			
@@ -271,4 +274,22 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	@Override public List<String> getArguments() {return null;}
 	@Override public List<String> getConditions() {return null;}
 	@Override public void sample(State state, Random random) {};
+	
+	@Override
+	public void init(PrintStream out) throws Exception {
+		super.init(out);
+		if (!m_bUsenNonPolymorphic) {
+			out.append("P0\t");
+			out.append("P1\t");
+		}
+	}
+	
+	@Override
+	public void log(int nSample, PrintStream out) {
+		super.log(nSample, out);
+		if (!m_bUsenNonPolymorphic) {
+			out.append(m_fP0 + "\t");
+			out.append(m_fP1 + "\t");
+		}
+	}
 } // class SSSTreeLikelihood
