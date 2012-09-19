@@ -86,6 +86,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	double [] fStoredSiteProbs;
 	
 	double m_fP0 = 0.0, m_fP1 = 0.0;
+	double m_fStoredP0 = 0.0, m_fStoredP1 = 0.0;
 	
 	SnapSubstitutionModel m_substitutionmodel;
 	
@@ -257,6 +258,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	System.arraycopy(fSiteProbs, 0, fStoredSiteProbs, 0, fStoredSiteProbs.length);
     	// DO NOT CALL super.store, since the super class TreeLikelihood has nothing to store
     	//super.store();
+    	m_fStoredP0 = m_fP0;
+    	m_fStoredP1 = m_fP1;
     }
 
 	@Override
@@ -268,6 +271,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	fSiteProbs = tmp;
     	// DO NOT CALL super.restore, since the super class TreeLikelihood has nothing to store
     	//super.restore();
+    	m_fP0 = m_fStoredP0;
+    	m_fP1 = m_fStoredP1;
     }
 
 	
