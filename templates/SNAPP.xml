@@ -62,6 +62,7 @@
             snap.likelihood.SnAPTreeLikelihood.useTipDates,
             snap.likelihood.SnAPTreeLikelihood.useAmbiguities,
             snap.likelihood.SnAPTreeLikelihood.tree,
+            snap.likelihood.SnAPTreeLikelihood.dominant,
             snap.likelihood.SnAPPrior.coalescenceRate
 '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
