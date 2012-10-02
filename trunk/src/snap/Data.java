@@ -240,10 +240,34 @@ public class Data extends beast.evolution.alignment.Alignment {
 				}
 				for (int j = 0; j < nTaxa; j++) {
 					m_counts.get(j).remove(i);
+					nrOfLineages.get(j).remove(i);
 				}
 				i--;
 			}
 		}
+
+		// remove sites that have no data in some branches
+		int removed = 0;
+		for (int i = 0; i < m_counts.get(0).size(); i++) {
+			boolean hasZeroCount = false;
+			for (int j = 0; j < nTaxa; j++) {
+				if (nrOfLineages.get(j).get(i) == 0) {
+					hasZeroCount = true;
+				}					
+			}
+			if (hasZeroCount) {
+				for (int j = 0; j < nTaxa; j++) {
+					m_counts.get(j).remove(i);
+					nrOfLineages.get(j).remove(i);
+				}
+				removed++;
+				i--;
+			}
+		}
+		if (removed > 0) {
+			System.out.println("WARNING: removed " + removed + " sites becaues they have one or more branches without data.");
+		}
+		
 		
 		// find unique patterns
 		int nSites = m_counts.get(0).size();
