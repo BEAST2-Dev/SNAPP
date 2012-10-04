@@ -27,9 +27,9 @@ package snap.likelihood;
 
 /** Ourisia60 
  20 samples
-real	0m39.389s
-user	0m41.267s
-sys	0m0.308s
+ real	0m39.389s
+ user	0m41.267s
+ sys	0m0.308s
 
  */
 
@@ -41,55 +41,74 @@ import snap.Data;
 import snap.NodeData;
 
 public class SnAPLikelihoodCore  {
-	boolean m_bReuseCache = false;
-	LineageCountCalculator m_lineageCountCalculator;
-	SiteProbabilityCalculator m_siteProbabilityCalculator;
-	
-	public SnAPLikelihoodCore(Node root, Alignment data) {
-		m_lineageCountCalculator = new LineageCountCalculator();
-		m_siteProbabilityCalculator = new SiteProbabilityCalculator();
-		m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
-	}
+    boolean m_bReuseCache = false;
+    LineageCountCalculator m_lineageCountCalculator;
+    SiteProbabilityCalculator m_siteProbabilityCalculator;
+
+    public SnAPLikelihoodCore(Node root, Alignment data) {
+        m_lineageCountCalculator = new LineageCountCalculator();
+        m_siteProbabilityCalculator = new SiteProbabilityCalculator();
+        m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
+    }
 
 
-	/**
-	 Compute Likelihood of the allele counts
-	 
-	 @param root  The tree. Uses branch lengths and coalescenceRate values stored on this tree.
-	 @param u  Mutation rate from red to green
-	 @param v Mutation rate from green to red
-	 @param sampleSize  Number of samples taken at each species (index by id field of the NodeData)
-	 @param redCount  Each entry is a different marker... for each marker the number of red alleles in each species.
-	 @param siteProbs  Vector of probabilities (logL) for each site.
-	 * @throws Exception 
-	 **/
-	
-	public double [] computeLogLikelihood(NodeData root, double u, double v, 
-			int [] sampleSizes, 
-			Data data, 
-			Double [] coalescenceRate,
-			boolean bMutationOnlyAtRoot,	
-			boolean bHasDominantMarkers,							  
-			boolean bUseCache,
-			boolean dprint /*= false*/) throws Exception
-	{
-		
-		m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate, bHasDominantMarkers, dprint);
-			
-			//TODO: Partial subtree updates over all sites.
-			double forwardLogL = 0.0;
-			int numPatterns = data.getPatternCount();
+    /**
+     Compute Likelihood of the allele counts
 
-			//Temporarily store pattern probabilities... used for numerical checks.
-			double [] patternProb = new double[numPatterns];
-			m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
+     @param root  The tree. Uses branch lengths and coalescenceRate values stored on this tree.
+     @param u  Mutation rate from red to green
+     @param v Mutation rate from green to red
+     @param sampleSize  Number of samples taken at each species (index by id field of the NodeData)
+     @param redCount  Each entry is a different marker... for each marker the number of red alleles in each species.
+     @param siteProbs  Vector of probabilities (logL) for each site.
+      * @throws Exception
+     **/
 
-			for(int id = 0; id < numPatterns; id++) {
-				int [] thisSite = data.getPattern(id);
-				int [] thisCounts = data.getPatternLineagCounts(id);
-				patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, thisCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
-			}
-			return patternProb;
+    public double [] computeLogLikelihood(NodeData root, double u, double v,
+                                          int [] sampleSizes,
+                                          Data data,
+                                          Double [] coalescenceRate,
+                                          boolean bMutationOnlyAtRoot,
+                                          boolean bHasDominantMarkers,
+                                          boolean bUseCache,
+                                          boolean dprint /*= false*/) throws Exception
+    {
+
+        m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate, bHasDominantMarkers, dprint);
+
+        //TODO: Partial subtree updates over all sites.
+        double forwardLogL = 0.0;
+        int numPatterns = data.getPatternCount();
+
+        //Temporarily store pattern probabilities... used for numerical checks.
+        double [] patternProb = new double[numPatterns];
+        m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
+
+
+
+        /******DEBUGGING *****
+        for(int id = 0; id < numPatterns; id++) {
+            int [] thisSite = data.getPattern(id);
+            int [] thisCounts = data.getPatternLineagCounts(id);
+            System.err.print("this Site = ");
+            for (int j=0;j<thisSite.length;j++)
+                System.err.print(" " + thisSite[j]);
+            System.err.println();
+
+            System.err.print("this Counts = ");
+            for (int j=0;j<thisCounts.length;j++)
+                System.err.print(" " + thisCounts[j]);
+            System.err.println();
+        }
+        /***DEBUGGING***/
+
+
+        for(int id = 0; id < numPatterns; id++) {
+            int [] thisSite = data.getPattern(id);
+            int [] thisCounts = data.getPatternLineagCounts(id);
+            patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, thisCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
+        }
+        return patternProb;
 /*
 		//System.err.println("Number of patterns = " + numPatterns);
 			for(int id = 0; id < numPatterns - (bUsenNonPolymorphic ? 0 : 2); id++) {
@@ -139,7 +158,7 @@ public class SnAPLikelihoodCore  {
 
 			return forwardLogL;
 */
-			
+
 //			//Compute site probabilities from pattern probabilities
 //			int nSites =   
 //					data.getSiteCount();
@@ -158,19 +177,19 @@ public class SnAPLikelihoodCore  {
 //			if (Math.abs(forwardLogL - backwardLogL)>EPSILON) 
 //				System.err.print("Numerical error evaluating likelihood");
 //			return (forwardLogL+backwardLogL)/2.0;
-	} // computeLogLikelihood
-	
+    } // computeLogLikelihood
 
-	int traverse(Node node) {
-		int nState = Tree.IS_CLEAN;
-		if (node.isLeaf()) {
-			nState |= traverse(node.getLeft());
-			nState |= traverse(node.getRight());
-		}
-		if (node.isDirty() != Tree.IS_CLEAN || nState != Tree.IS_CLEAN) {
-			SiteProbabilityCalculator.m_cache.clearNode(node.getNr());
-			nState |= node.isDirty();
-		}
-		return nState;
-	}
+
+    int traverse(Node node) {
+        int nState = Tree.IS_CLEAN;
+        if (node.isLeaf()) {
+            nState |= traverse(node.getLeft());
+            nState |= traverse(node.getRight());
+        }
+        if (node.isDirty() != Tree.IS_CLEAN || nState != Tree.IS_CLEAN) {
+            SiteProbabilityCalculator.m_cache.clearNode(node.getNr());
+            nState |= node.isDirty();
+        }
+        return nState;
+    }
 } // class SnAPLikelihoodCore
