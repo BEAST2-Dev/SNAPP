@@ -95,7 +95,7 @@ public class SNPSequence extends Sequence {
         // convert array to list
         List<Integer> list = new ArrayList<Integer>();
         for (Integer i : statecounts) {
-        	list.add(i);
+        	list.add(i + 1);
         }
         return list;
 	}
