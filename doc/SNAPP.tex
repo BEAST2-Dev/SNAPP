@@ -186,9 +186,12 @@ the text in the filter are highlighted, the remainder greyed out.
 
 \subsubsection{Beauti mutation model settings}
 
-Click the tab 'mutation model' to show u, v and coalescent rate parameters and a
-By default, the MCMC does not sample values for the backwards and forward mutation rates, $u$ and $v$. These are fixed at their initial values. We note that, given these rates, the stationary frequencies of the two states are $\pi_0 = v/(u+v)$ and $\pi_1 = u/(u+v)$, while the mutation rate is 
-\[\pi_0 u + \pi_1 v = \frac{2uv}{u+v}.\]
+Click the tab 'mutation model' to show u, v and coalescent rate parameters and a number 
+of optional check boxes.
+By default, the MCMC does not sample values for the backwards and forward mutation rates,
+$u$ and $v$. These are fixed at their initial values. We note that, given these rates, 
+the stationary frequencies of the two states are $\pi_0 = v/(u+v)$ and $\pi_1 = u/(u+v)$, 
+while the mutation rate is \[\pi_0 u + \pi_1 v = \frac{2uv}{u+v}.\]
 Hence, given an estimate for $\pi_0$, and the constraint that the mutation rate is $1$, we can solve for $u$ and $v$ as
 \begin{eqnarray*}
 u & = & \frac{1}{2\pi_0} \\
@@ -211,6 +214,19 @@ will show up automatically under the 'prior' tab).
 \includegraphics[width=0.75\textwidth]{figures/Beauti-model.png}
 \end{center}
 \end{minipage}
+
+The "non-polymorphic" checkbox indicates whether to use non-polymorphic data in the sequences.
+If true, constant-sites in the data will be used as part of the likelihood calculation. 
+If false (the default) constant sites will be removed from the sequence data and a normalization 
+factor is calculated for the likelihood.
+
+The "mutationOnlyAtRoot" checkbox indicates conditioning on zero mutations, except 
+at root (default false).
+As a result, all gene trees will coalesce in the root only, and never in any of the branches.
+
+It is possible to indicate whether alleles are dominant, however in our experience this
+only leads to much longer run times without changing the analysis significantly. Therefore
+it is set to false by default.
 
 \subsubsection{Beauti tree prior settings}
 
@@ -270,6 +286,7 @@ When selecting the CIR process \cite{CIR}, the kappa parameter is used as well.
 			 We are applying the CIR process to $$\theta = 2/r$$
 
 When selecting 'uniform' we assume the rate is uniformly distributed in the range 0...10000,
+which means there is a large proportion of the prior indicates a large value, with a mean of 5000.
 
 \subsubsection{Beauti hyper prior settings}
 
