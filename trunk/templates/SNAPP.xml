@@ -1,5 +1,6 @@
 <beast version='2.0' 
-	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution:beast.math.distributions:beast.app.beauti'>
+	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution:beast.math.distributions:beast.app.beauti'
+    templateinfo='template for SNP and AFLP data which automatically integrates out all lineage trees'>
 
 <map name='connect'>beast.app.beauti.BeautiConnector</map>
 <map name='subtemplate'>beast.app.beauti.BeautiSubTemplate</map>
