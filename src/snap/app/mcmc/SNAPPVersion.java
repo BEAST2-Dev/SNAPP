@@ -20,11 +20,11 @@ public class SNAPPVersion extends Version {
     /**
      * Version string: assumed to be in format x.x.x
      */
-    private static final String VERSION = "1.1.a";
+    private static final String VERSION = "1.1.1";
 
-    private static final String DATE_STRING = "2009-2011";
+    private static final String DATE_STRING = "2009-2012";
 
-    private static final boolean IS_PRERELEASE = true;
+    private static final boolean IS_PRERELEASE = false;
 
     private static final String REVISION = "$Rev$";
 

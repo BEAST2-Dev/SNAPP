@@ -27,7 +27,6 @@ package snap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -211,17 +210,17 @@ public class Data extends beast.evolution.alignment.Alignment {
         	if (seq instanceof SNPSequence) {
         		// it can vary over sites
         		try {
-        			nrOfLineages.add(((SNPSequence) seq).getStateCounts(m_dataType));
+        			nrOfLineages.add(((SNPSequence) seq).getLineageCounts(m_dataType));
         		} catch (Exception e) {
 					e.printStackTrace();
 				}
         	} else {
         		// it is constant over all sites 
         		List<Integer> statecounts = new ArrayList<Integer>();
-        		int statecount = m_nStateCounts.get(nrOfLineages.size());
+        		int lineageCount = m_nStateCounts.get(nrOfLineages.size()) - 1;
         		int nSites = m_counts.get(0).size();
         		for (int i = 0; i < nSites; i++) {
-        			statecounts.add(statecount);
+        			statecounts.add(lineageCount);
         		}
         		nrOfLineages.add(statecounts);
         	}
@@ -351,10 +350,10 @@ public class Data extends beast.evolution.alignment.Alignment {
 		m_nWeight[nPatterns] = nZeroSitesCount;
 		m_nWeight[nPatterns+1] =nAllSitesCount;
 		for (int i = 0; i < nTaxa; i++) {
-			//m_nPatterns[nPatterns + 1][i] = 0;
-			m_nPatterns[nPatterns + 1][i] = m_nStateCounts.get(i);
-			m_nPatternLineageCounts[nPatterns][i] = m_nStateCounts.get(i);
-			m_nPatternLineageCounts[nPatterns + 1][i] = m_nStateCounts.get(i);
+			int lineageCount = m_nStateCounts.get(i) - 1;
+			m_nPatterns[nPatterns + 1][i]             = lineageCount;
+			m_nPatternLineageCounts[nPatterns][i]     = lineageCount;
+			m_nPatternLineageCounts[nPatterns + 1][i] = lineageCount;
 		}
 //		for (int i = 0; i < nTaxa; i++) {
 //			for (int j = 0; j < nPatterns + 2; j++) {
@@ -368,7 +367,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 //		}
 		System.err.println(getMaxStateCount() + " states max");
 		System.err.println(getSiteCount() + " sites");
-		System.err.println(getPatternCount() + " patterns (2 dummies)");
+		System.err.println(getPatternCount() + " patterns (including 2 dummies)");
 	} // calc
 
 

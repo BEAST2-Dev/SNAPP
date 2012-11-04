@@ -86,9 +86,9 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 
 			try {
 				int [] thisSite = m_data.getPattern(id);
-				int [] thisCounts = m_data.getPatternLineagCounts(id);
+				int [] lineageCounts = m_data.getPatternLineagCounts(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
-				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, thisCounts, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, m_bUseCache, false, 0);
+				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, lineageCounts, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, m_bUseCache, false, 0);
 
 			}
 			catch (Exception ex) {
@@ -133,7 +133,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			//TODO: Partial subtree updates over all sites.
 			
 			
-			double forwardLogL = 0.0;
+			//double forwardLogL = 0.0;
 			int numPatterns = data.getPatternCount();
 
 			//Temporarily store pattern probabilities... used for numerical checks.
