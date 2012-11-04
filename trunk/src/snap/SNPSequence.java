@@ -20,13 +20,26 @@ public class SNPSequence extends Sequence {
 	
 	@Override
 	public void initAndValidate() throws Exception {
-		int totalCount = 0;
+		int nNrOfStates = 0;
+		
+		boolean warned = false;
 		for (Sequence s : m_sequences.get()) {
 			// remove one for zero state
-			totalCount += s.m_nTotalCount.get() - 1;
+			nNrOfStates += s.m_nTotalCount.get() - 1;
+			
+			if (!warned && s.getClass().equals(Sequence.class) && s.m_nTotalCount.get() != null && s.m_nTotalCount.get() > 3) {
+				warned = true;
+				System.out.println("WARNING: there is a sequence with a state count larger than 2.\n" +
+					"If this XML file was generated with BEAUti, this is most likely wrong.\n" +
+					"To fix this, change totalCount in the XML to 2 for binary sequences, or 3 for diploid data.");
+			}
+			if (!warned && s.getClass().equals(Sequence.class) && s.m_nTotalCount.get() != null && s.m_nTotalCount.get() > 3) {
+				System.out.println("WARNING: there is a sequence with a state count of 1 or less, which will be ignored.");
+			}
+			
 		}
 		// add one for zero state
-		m_nTotalCount.setValue(totalCount + 1, this);
+		m_nTotalCount.setValue(nNrOfStates + 1, this);
 	}
 
 	@Override
@@ -64,12 +77,13 @@ public class SNPSequence extends Sequence {
 	}
 	
 	/** For every site in the sequence, determine the total nr of reds + greens 
-	 *  Ambiguous sites are disgarded **/
-    public List<Integer> getStateCounts(DataType dataType) throws Exception {
+	 *  Ambiguous sites are disregarded **/
+    public List<Integer> getLineageCounts(DataType dataType) throws Exception {
     	int [] statecounts = null;
         
         // grab info from sub sequences and add them up
         for (Sequence sequence: m_sequences.get()) {
+        	System.out.println("Seq: " + sequence.getID());
         	if (statecounts == null) {
         		int maxStateCount = sequence.m_nTotalCount.get();
         		// start with first sequence
@@ -95,7 +109,7 @@ public class SNPSequence extends Sequence {
         // convert array to list
         List<Integer> list = new ArrayList<Integer>();
         for (Integer i : statecounts) {
-        	list.add(i > 0 ? i + 1 : 0);
+        	list.add(i);
         }
         return list;
 	}

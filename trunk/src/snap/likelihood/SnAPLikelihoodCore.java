@@ -77,7 +77,7 @@ public class SnAPLikelihoodCore  {
         m_lineageCountCalculator.computeCountProbabilities(root,sampleSizes,coalescenceRate, bHasDominantMarkers, dprint);
 
         //TODO: Partial subtree updates over all sites.
-        double forwardLogL = 0.0;
+        //double forwardLogL = 0.0;
         int numPatterns = data.getPatternCount();
 
         //Temporarily store pattern probabilities... used for numerical checks.
@@ -105,8 +105,8 @@ public class SnAPLikelihoodCore  {
 
         for(int id = 0; id < numPatterns; id++) {
             int [] thisSite = data.getPattern(id);
-            int [] thisCounts = data.getPatternLineagCounts(id);
-            patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, thisCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
+            int [] lineageCounts = data.getPatternLineagCounts(id);
+            patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, lineageCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
         }
         return patternProb;
 /*
