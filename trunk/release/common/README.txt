@@ -1,5 +1,5 @@
-                    SNAPP v1.0.a 2011
-                 SNAPP 2 development team 2011
+                    SNAPP v1.1.1 2011
+                 SNAPP 2 development team 2012
 
 Last updated: 12 Aug 2011
 
