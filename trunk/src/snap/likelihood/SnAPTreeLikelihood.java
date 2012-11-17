@@ -40,6 +40,7 @@ import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
 
 import snap.Data;
@@ -104,10 +105,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	m_bMutationOnlyAtRoot = mutationOnlyAtRoot.get();
     	m_bHasDominantMarkers = hasDominantMarkers.get();
     	
-    	m_siteModel = m_pSiteModel.get();
+    	m_siteModel = (SiteModel.Base) m_pSiteModel.get();
     	
     	Tree tree = m_tree.get();
-    	m_substitutionmodel = ((SnapSubstitutionModel)m_pSiteModel.get().m_pSubstModel.get());
+    	m_substitutionmodel = ((SnapSubstitutionModel)m_siteModel.m_pSubstModel.get());
     	Input<RealParameter> coalescenceRatenput = m_substitutionmodel.m_pCoalescenceRate;
 		
 		Double [] values = new Double[tree.getNodeCount()];
