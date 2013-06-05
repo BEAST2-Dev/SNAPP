@@ -108,6 +108,17 @@ public class SnAPLikelihoodCore  {
             int [] lineageCounts = data.getPatternLineagCounts(id);
             patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, lineageCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
         }
+
+        
+//        for(int id = 0; id < numPatterns; id++) {
+//            int [] thisSite = data.getPattern(id);
+//            System.out.print("this Site = ");
+//            for (int j=0;j<thisSite.length;j++)
+//                System.out.print(" " + thisSite[j]);
+//            System.out.println(patternProb[id]);
+//        }
+//        System.exit(0);
+        
         return patternProb;
 /*
 		//System.err.println("Number of patterns = " + numPatterns);
