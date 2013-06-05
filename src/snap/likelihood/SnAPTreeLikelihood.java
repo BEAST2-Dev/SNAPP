@@ -66,6 +66,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Conditioning on zero mutations, except at root (default false)", false);
 	public Input<Boolean> hasDominantMarkers = new Input<Boolean>("dominant", "indicate that alleles are dominant (default false)", false);
+	public Input<Boolean> showPatternLikelihoodsAndQuit = new Input<Boolean>("showPatternLikelihoodsAndQuit", "print out likelihoods for all patterns for the starting state, then quit", false);
+	public Input<Boolean> useLogLikelihoodCorrection = new Input<Boolean>("useLogLikelihoodCorrection", "use correction of log likelihood for the purpose of calculating " +
+			"Bayes factors for different species assignments. There is (almost) no computational cost involved for the MCMC chain, but the log likelihood " +
+			"might be reported as positive number with this correction since the likelihood is not a proper likelihood any more.", true);
 	
 	public SnAPTreeLikelihood() throws Exception {
 		// suppress some validation rules
@@ -170,19 +174,22 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		
 		// calculate Likelihood Correction
 		m_fLogLikelihoodCorrection = 0;
-    	for (int i = 0; i < numPatterns; i++) {
-            int [] thisSite = m_data2.getPattern(i);
-            int [] lineageCounts = m_data2.getPatternLineagCounts(i);
-            for (int j = 0; j < thisSite.length; j++) {
-            	m_fLogLikelihoodCorrection += logBinom(thisSite[i], lineageCounts[i]) * m_data2.getPatternWeight(i);
-            }
+		if (useLogLikelihoodCorrection.get()) {
+	    	for (int i = 0; i < numPatterns; i++) {
+	            int [] thisSite = m_data2.getPattern(i);
+	            int [] lineageCounts = m_data2.getPatternLineagCounts(i);
+	            for (int j = 0; j < thisSite.length; j++) {
+	            	m_fLogLikelihoodCorrection += logBinom(thisSite[j], lineageCounts[j]) * m_data2.getPatternWeight(i);
+	            }
+	    	}
     	}
+		System.err.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);
 
     }
 
     private double logBinom(int k, int n) {
     	double f = 0;
-    	for (int i = k + 1; i <= n; k++) {
+    	for (int i = k + 1; i <= n; i++) {
     		f += Math.log(i) - Math.log(n - i + 1);
     	}
 		return f;
@@ -209,7 +216,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	    	double v  = m_substitutionmodel.m_pV.get().getValue();
 			boolean useCache = true;
 			//boolean useCache = false;
-			boolean dprint = false;
+			boolean dprint = showPatternLikelihoodsAndQuit.get();
+			if (dprint) {
+				System.out.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);
+			}
 			
 			
 			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
@@ -258,8 +268,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
 			}				
 			
-			
-			logP += m_fLogLikelihoodCorrection;
+			if (useLogLikelihoodCorrection.get()) {
+				logP += m_fLogLikelihoodCorrection;
+			}
 			
 			
 //			logP = m_core.computeLogLikelihood(root, u , v, 
