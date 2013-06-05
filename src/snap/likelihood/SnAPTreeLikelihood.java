@@ -179,7 +179,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	            int [] thisSite = m_data2.getPattern(i);
 	            int [] lineageCounts = m_data2.getPatternLineagCounts(i);
 	            for (int j = 0; j < thisSite.length; j++) {
-	            	m_fLogLikelihoodCorrection += logBinom(thisSite[j], lineageCounts[j]) * m_data2.getPatternWeight(i);
+	            	m_fLogLikelihoodCorrection -= logBinom(thisSite[j], lineageCounts[j]) * m_data2.getPatternWeight(i);
 	            }
 	    	}
     	}
