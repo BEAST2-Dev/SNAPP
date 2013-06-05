@@ -151,8 +151,8 @@ public class QViewer extends JPanel implements ChangeListener {
 
 	
 	double [][][]m_fP; // # bottom lineages x # top lineages x # time stamps
-	static int NR_TIMES = 100;
 	void recalc() {
+		int NR_TIMES = Math.max(100, getWidth());
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		m_fP = new double[m_nBottom+1][NR_TIMES][m_nTop+1];
 		for (int nReds = 0; nReds <= m_nBottom; nReds++) {
@@ -174,6 +174,7 @@ public class QViewer extends JPanel implements ChangeListener {
 	
 
 	protected void paintComponent(Graphics g) {
+		int NR_TIMES = m_fP[0].length;
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setBackground(Color.WHITE);
 		int nWidth = getWidth();
