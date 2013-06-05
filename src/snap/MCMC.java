@@ -172,6 +172,8 @@ public class MCMC extends beast.core.MCMC {
 				double fNewLogLikelihood = posterior.calculateLogP();
 				
 				logAlpha = fNewLogLikelihood -fOldLogLikelihood + fLogHastingsRatio; //CHECK HASTINGS
+				
+				//System.err.println(fNewLogLikelihood + " " + fOldLogLikelihood + " " + fLogHastingsRatio);
 	            if (!Double.isNaN(fNewLogLikelihood) && (logAlpha>=0 || Randomizer.nextDouble() < Math.exp(logAlpha))) {
 					// accept
 					fOldLogLikelihood = fNewLogLikelihood;

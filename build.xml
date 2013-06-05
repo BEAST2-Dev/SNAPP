@@ -87,6 +87,26 @@
 				<include name="**/*.properties" />
 			</fileset>
 		</jar>
+
+		<!-- Put everything + beastii in ${build} into the snapii.jar file -->
+		<jar jarfile="${dist}/snapii.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${main_class_SnAP}" />
+			</manifest>
+			<zipgroupfileset dir="${lib}" includes="mtj.jar" />
+			<zipgroupfileset dir="${lib}" includes="beast.jar" />
+			<fileset dir="${build}">
+				<include name="snap/**/*.class" />
+				<include name="snap/**/*.png" />
+				<include name="beast/**/*.class" />
+				<include name="**/*.properties" />
+			</fileset>
+			<fileset dir="/home/remco/workspace/beastii/build/">
+				<include name="beast/**/*.class" />
+			</fileset>
+		</jar>
+
 		<jar jarfile="${dist}/snap.addon.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

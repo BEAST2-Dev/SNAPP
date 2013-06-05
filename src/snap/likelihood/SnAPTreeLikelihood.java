@@ -91,6 +91,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	SnapSubstitutionModel m_substitutionmodel;
 	
+	// Correction so that the returned value is a likelihood instead
+	// of a sufficient statistic for the likelihood
+	double m_fLogLikelihoodCorrection = 0;
+	
     @Override
     public void initAndValidate() throws Exception {
     	// check that alignment has same taxa as tree
@@ -161,10 +165,30 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		int numPatterns = m_data2.getPatternCount();
 		fSiteProbs = new double[numPatterns];
 		fStoredSiteProbs = new double[numPatterns];
+		
+		
+		
+		// calculate Likelihood Correction
+		m_fLogLikelihoodCorrection = 0;
+    	for (int i = 0; i < numPatterns; i++) {
+            int [] thisSite = m_data2.getPattern(i);
+            int [] lineageCounts = m_data2.getPatternLineagCounts(i);
+            for (int j = 0; j < thisSite.length; j++) {
+            	m_fLogLikelihoodCorrection += logBinom(thisSite[i], lineageCounts[i]) * m_data2.getPatternWeight(i);
+            }
+    	}
 
     }
 
-    /**
+    private double logBinom(int k, int n) {
+    	double f = 0;
+    	for (int i = k + 1; i <= n; k++) {
+    		f += Math.log(i) - Math.log(n - i + 1);
+    	}
+		return f;
+	}
+
+	/**
      * Calculate the log likelihood of the current state.
      *
      * @return the log likelihood.
@@ -234,6 +258,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
 			}				
 			
+			
+			logP += m_fLogLikelihoodCorrection;
 			
 			
 //			logP = m_core.computeLogLikelihood(root, u , v, 
