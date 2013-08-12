@@ -61,6 +61,11 @@ public class NodeData extends Node implements Serializable  {
 	public void initFb(int n, int nReds) {
 		m_Fb = new FMatrix(n, nReds);
 	}
+	public void initFb(int n, int nReds, int nMissing) {
+		m_Fb = new FMatrix(n, nReds,nMissing);
+	}
+	
+	
 	public void initFb(int n, double [] FAsArray) {
 		m_Fb = new FMatrix(n, FAsArray);
 	}
