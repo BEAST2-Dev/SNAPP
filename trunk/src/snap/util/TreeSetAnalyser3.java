@@ -166,6 +166,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 		System.out.println("95% HPD contains " + k +" topologies,... out of a total of " + m_nTopologies + " topologies");
 		
 		//Standard error is condensed info only.
+		
 		System.err.print(m_sFileName+"\t"+k+"\t"+m_nTopologies);
 		
 		// print top 20, or top 95% coverage tree topologies, whichever is smaller
