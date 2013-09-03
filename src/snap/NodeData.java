@@ -36,6 +36,8 @@ import beast.evolution.tree.Node;
 
 
 
+
+
 @Description("This node has population parameter (coalescenceRate=2/theta) " +
 		"and some specific members for performing SnAP (SNP and AFLP) " +
 		"analysis.")
@@ -61,11 +63,6 @@ public class NodeData extends Node implements Serializable  {
 	public void initFb(int n, int nReds) {
 		m_Fb = new FMatrix(n, nReds);
 	}
-	public void initFb(int n, int nReds, int nMissing) {
-		m_Fb = new FMatrix(n, nReds,nMissing);
-	}
-	
-	
 	public void initFb(int n, double [] FAsArray) {
 		m_Fb = new FMatrix(n, FAsArray);
 	}
@@ -145,9 +142,9 @@ public class NodeData extends Node implements Serializable  {
 
 	public NodeData copyx() throws CloneNotSupportedException {
 		NodeData node = new NodeData();
-		node.m_fHeight = m_fHeight;
-		node.m_iLabel = m_iLabel;
-		node.m_sMetaData = m_sMetaData;
+		node.height = height;
+		node.labelNr = labelNr;
+		node.metaDataString = metaDataString;
 		node.setParent(null);
 		if (getLeft() != null) {
 			node.setLeft(((NodeData)getLeft()).copyx());
@@ -161,9 +158,9 @@ public class NodeData extends Node implements Serializable  {
 
 	public NodeData copy() {
 		NodeData node = new NodeData();
-		node.m_fHeight = m_fHeight;
-		node.m_iLabel = m_iLabel;
-		node.m_sMetaData = m_sMetaData;
+		node.height = height;
+		node.labelNr = labelNr;
+		node.metaDataString = metaDataString;
 
 //		node.set_coalescenceRate(m_fCoalescenceRate);
 		//node.m_n = m_n;
@@ -242,9 +239,9 @@ public class NodeData extends Node implements Serializable  {
 	
 	@Override
 	public Object getMetaData(String sPattern) {
-		if (m_sMetaData != null && m_sMetaData.indexOf(sPattern+"=")>=0) {
-			int i = m_sMetaData.indexOf(sPattern+"=") + sPattern.length() + 1;
-			String sStr = m_sMetaData.substring(i, m_sMetaData.length());
+		if (metaDataString != null && metaDataString.indexOf(sPattern+"=")>=0) {
+			int i = metaDataString.indexOf(sPattern+"=") + sPattern.length() + 1;
+			String sStr = metaDataString.substring(i, metaDataString.length());
 			if (sStr.indexOf(',')>=0) {
 				sStr = sStr.substring(0, sStr.indexOf(','));
 			}

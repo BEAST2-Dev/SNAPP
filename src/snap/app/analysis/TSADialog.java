@@ -1,5 +1,6 @@
 package snap.app.analysis;
 
+
 import jam.mac.Utils;
 import jam.panels.OptionsPanel;
 
@@ -8,7 +9,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 
-import snap.app.mcmc.WholeNumberField;
+import beast.app.util.WholeNumberField;
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

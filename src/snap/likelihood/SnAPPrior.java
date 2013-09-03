@@ -30,16 +30,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import snap.distribution.ChiSquareNoncentralDist;
-
 import beast.core.Description;
-import beast.core.Input;
 import beast.core.Distribution;
+import beast.core.Input;
 import beast.core.State;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+
+import snap.distribution.ChiSquareNoncentralDist;
+
 
 @Description("Standard prior for SnAP analysis, consisting of a Yule prior on the tree " +
         "(parameterized by lambda) " +

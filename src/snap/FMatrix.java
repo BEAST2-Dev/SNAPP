@@ -74,16 +74,6 @@ public class FMatrix {
 		}
 	} // c'tor
 
-	public FMatrix(int n, int nReds, int nMissing) {
-		resize(n);
-		if (n > 0) {
-			for (k=nReds;k<=nReds+nMissing;k++) {
-				set(n, k, 1.0);
-			}
-		}
-	} // c'tor
-	
-	
 	/** construct a top-of-branch likelihood **/
 	public FMatrix(int n, double []_F) {
 		m_n = n;

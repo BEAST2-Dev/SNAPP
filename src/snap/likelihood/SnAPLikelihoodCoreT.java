@@ -36,9 +36,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import beast.app.BeastMCMC;
-
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
+
+
 
 /** threaded version of SSSLikelihoodCore **/ 
 public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {

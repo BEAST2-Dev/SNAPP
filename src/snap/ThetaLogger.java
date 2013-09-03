@@ -5,12 +5,14 @@ import java.io.PrintStream;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 
+
+
 @Description("Logger that reports coalescent rates as theta (using theta=2/rate)")
-public class ThetaLogger extends Plugin implements Loggable {
+public class ThetaLogger extends BEASTObject implements Loggable {
 	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate","reports 2 over the value of the parameter.", Validate.REQUIRED);
 
 	

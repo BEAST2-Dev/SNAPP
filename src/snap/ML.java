@@ -31,6 +31,8 @@ import java.util.List;
 
 import beast.core.*;
 
+
+
 @Description("Maximum likelihood search by hill climbing.")
 public class ML extends beast.core.MCMC {
 	
@@ -62,8 +64,8 @@ public class ML extends beast.core.MCMC {
 		long tStart = System.currentTimeMillis();
 		state.setEverythingDirty(true);
 		
-		int nBurnIn = m_oBurnIn.get();
-		int nChainLength = m_oChainLength.get();
+		int nBurnIn = burnInInput.get();
+		int nChainLength = chainLengthInput.get();
 		//int nStateBurnin = m_oStateBurnIn.get();
 
 		System.err.println("Start state:");
@@ -122,7 +124,7 @@ public class ML extends beast.core.MCMC {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);
-            if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
+            if (storeEvery > 0 && iSample % storeEvery == 0 && iSample > 0) {
                 state.storeToFile(iSample);
             	operatorSchedule.storeToFile();
             }

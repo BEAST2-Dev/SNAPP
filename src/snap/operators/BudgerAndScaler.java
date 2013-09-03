@@ -27,14 +27,14 @@ package snap.operators;
 
 
 
-import snap.GammaParameter;
-import snap.NodeData;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
+import snap.GammaParameter;
+import snap.NodeData;
 
 @Description("Moves internal node height without changing the tree topology. " +
 		"So the range is limited by the height of the parent node and the height " +

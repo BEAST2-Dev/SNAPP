@@ -5,9 +5,13 @@ import java.util.List;
 import javax.swing.Box;
 
 import beast.app.beauti.BeautiDoc;
+import beast.app.draw.InputEditor;
+import beast.app.draw.ListInputEditor;
+import beast.app.draw.ParameterInputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.sitemodel.SiteModel;
+
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
@@ -25,7 +29,7 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     SnapSubstitutionModel substModel;
     
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
 		m_bExpandOption = bExpand;
         m_input = input;
@@ -37,7 +41,7 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
         for (Object o : (List<?>) input.get()) {
             if (o instanceof SnAPTreeLikelihood) {
             	SnAPTreeLikelihood plugin2 = (SnAPTreeLikelihood) o;
-            	substModel = (SnapSubstitutionModel) ((SiteModel.Base) plugin2.m_pSiteModel.get()).m_pSubstModel.get();
+            	substModel = (SnapSubstitutionModel) ((SiteModel.Base) plugin2.siteModelInput.get()).substModelInput.get();
             	doc.getInpuEditorFactory().addInputs(m_listBox, substModel, this, null, doc);
             	doc.getInpuEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }

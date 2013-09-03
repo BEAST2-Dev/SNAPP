@@ -29,8 +29,8 @@ package snap;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.evolution.tree.Node;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
 @Description("Represents population size associated with each node in a tree.")
@@ -69,7 +69,7 @@ public class GammaParameter extends RealParameter {
 			values = new Double[m_tree.getNodeCount()];
 			m_nDimension.setValue(new Integer(values.length), this);
 
-	    	String sValue = m_pValues.get();
+	    	String sValue = valuesInput.get();
 	    	// remove start and end spaces
 	    	sValue = sValue.replaceAll("^\\s+", "");
 	    	sValue = sValue.replaceAll("\\s+$", "");
@@ -87,7 +87,7 @@ public class GammaParameter extends RealParameter {
 	@Override
     public GammaParameter copy() {
     	GammaParameter copy = new GammaParameter();
-    	copy.m_sID = m_sID;
+    	copy.ID = ID;
     	copy.values = new Double[values.length];
     	System.arraycopy(values, 0, copy.values, 0, values.length);
         copy.m_bIsDirty = new boolean[values.length];

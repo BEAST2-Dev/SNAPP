@@ -7,6 +7,8 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.util.Randomizer;
 
+
+
 @Description("Alignment with weights attached to patterns")
 public class WeightedData extends Data {
 	public Input<String> weightInput = new Input<String>("weights", "comma separated list of weights, one for each site in the alignment", Validate.REQUIRED);
@@ -21,18 +23,18 @@ public class WeightedData extends Data {
 		
 		String [] sStr = weightInput.get().split(",");
 		
-		int siteCount = getSiteCount() + m_nWeight[m_nWeight.length - 2] + m_nWeight[m_nWeight.length - 1];
+		int siteCount = getSiteCount() + patternWeight[patternWeight.length - 2] + patternWeight[patternWeight.length - 1];
 		if (sStr.length != siteCount) {
 			throw new Exception("Number of weights (" + sStr.length + ") does not match number of sites (" + siteCount + ") in alignment");
 		}
-		Arrays.fill(m_nWeight, 0);
+		Arrays.fill(patternWeight, 0);
 		for (int i = 0; i < sStr.length; i++) {
 			int userWeight = Integer.parseInt(sStr[i]);
 			int pattern = getPatternIndex(i);
-			if (pattern >= m_nWeight.length - 2) {
+			if (pattern >= patternWeight.length - 2) {
 				System.err.println("WARNING: Constant pattern detected. This will be ignored.");
 			} else {
-				m_nWeight[pattern] += userWeight;
+				patternWeight[pattern] += userWeight;
 			}
 		}
 		if (balance.get()) {
@@ -41,7 +43,7 @@ public class WeightedData extends Data {
 	} // initAndValidate
 
 	private void attemptToBalance() {
-		int nPatterns = m_nPatterns.length-2;
+		int nPatterns = sitePatterns.length-2;
 		int [] complement = new int[nPatterns];
 		Arrays.fill(complement, -1);
 
@@ -52,7 +54,7 @@ public class WeightedData extends Data {
 				int [] pattern1 = getPattern(j);
 				boolean match = true;
 				for (int k = 0; k < pattern0.length; k++) {
-					if (pattern0[k] + pattern1[k] != m_nStateCounts.get(k)) {
+					if (pattern0[k] + pattern1[k] != stateCounts.get(k)) {
 						match = false;
 						break;
 					}
@@ -73,7 +75,7 @@ public class WeightedData extends Data {
 			for (int k = 0; k < pattern0.length; k++) {
 				patternscore[i] += pattern0[k];
 			}
-			score[i] = patternscore[i] * m_nWeight[i];
+			score[i] = patternscore[i] * patternWeight[i];
 			currentScore += score[i]; 
 		}	
 
@@ -81,10 +83,10 @@ public class WeightedData extends Data {
 		int targetScore = 0;
 		int totalLineages = 0;
 		for (int k = 0; k < getPattern(0).length; k++) {
-			totalLineages += m_nStateCounts.get(k);
+			totalLineages += stateCounts.get(k);
 		}
 		for (int i = 0; i < nPatterns; i++) {
-			targetScore += totalLineages * m_nWeight[i];
+			targetScore += totalLineages * patternWeight[i];
 		}
 		targetScore = targetScore / 2;
 		
@@ -95,13 +97,13 @@ public class WeightedData extends Data {
 			int i = Randomizer.nextInt(nPatterns);
 			if (complement[i] >= 0) {
 				int j = complement[i];
-				int newScore = currentScore - m_nWeight[i] * patternscore[i] - m_nWeight[j] * patternscore[j] +
-						m_nWeight[i] * patternscore[j] + m_nWeight[j] * patternscore[i];
+				int newScore = currentScore - patternWeight[i] * patternscore[i] - patternWeight[j] * patternscore[j] +
+						patternWeight[i] * patternscore[j] + patternWeight[j] * patternscore[i];
 				int newDelta = targetScore - newScore;
 				if (Math.abs(newDelta) < Math.abs(delta)) {
-					int tmp = m_nWeight[i];
-					m_nWeight[i] = m_nWeight[j];
-					m_nWeight[j] = tmp;
+					int tmp = patternWeight[i];
+					patternWeight[i] = patternWeight[j];
+					patternWeight[j] = tmp;
 					delta = newDelta;
 					currentScore = newScore;
 				}
@@ -109,25 +111,25 @@ public class WeightedData extends Data {
 			attempts++;
 		}
 		
-		System.out.println(Arrays.toString(m_nWeight));
+		System.out.println(Arrays.toString(patternWeight));
 	} // attemptToBalance
 	
 
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		if (m_nPatterns != null) {
-			int nTaxa = m_nPatterns[0].length;
-			int nPatterns = m_nPatterns.length;
+		if (sitePatterns != null) {
+			int nTaxa = sitePatterns[0].length;
+			int nPatterns = sitePatterns.length;
 			for (int i = 0; i < nTaxa; i++) {
 				for (int j = 0; j < nPatterns; j++) {
-					buf.append(m_nPatterns[j][i]);
+					buf.append(sitePatterns[j][i]);
 				}
 				buf.append("\n");
 			}
-			if (m_nWeight != null) {
+			if (patternWeight != null) {
 				for (int j = 0; j < nPatterns; j++) {
-					buf.append(m_nWeight[j] + ",");
+					buf.append(patternWeight[j] + ",");
 				}
 				buf.append("\n");
 			}

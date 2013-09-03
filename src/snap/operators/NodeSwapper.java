@@ -32,9 +32,11 @@ import java.util.Vector;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
+
+
 
 @Description("Randomly selects two nodes and swap them in the tree.")
 public class NodeSwapper extends Operator {

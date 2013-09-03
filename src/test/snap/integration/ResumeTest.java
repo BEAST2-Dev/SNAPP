@@ -11,6 +11,8 @@ import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 
+
+
 /** check that a chain can be resumed after termination **/
 public class ResumeTest  extends TestCase {
 	
@@ -19,7 +21,7 @@ public class ResumeTest  extends TestCase {
 	@Test
 	public void test_ThatXmlExamplesRun() throws Exception {
 		Randomizer.setSeed(127);
-		Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+		Logger.FILE_MODE = Logger.LogFileMode.overwrite;
 		String sDir = System.getProperty("user.dir") + "/examples";
 		String sFileName = sDir + "/" + XML_FILE;
 
@@ -36,7 +38,7 @@ public class ResumeTest  extends TestCase {
 		System.out.println("Done " + sFileName);
 
 		System.out.println("Resuming " + sFileName);
-		Logger.FILE_MODE = Logger.FILE_APPEND;
+		Logger.FILE_MODE = Logger.LogFileMode.resume;
 		parser = new XMLParser();
 		runable = parser.parseFile(new File(sFileName));
 		runable.setStateFile("tmp.state", true);

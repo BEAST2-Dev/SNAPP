@@ -33,7 +33,7 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 
-@Description("Moves length of branch and coalescence rate of branch in the oposite direction.")
+@Description("Moves length of branch and coalescence rate of branch in the opposit direction.")
 public class RateMixer extends Operator {
 
 	public Input<Double> m_pScale = new Input<Double>("scaleFactors", "scaling factor: larger means more bold proposals");

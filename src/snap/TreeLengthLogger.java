@@ -5,14 +5,16 @@ import java.io.PrintStream;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
+
+
 @Description("Logger to report sum of node heights of a tree")
-public class TreeLengthLogger extends Plugin implements Loggable {
+public class TreeLengthLogger extends BEASTObject implements Loggable {
 	public Input<Tree> m_tree = new Input<Tree>("tree", "tree to report on.", Validate.REQUIRED);
 
 	@Override
