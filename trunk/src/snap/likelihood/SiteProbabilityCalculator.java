@@ -359,24 +359,14 @@ public class SiteProbabilityCalculator {
           */
     }
 
-	/**
-     Computes likelihood at a leaf. That is, one for the correct number of lineages and zero otherwise.
-     **/
-	void doLeafLikelihood(NodeData node, int nReds, int nLineageCount, boolean bHasDominantMarkers, boolean dprint) {
-		doLeafLikelihood(node,nReds,0,nLineageCount,bHasDominantMarkers,dprint);
-	}
-	
 
     /**
      Computes likelihood at a leaf. That is, one for the correct number of lineages and zero otherwise.
      **/
-    void doLeafLikelihood(NodeData node, int nReds, int nMissing, int nLineageCount, boolean bHasDominantMarkers, boolean dprint)
+    void doLeafLikelihood(NodeData node, int nReds, int nLineageCount, boolean bHasDominantMarkers, boolean dprint)
     {
         
 		if (bHasDominantMarkers) {
-			
-			/** THIS IS NOT VALID WHEN nMissing>0 **/
-			
 			nLineageCount = 2 * nLineageCount;
 			if (nReds>0) {			
 				// Need to account for the fact that the markers are dominant.
@@ -408,7 +398,7 @@ public class SiteProbabilityCalculator {
 		}
 		else
 //			node.initFb(node.m_n, nReds);
-			node.initFb(nLineageCount, nReds,nMissing);
+			node.initFb(nLineageCount, nReds);
 		
 		//System.err.print("Leaf = "+node.getNr());
 		//System.err.print(" ["+nReds+","+node.m_n+"::");
@@ -421,12 +411,6 @@ public class SiteProbabilityCalculator {
         //node.getFb().set(node.n,numReds,1.0);
     } // doLeafLikelihood
 
-	
-	
-	
-	
-	
-	
     /**
 
      Updates the likelihood at the top of a branch, assuming that the likelihood at the

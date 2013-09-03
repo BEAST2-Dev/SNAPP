@@ -1,19 +1,21 @@
 package snap;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Valuable;
-import beast.core.Input.Validate;
-import beast.core.Loggable;
-import beast.core.Plugin;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
 
 import java.io.PrintStream;
 
+import beast.core.Description;
+import beast.core.Function;
+import beast.core.Input;
+import beast.core.Loggable;
+import beast.core.BEASTObject;
+import beast.core.Input.Validate;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+
+
 
 @Description("Logger to report height of all internal nodes in a tree")
-public class TreeNodeLogger extends Plugin implements Loggable, Valuable {
+public class TreeNodeLogger extends BEASTObject implements Loggable, Function {
 	public Input<Tree> m_tree = new Input<Tree>("tree", "tree to report height for.", Validate.REQUIRED);
 
 	@Override

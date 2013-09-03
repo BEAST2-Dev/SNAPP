@@ -36,12 +36,13 @@ import beast.app.BeastMCMC;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.State;
+import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
+
 
 import snap.Data;
 import snap.NodeData;
@@ -73,7 +74,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	public SnAPTreeLikelihood() throws Exception {
 		// suppress some validation rules
-		m_pSiteModel.setRule(Validate.OPTIONAL);
+		siteModelInput.setRule(Validate.OPTIONAL);
 	}
 	
 	/** shadow variable of m_pData input */
@@ -102,10 +103,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     @Override
     public void initAndValidate() throws Exception {
     	// check that alignment has same taxa as tree
-    	if (!(m_data.get() instanceof Data)) {
+    	if (!(dataInput.get() instanceof Data)) {
     		throw new Exception("The data input should be a snap.Data object");
     	}
-    	if (m_data.get().getNrTaxa() != m_tree.get().getLeafNodeCount()) {
+    	if (dataInput.get().getNrTaxa() != treeInput.get().getLeafNodeCount()) {
     		throw new Exception("The number of nodes in the tree does not match the number of sequences");
     	}
 
@@ -113,10 +114,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	m_bMutationOnlyAtRoot = mutationOnlyAtRoot.get();
     	m_bHasDominantMarkers = hasDominantMarkers.get();
     	
-    	m_siteModel = (SiteModel.Base) m_pSiteModel.get();
+    	m_siteModel = (SiteModel.Base) siteModelInput.get();
     	
-    	Tree tree = m_tree.get();
-    	m_substitutionmodel = ((SnapSubstitutionModel)m_siteModel.m_pSubstModel.get());
+    	Tree tree = treeInput.get();
+    	m_substitutionmodel = ((SnapSubstitutionModel)m_siteModel.substModelInput.get());
     	Input<RealParameter> coalescenceRatenput = m_substitutionmodel.m_pCoalescenceRate;
 		
 		Double [] values = new Double[tree.getNodeCount()];
@@ -127,7 +128,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				sCoalescenceRateValues += d + " ";
 			}
 		} else {
-	    	String sValue = coalescenceRatenput.get().m_pValues.get();
+	    	String sValue = coalescenceRatenput.get().valuesInput.get();
 	    	// remove start and end spaces
 	    	sValue = sValue.replaceAll("^\\s+", "");
 	    	sValue = sValue.replaceAll("\\s+$", "");
@@ -148,22 +149,22 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	
     	
     	
-    	m_data2 = (Data) m_data.get();
+    	m_data2 = (Data) dataInput.get();
     	if ( BeastMCMC.m_nThreads == 1) {
     		// single threaded likelihood core
-    		m_core = new SnAPLikelihoodCore(m_tree.get().getRoot(), m_data.get());
+    		m_core = new SnAPLikelihoodCore(treeInput.get().getRoot(), dataInput.get());
     	} else {
     		// multi-threaded likelihood core
-    		m_core = new SnAPLikelihoodCoreT(m_tree.get().getRoot(), m_data.get());
+    		m_core = new SnAPLikelihoodCoreT(treeInput.get().getRoot(), dataInput.get());
     	}
     	Integer [] nSampleSizes = m_data2.getStateCounts().toArray(new Integer[0]);
     	m_nSampleSizes = new int[nSampleSizes.length];
     	for (int i = 0; i < nSampleSizes.length; i++) {
     		m_nSampleSizes[i] = nSampleSizes[i];
     	}
-    	if (!(m_tree.get().getRoot() instanceof NodeData)) {
+    	if (!(treeInput.get().getRoot() instanceof NodeData)) {
     		throw new Exception("Tree has no nodes of the wrong type. NodeData expected, but found " + 
-    				m_tree.get().getRoot().getClass().getName());
+    				treeInput.get().getRoot().getClass().getName());
     	}
 
 		int numPatterns = m_data2.getPatternCount();
@@ -204,7 +205,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     public double calculateLogP() {
     	try {
     		// get current tree
-	    	NodeData root = (NodeData) m_tree.get().getRoot();
+	    	NodeData root = (NodeData) treeInput.get().getRoot();
 	    	Double [] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
 	    	// assing gamma values to tree
 //	    	if (m_pGamma.get().somethingIsDirty()) {

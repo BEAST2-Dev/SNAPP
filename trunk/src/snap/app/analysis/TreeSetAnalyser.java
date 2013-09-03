@@ -1,16 +1,17 @@
 package snap.app.analysis;
 
-import beast.app.util.Arguments;
-import beast.app.util.ErrorLogHandler;
-import beast.app.util.MessageLogHandler;
-import beast.app.util.Version;
-import beast.util.Randomizer;
 import jam.util.IconUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
-import snap.app.mcmc.SNAPPVersion;
+import beast.app.BEASTVersion;
+import beast.app.util.Arguments;
+import beast.app.util.ErrorLogHandler;
+import beast.app.util.MessageLogHandler;
+import beast.app.util.Version;
+import beast.util.Randomizer;
+
 import snap.util.TreeSetAnalyser3;
 
 import java.io.File;
@@ -20,7 +21,7 @@ import java.util.logging.*;
 
 public class TreeSetAnalyser {
 
-    private final static Version version = new SNAPPVersion();
+    private final static Version version = new BEASTVersion();
 
     static class TSAConsoleApp extends jam.console.ConsoleApplication {
 

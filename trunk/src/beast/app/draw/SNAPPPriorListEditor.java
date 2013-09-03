@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.swing.Box;
 
-import snap.likelihood.SnAPPrior;
 import beast.app.beauti.BeautiDoc;
+import beast.app.draw.ListInputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
+
+import snap.likelihood.SnAPPrior;
 
 public class SNAPPPriorListEditor extends ListInputEditor {
     public SNAPPPriorListEditor(BeautiDoc doc) {
@@ -21,7 +23,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
     }
     
     @Override
-    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
     	m_bExpandOption = bExpand;
         m_input = input;

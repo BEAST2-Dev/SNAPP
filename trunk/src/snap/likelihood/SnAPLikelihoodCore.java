@@ -86,6 +86,7 @@ public class SnAPLikelihoodCore  {
 
 
 
+        /******DEBUGGING *****
         for(int id = 0; id < numPatterns; id++) {
             int [] thisSite = data.getPattern(id);
             int [] thisCounts = data.getPatternLineagCounts(id);
@@ -99,6 +100,7 @@ public class SnAPLikelihoodCore  {
                 System.err.print(" " + thisCounts[j]);
             System.err.println();
         }
+        /***DEBUGGING***/
 
 
         for(int id = 0; id < numPatterns; id++) {

@@ -49,20 +49,20 @@ public class MCMC extends beast.core.MCMC {
 	@Override
 	public void run() throws Exception {
         // initialises log so that log file headers are written, etc.
-        for (Logger log : m_loggers.get()) {
+        for (Logger log : loggersInput.get()) {
             log.init();
         }
     	// set up state (again). Other plugins may have manipulated the
     	// StateNodes, e.g. set up bounds or dimensions
     	state.initAndValidate();
     	// also, initialise state with the file name to store and set-up whether to resume from file
-    	state.setStateFileName(m_sStateFile + "." + Randomizer.getSeed());
-        operatorSchedule.setStateFileName(m_sStateFile);
+    	state.setStateFileName(stateFileName + "." + Randomizer.getSeed());
+        operatorSchedule.setStateFileName(stateFileName);
 
-        int nBurnIn = m_oBurnIn.get();
-		int nChainLength = m_oChainLength.get();
+        int nBurnIn = burnInInput.get();
+		int nChainLength = chainLengthInput.get();
 		int nStateBurnin = m_oStateBurnIn.get();
-        if (m_bRestoreFromFile) {
+        if (restoreFromFile) {
         	state.restoreFromFile();
         	nBurnIn = 0;
         	//prepare();
@@ -82,7 +82,7 @@ public class MCMC extends beast.core.MCMC {
 		// Sample initial state from 'prior' = stateUncertainty
 		// For this to work, stateBurnin must be specified as the number of samples to be 
 		// taken from the 'prior', and the stateUncertainty must contain the 'prior'.
-		if (!m_bRestoreFromFile && nStateBurnin > 0) {
+		if (!restoreFromFile && nStateBurnin > 0) {
 			System.err.println("Sampling state from prior for " + nStateBurnin + " samples...");
 			//prepare();
 			
@@ -157,7 +157,7 @@ public class MCMC extends beast.core.MCMC {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);
-            if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
+            if (storeEvery > 0 && iSample % storeEvery == 0 && iSample > 0) {
                 state.storeToFile(iSample);
             	operatorSchedule.storeToFile();
             }

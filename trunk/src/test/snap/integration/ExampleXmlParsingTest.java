@@ -13,6 +13,8 @@ import beast.core.Logger;
 import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
+
+
 import junit.framework.TestCase;
 
 /** check whether all example files parse **/
@@ -22,7 +24,7 @@ public class ExampleXmlParsingTest extends TestCase {
 	public void test_ThatXmlExamplesParse() {
 		try {
 			Randomizer.setSeed(127);
-			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+			Logger.FILE_MODE = Logger.LogFileMode.overwrite;
 			String sDir = System.getProperty("user.dir") + "/examples2";
 			System.out.println("Test XML Examples in " + sDir);
 			File sExampleDir = new File(sDir);
@@ -60,7 +62,7 @@ public class ExampleXmlParsingTest extends TestCase {
 	@Test
 	public void test_ThatXmlExamplesRun() {
 		try {
-			Logger.FILE_MODE = Logger.FILE_OVERWRITE;
+			Logger.FILE_MODE = Logger.LogFileMode.overwrite;
 			String sDir = System.getProperty("user.dir") + "/examples2";
 			System.out.println("Test that XML Examples run in " + sDir);
 			File sExampleDir = new File(sDir);

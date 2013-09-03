@@ -40,6 +40,8 @@ import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 
 
+
+
 @Description("Represents sequence data for SnAP analysis. "+
  "The difference with standard sequence data is that constant sites "+
  "are removed + 2 patterns are added at the end representing these "+
@@ -54,15 +56,15 @@ public class Data extends beast.evolution.alignment.Alignment {
 	int [][]  m_nPatternLineageCounts;
 	
 	public Data() {
-		m_pSequences.setRule(Validate.OPTIONAL);
+		sequenceInput.setRule(Validate.OPTIONAL);
 	}
 	
 	@Override
 	public void initAndValidate() throws Exception {
 		// guess taxon set if no sequences and no taxonsets are known
 		if (/*m_pSequences.get().size() == 0 && */m_taxonsets.get().size() == 0 && m_rawData.get() != null) {
-			while (m_pSequences.get().size() > 0) {
-				m_pSequences.get().remove(0);
+			while (sequenceInput.get().size() > 0) {
+				sequenceInput.get().remove(0);
 			}
 			// by last separator
 			int nIgnored = guessTaxonSets("^(.+)[-_\\. ](.*)$", 1);
@@ -80,16 +82,16 @@ public class Data extends beast.evolution.alignment.Alignment {
 		if (m_taxonsets.get().size() > 0) {
 			// sequences are defined through taxon sets, so construct
 			// SNPSequences from binary sequences as defined by the taxon sets
-			List<Sequence> sequences = m_rawData.get().m_pSequences.get();
-			List<Sequence> SNPsequences = m_pSequences.get();
+			List<Sequence> sequences = m_rawData.get().sequenceInput.get();
+			List<Sequence> SNPsequences = sequenceInput.get();
 			for(TaxonSet set : m_taxonsets.get()) {
 				SNPSequence SNPSequence = new SNPSequence();
 				SNPSequence.setID(set.getID());
-				SNPSequence.m_sTaxon.setValue(set.getID(), SNPSequence);
-				for (Taxon taxon : set.m_taxonset.get()) {
+				SNPSequence.taxonInput.setValue(set.getID(), SNPSequence);
+				for (Taxon taxon : set.taxonsetInput.get()) {
 					boolean bFound = false;
 					for (int i = 0; i < sequences.size() && !bFound; i++) {
-						if (sequences.get(i).m_sTaxon.get().equals(taxon.getID())) {
+						if (sequences.get(i).taxonInput.get().equals(taxon.getID())) {
 							SNPSequence.m_sequences.setValue(sequences.get(i), SNPSequence);
 							bFound = true;
 						}
@@ -106,7 +108,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 		super.initAndValidate();
 
 		if (m_rawData.get() != null) {
-			m_pSequences.get().clear();
+			sequenceInput.get().clear();
 		}
 	} // initAndValidate
 	
@@ -116,13 +118,13 @@ public class Data extends beast.evolution.alignment.Alignment {
 	public int guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
 		m_taxonsets.get().clear();
 		List<Taxon> taxa = new ArrayList<Taxon>();
-		for (Sequence sequence : m_rawData.get().m_pSequences.get()) {
+		for (Sequence sequence : m_rawData.get().sequenceInput.get()) {
 			Taxon taxon = new Taxon();
 			// ensure sequence and taxon do not get same ID
-			if (sequence.getID() == null || sequence.getID().equals(sequence.m_sTaxon.get())) {
+			if (sequence.getID() == null || sequence.getID().equals(sequence.taxonInput.get())) {
 				sequence.setID("_"+sequence.getID());
 			}
-			taxon.setID(sequence.m_sTaxon.get());
+			taxon.setID(sequence.taxonInput.get());
 			taxa.add(taxon);
 		}
 		HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
@@ -135,7 +137,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 				try {
 					if (map.containsKey(sMatch)) {
 						TaxonSet set = map.get(sMatch);
-						set.m_taxonset.setValue(taxon, set);
+						set.taxonsetInput.setValue(taxon, set);
 					} else {
 						TaxonSet set = new TaxonSet();
 						if (sMatch.equals(taxon.getID())) {
@@ -143,7 +145,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 						} else {
 							set.setID(sMatch);
 						}
-						set.m_taxonset.setValue(taxon, set);
+						set.taxonsetInput.setValue(taxon, set);
 						map.put(sMatch, set);
 					}
 				} catch (Exception ex) {
@@ -155,29 +157,29 @@ public class Data extends beast.evolution.alignment.Alignment {
     	}
     	// add taxon sets
     	for (TaxonSet set : map.values()) {
-    		if (set.m_taxonset.get().size() > nMinSize) {
+    		if (set.taxonsetInput.get().size() > nMinSize) {
                 m_taxonsets.setValue(set, this);
     		} else {
-    			nIgnored += set.m_taxonset.get().size();
+    			nIgnored += set.taxonsetInput.get().size();
     		}
     	}
     	return nIgnored;
 	}
 	
 	public int getPatternWeight(int id) {
-		if (id < m_nWeight.length) {
-			return m_nWeight[id];
+		if (id < patternWeight.length) {
+			return patternWeight[id];
 		}
 		return 0;
 	}
 
 	/** check whether a pattern is all red or all green **/
 	private boolean isConstant(int iSite) {
-		int nTaxa = m_counts.size();
+		int nTaxa = counts.size();
 		boolean bAllZero = true;
 		boolean bAllMax = true;
 		for (int i = 0; i < nTaxa; i++) {
-			int iValue = m_counts.get(i).get(iSite);
+			int iValue = counts.get(i).get(iSite);
 			if (iValue > 0) {
 				bAllZero = false;
 				if (bAllMax == false) {
@@ -206,7 +208,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	protected void calcPatterns() {
         // determine # lineages for each site for each taxon
 		nrOfLineages = new ArrayList<List<Integer>>();
-        for (Sequence seq : m_pSequences.get()) {
+        for (Sequence seq : sequenceInput.get()) {
         	if (seq instanceof SNPSequence) {
         		// it can vary over sites
         		try {
@@ -217,8 +219,8 @@ public class Data extends beast.evolution.alignment.Alignment {
         	} else {
         		// it is constant over all sites 
         		List<Integer> statecounts = new ArrayList<Integer>();
-        		int lineageCount = m_nStateCounts.get(nrOfLineages.size()) - 1;
-        		int nSites = m_counts.get(0).size();
+        		int lineageCount = stateCounts.get(nrOfLineages.size()) - 1;
+        		int nSites = counts.get(0).size();
         		for (int i = 0; i < nSites; i++) {
         			statecounts.add(lineageCount);
         		}
@@ -227,18 +229,18 @@ public class Data extends beast.evolution.alignment.Alignment {
         }
 
 		// remove constant sites
-		int nTaxa = m_counts.size();
+		int nTaxa = counts.size();
 		int nZeroSitesCount = 0;
 		int nAllSitesCount = 0;
-		for (int i = 0; i < m_counts.get(0).size(); i++) {
+		for (int i = 0; i < counts.get(0).size(); i++) {
 			if (isConstant(i)) {
-				if (m_counts.get(0).get(i) == 0) {
+				if (counts.get(0).get(i) == 0) {
 					nZeroSitesCount++;
 				} else {
 					nAllSitesCount++;
 				}
 				for (int j = 0; j < nTaxa; j++) {
-					m_counts.get(j).remove(i);
+					counts.get(j).remove(i);
 					nrOfLineages.get(j).remove(i);
 				}
 				i--;
@@ -247,7 +249,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 
 		// remove sites that have no data in some branches
 		int removed = 0;
-		for (int i = 0; i < m_counts.get(0).size(); i++) {
+		for (int i = 0; i < counts.get(0).size(); i++) {
 			boolean hasZeroCount = false;
 			for (int j = 0; j < nTaxa; j++) {
 				if (nrOfLineages.get(j).get(i) == 0) {
@@ -256,7 +258,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 			}
 			if (hasZeroCount) {
 				for (int j = 0; j < nTaxa; j++) {
-					m_counts.get(j).remove(i);
+					counts.get(j).remove(i);
 					nrOfLineages.get(j).remove(i);
 				}
 				removed++;
@@ -269,7 +271,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 		
 		
 		// find unique patterns
-		int nSites = m_counts.get(0).size();
+		int nSites = counts.get(0).size();
 		int [] weights = new int[nSites];
 		for (int i = 0; i < weights.length; i++) {
 			int j = 0;
@@ -287,45 +289,45 @@ public class Data extends beast.evolution.alignment.Alignment {
 				nPatterns++;
 			}
 		}		
-		m_nWeight = new int[nPatterns+2];
-		m_nPatterns = new int[nPatterns+2][nTaxa];
+		patternWeight = new int[nPatterns+2];
+		sitePatterns = new int[nPatterns+2][nTaxa];
 		m_nPatternLineageCounts = new int[nPatterns+2][nTaxa];
 //		m_nPatterns = new int[nPatterns][nTaxa];
-		m_nPatternIndex = new int[nSites];
+		patternIndex = new int[nSites];
 
 		nPatterns = 0;
 		int iSite = 0;
 		// instantiate patterns
 		for (int i = 0; i < nSites; i++) {
 			if (weights[i]>0) {
-				m_nWeight[nPatterns] = weights[i];
+				patternWeight[nPatterns] = weights[i];
 				for (int j = 0; j < nTaxa; j++) {
-					m_nPatterns[nPatterns][j] = m_counts.get(j).get(i);
+					sitePatterns[nPatterns][j] = counts.get(j).get(i);
 					m_nPatternLineageCounts[nPatterns][j] = nrOfLineages.get(j).get(i);
 				}
 				for (int k = 0; k < weights[i]; k++) {
-					m_nPatternIndex[iSite++] = nPatterns;
+					patternIndex[iSite++] = nPatterns;
 				}
 				nPatterns++;
 			}
 		}
         
-        Arrays.fill(m_nPatternIndex, -1);
+        Arrays.fill(patternIndex, -1);
         for (int i = 0; i < nSites; i++) {
             int[] sites = new int[nTaxa];
             for (int j = 0; j < nTaxa; j++) {
-                sites[j] = m_counts.get(j).get(i);
+                sites[j] = counts.get(j).get(i);
             }
             for (int j = 0; j < nPatterns; j++) {
             	boolean found = true;
             	for (int k = 0; k < nTaxa; k++) {
-            		if (sites[k] != m_counts.get(k).get(j)) {
+            		if (sites[k] != counts.get(k).get(j)) {
             			found = false;
             			break;
             		}
             	}
             	if (found) {
-            		m_nPatternIndex[i] = j;
+            		patternIndex[i] = j;
             		j = nPatterns;
             	}
             }
@@ -333,25 +335,25 @@ public class Data extends beast.evolution.alignment.Alignment {
 		
 		
 		
-		m_nMaxStateCount = 0;
-		for (int i = 0; i < m_nStateCounts.size(); i++) {
-			m_nMaxStateCount = Math.max(m_nMaxStateCount, m_nStateCounts.get(i));
+		maxStateCount = 0;
+		for (int i = 0; i < stateCounts.size(); i++) {
+			maxStateCount = Math.max(maxStateCount, stateCounts.get(i));
 		}
 		// add one for the zero state
-		m_nMaxStateCount++;
+		maxStateCount++;
 		// report some statistics
-		for (int i = 0; i < m_sTaxaNames.size(); i++) {
-			System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
+		for (int i = 0; i < taxaNames.size(); i++) {
+			System.err.println(taxaNames.get(i) + ": " + counts.get(i).size() + " " + stateCounts.get(i));
 		}
 		
 		
 		// add dummy patterns
 //		TODO: set up weights for dummy patterns
-		m_nWeight[nPatterns] = nZeroSitesCount;
-		m_nWeight[nPatterns+1] =nAllSitesCount;
+		patternWeight[nPatterns] = nZeroSitesCount;
+		patternWeight[nPatterns+1] =nAllSitesCount;
 		for (int i = 0; i < nTaxa; i++) {
-			int lineageCount = m_nStateCounts.get(i) - 1;
-			m_nPatterns[nPatterns + 1][i]             = lineageCount;
+			int lineageCount = stateCounts.get(i) - 1;
+			sitePatterns[nPatterns + 1][i]             = lineageCount;
 			m_nPatternLineageCounts[nPatterns][i]     = lineageCount;
 			m_nPatternLineageCounts[nPatterns + 1][i] = lineageCount;
 		}
@@ -373,9 +375,9 @@ public class Data extends beast.evolution.alignment.Alignment {
 
 	/** test whether two columns (e.g. sites) contain equal values **/
 	protected boolean isEqual(int iSite1, int iSite2) {
-		for (int i = 0; i < m_counts.size(); i++) {
-			if (m_counts.get(i).get(iSite1)
-					!= m_counts.get(i).get(iSite2)) {
+		for (int i = 0; i < counts.size(); i++) {
+			if (counts.get(i).get(iSite1)
+					!= counts.get(i).get(iSite2)) {
 				return false;
 			}
 			if (nrOfLineages.get(i).get(iSite1)

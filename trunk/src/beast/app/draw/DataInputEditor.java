@@ -24,12 +24,15 @@ import javax.swing.table.TableCellRenderer;
 
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.GuessPatternDialog;
+import beast.app.draw.InputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+
+
 
 public class DataInputEditor extends InputEditor.Base {
 	public DataInputEditor(BeautiDoc doc) {
@@ -55,7 +58,7 @@ public class DataInputEditor extends InputEditor.Base {
 
 	
 	@Override
-	public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_input = input;
 		m_plugin = plugin;
 		this.itemNr = itemNr;
@@ -69,7 +72,7 @@ public class DataInputEditor extends InputEditor.Base {
 		m_taxonMap = new HashMap<String, String>();
 		m_lineageset = new ArrayList<Taxon>();
 		for (Taxon taxonset2 : m_taxonset) {
-			for (Taxon taxon : ((TaxonSet)taxonset2).m_taxonset.get()) {
+			for (Taxon taxon : ((TaxonSet)taxonset2).taxonsetInput.get()) {
 				m_lineageset.add(taxon);
 				m_taxonMap.put(taxon.getID(), taxonset2.getID());
 			}
@@ -239,13 +242,13 @@ public class DataInputEditor extends InputEditor.Base {
     	m_taxonset.clear();
 		List<Taxon> taxa = new ArrayList<Taxon>();
         for (Alignment alignment : getDoc().alignments) {
-            for (Sequence sequence : alignment.m_pSequences.get()) {
+            for (Sequence sequence : alignment.sequenceInput.get()) {
 				Taxon taxon = new Taxon();
 				// ensure sequence and taxon do not get same ID
-				if (sequence.getID() == null || sequence.getID().equals(sequence.m_sTaxon.get())) {
+				if (sequence.getID() == null || sequence.getID().equals(sequence.taxonInput.get())) {
 					sequence.setID("_"+sequence.getID());
 				}
-				taxon.setID(sequence.m_sTaxon.get());
+				taxon.setID(sequence.taxonInput.get());
 				taxa.add(taxon);
             }
 		}
@@ -257,11 +260,11 @@ public class DataInputEditor extends InputEditor.Base {
                     try {
                         if (map.containsKey(sMatch)) {
                             TaxonSet set = map.get(sMatch);
-                            set.m_taxonset.setValue(taxon, set);
+                            set.taxonsetInput.setValue(taxon, set);
                         } else {
                             TaxonSet set = new TaxonSet();
                             set.setID(sMatch);
-                            set.m_taxonset.setValue(taxon, set);
+                            set.taxonsetInput.setValue(taxon, set);
                             map.put(sMatch, set);
                         }
                     } catch (Exception ex) {
@@ -292,7 +295,7 @@ public class DataInputEditor extends InputEditor.Base {
 				break;
 	        }
 			for (Taxon taxonset2 : m_taxonset) {
-				for (Taxon taxon : ((TaxonSet)taxonset2).m_taxonset.get()) {
+				for (Taxon taxon : ((TaxonSet)taxonset2).taxonsetInput.get()) {
 					m_lineageset.add(taxon);
 					m_taxonMap.put(taxon.getID(), taxonset2.getID());
 				}
@@ -415,7 +418,7 @@ public class DataInputEditor extends InputEditor.Base {
 		
 		// clear old taxon sets
 		for (TaxonSet set : m_taxonset) {
-			set.m_taxonset.get().clear();
+			set.taxonsetInput.get().clear();
 		}
 		
 		// group lineages with their taxon sets
@@ -426,7 +429,7 @@ public class DataInputEditor extends InputEditor.Base {
 					for (TaxonSet set : m_taxonset) {
 						if (set.getID().equals(sTaxonSet)) {
 							try {
-								set.m_taxonset.setValue(taxon, set);
+								set.taxonsetInput.setValue(taxon, set);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -438,7 +441,7 @@ public class DataInputEditor extends InputEditor.Base {
 		
 		// remove unused taxon sets
 		for (int i = m_taxonset.size()-1; i >= 0; i--) {
-			if (m_taxonset.get(i).m_taxonset.get().size() == 0) {
+			if (m_taxonset.get(i).taxonsetInput.get().size() == 0) {
 				m_taxonset.remove(i);
 			}
 		}
