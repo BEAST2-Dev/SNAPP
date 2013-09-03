@@ -265,7 +265,7 @@ public class NodeData extends Node implements Serializable  {
 //	}
 
 	public String toString() {
-		return toNewick(null);
+		return toNewick();
 	}
 }
 

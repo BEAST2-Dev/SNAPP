@@ -102,7 +102,7 @@
 				<include name="beast/**/*.class" />
 				<include name="**/*.properties" />
 			</fileset>
-			<fileset dir="/home/remco/workspace/beastii/build/">
+			<fileset dir="../beastii/build/">
 				<include name="beast/**/*.class" />
 			</fileset>
 		</jar>
