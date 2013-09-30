@@ -129,14 +129,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				sCoalescenceRateValues += d + " ";
 			}
 		} else {
-	    	String sValue = coalescenceRatenput.get().valuesInput.get();
-	    	// remove start and end spaces
-	    	sValue = sValue.replaceAll("^\\s+", "");
-	    	sValue = sValue.replaceAll("\\s+$", "");
-	    	// split into space-separated bits
-	    	String [] sValues = sValue.split("\\s+");
+	    	List<Double> sValues = coalescenceRatenput.get().valuesInput.get();
 	        for (int i = 0; i < values.length; i++) {
-	            values[i] = new Double(sValues[i % sValues.length]);
+	            values[i] = new Double(sValues.get(i % sValues.size()));
 				sCoalescenceRateValues += values[i] + " ";
 	        }
 			tree.setMetaData(tree.getRoot(), values, m_pPattern.get());
