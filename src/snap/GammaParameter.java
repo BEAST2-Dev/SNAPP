@@ -26,6 +26,8 @@
 package snap;
 
 
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -64,23 +66,18 @@ public class GammaParameter extends RealParameter {
 		if (m_bInitFromTree.get() == true) {
 			values = new Double[m_tree.getNodeCount()];
 			m_tree.getMetaData(m_tree.getRoot(), values, m_pPattern.get());
-			m_nDimension.setValue(new Integer(values.length), this);
+			dimensionInput.setValue(new Integer(values.length), this);
 		} else {
 			values = new Double[m_tree.getNodeCount()];
-			m_nDimension.setValue(new Integer(values.length), this);
+			dimensionInput.setValue(new Integer(values.length), this);
 
-	    	String sValue = valuesInput.get();
-	    	// remove start and end spaces
-	    	sValue = sValue.replaceAll("^\\s+", "");
-	    	sValue = sValue.replaceAll("\\s+$", "");
-	    	// split into space-separated bits
-	    	String [] sValues = sValue.split("\\s+");
+	    	List<Double> sValues = valuesInput.get();
 	        for (int i = 0; i < values.length; i++) {
-	            values[i] = new Double(sValues[i % sValues.length]);
+	            values[i] = new Double(sValues.get(i % sValues.size()));
 	        }
 			m_tree.setMetaData(m_tree.getRoot(), values, m_pPattern.get());
 		}
-    	m_bIsDirty = new boolean[m_nDimension.get()];
+    	m_bIsDirty = new boolean[dimensionInput.get()];
     	m_pTree.setValue(null, this);
 	}
 	
