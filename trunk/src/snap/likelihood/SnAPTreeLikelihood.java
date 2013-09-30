@@ -42,6 +42,7 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 
 
 import snap.Data;
@@ -116,7 +117,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	
     	m_siteModel = (SiteModel.Base) siteModelInput.get();
     	
-    	Tree tree = treeInput.get();
+    	TreeInterface tree = treeInput.get();
     	m_substitutionmodel = ((SnapSubstitutionModel)m_siteModel.substModelInput.get());
     	Input<RealParameter> coalescenceRatenput = m_substitutionmodel.m_pCoalescenceRate;
 		
