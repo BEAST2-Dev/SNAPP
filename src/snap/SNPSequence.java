@@ -14,7 +14,7 @@ import beast.evolution.datatype.DataType;
 @Description("A SNPSequence holds a collection of binary sequences that are summarized in a new sequence " +
 		"by counting the number of sites with a 1.")
 public class SNPSequence extends Sequence {
-	public Input<List<Sequence>> m_sequences = new Input<List<Sequence>>("sequence","binary sequence", new ArrayList<Sequence>());
+	public Input<List<Sequence>> m_sequences = new Input<List<Sequence>>("sequence","sequence containing binary data", new ArrayList<Sequence>());
 
 	public SNPSequence() {
 		dataInput.setRule(Validate.OPTIONAL);
