@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.Map;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -97,7 +98,14 @@ public class Data extends beast.evolution.alignment.Alignment {
 						}
 					}
 					if (!bFound) {
-						throw new Exception("Could not find taxon " + taxon.getID() + " in alignments");
+						String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
+						if (seq != null) {
+							Sequence sequence = new Sequence(taxon.getID(), seq);
+							sequence.totalCountInput.setValue(2, sequence);
+							SNPSequence.m_sequences.setValue(sequence, SNPSequence);
+						} else {
+							throw new Exception("Could not find taxon " + taxon.getID() + " in alignment");
+						}
 					}
 				}
 				SNPSequence.initAndValidate();
