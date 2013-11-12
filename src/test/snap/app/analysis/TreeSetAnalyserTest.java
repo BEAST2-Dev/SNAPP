@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import snap.app.analysis.TreeSetAnalyser;
+import snap.util.TreeSetAnalyser3;
 
 import beast.core.Logger;
 import beast.core.MCMC;
@@ -21,7 +22,7 @@ public class TreeSetAnalyserTest  extends TestCase {
 
 	@Test
 	// rudimentary test to see that the analyser does not crash
-	public void testTreeSetAnalyser() throws IOException {
+	public void testTreeSetAnalyser() throws Exception {
 		
 		// create tree log file
 		try {
@@ -51,7 +52,16 @@ public class TreeSetAnalyserTest  extends TestCase {
 		}
 		
 		// run TreeSetAnalyser
-		TreeSetAnalyser.main(new String[]{"-file", "test.127.trees", "-tree", "((A,B),(C,D))"});
+		try {
+			String [] args = new String[]{"-tree", "((A,B),(C,D))", System.getProperty("user.dir") +"/test.127.trees"};
+			TreeSetAnalyser3 analyser = new TreeSetAnalyser3();
+        	if (analyser.parseArgs(args)) {
+        		new TreeSetAnalyser(analyser, null, 1);
+        	}
+		} catch (Exception e) {
+			e.printStackTrace();
+			//throw e;
+		}
 	}
 	
 	
