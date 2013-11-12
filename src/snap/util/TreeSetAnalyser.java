@@ -80,10 +80,12 @@ public class TreeSetAnalyser {
 		}
 		if (sMetaData.contains("theta=")) {
 			String sStr = sMetaData.replaceAll("theta=", "");
+			sStr = sStr.replaceAll("&", "");
 			double f = Double.parseDouble(sStr);
 			return f;
 		} else {
 			String sStr = sMetaData.replaceAll("coalescenceRate=", "");
+			sStr = sStr.replaceAll("&", "");
 			double f = 2.0/Double.parseDouble(sStr);
 			return f;
 		}
