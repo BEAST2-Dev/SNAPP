@@ -1,10 +1,6 @@
 package test.snap.app.analysis;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -60,7 +56,7 @@ public class TreeSetAnalyserTest  extends TestCase {
         	}
 		} catch (Exception e) {
 			e.printStackTrace();
-			//throw e;
+			throw e;
 		}
 	}
 	
