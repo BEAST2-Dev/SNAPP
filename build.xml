@@ -53,6 +53,8 @@
 		<!-- Compile the java code from ${src} into ${build} /bin -->
 		<javac srcdir="${src}" destdir="${build}" classpathref="classpath" 
 		       fork="true" includeantruntime='false'
+			   source="1.6"
+		       target="1.6"			
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m">
 			<include name="snap/**/**" />
