@@ -13,13 +13,12 @@ import beast.core.util.CompoundDistribution;
 import beast.core.Operator;
 import beast.core.StateNode;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.distance.Distance;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
-
-
 
 
 @Description("An operator that uses an approximate likelihood and filters out proposales with low acceptance " +
@@ -46,6 +45,10 @@ public class DelayedAcceptanceOperator extends Operator {
 	SnapSubstitutionModel substitutionmodel;
 	
     State state;
+    
+    // empirical distance and variance between taxa
+    double [][] distance;
+    double var;
 
 	
 	public void initAndValidate() {
@@ -92,9 +95,44 @@ public class DelayedAcceptanceOperator extends Operator {
         if (data == null || tree == null) {
         	throw new RuntimeException("DelayedAcceptanceOperator: could not identify data or tree in treelikelihood in posterior input");
         }
+        
+        
+        calcDistanceAndVariance();
     }
 
-    @Override
+    private void calcDistanceAndVariance() {
+    	// set up distance matrix
+    	
+    	// TODO: verify this is the correct distance
+		Distance.Base d = new Distance.Base();
+		d.setPatterns(data);
+		int nrOfTaxa = data.getNrTaxa();
+		distance = new double[nrOfTaxa][nrOfTaxa];
+		for (int i = 0; i < nrOfTaxa; i++) {
+			for (int j = i+ 1; j < nrOfTaxa; j++) {
+				distance[i][j] = d.pairwiseDistance(i,  j);
+				distance[j][i] = distance[i][j];
+			}
+		}
+		// TODO: normalise?
+		
+		// estimate variance
+		// TODO: should be variance for each entry [i,j]?
+		double v = 0;
+		double mean = 0;
+		for (int i = 0; i < nrOfTaxa; i++) {
+			for (int j = i+ 1; j < nrOfTaxa; j++) {
+				mean += distance[i][j];
+				v += distance[i][j] * distance[i][j];
+			}
+		}
+		// TODO: should we take the diagonal in account (as is implemented) or not?
+		v = v * 2 / (nrOfTaxa * nrOfTaxa);
+		mean = mean * 2 / (nrOfTaxa * nrOfTaxa);
+		var = v - mean * mean; 
+	}
+
+	@Override
     public double proposal()  {
     	try {
 	    	double oldApproxLogLikelihood = evaluate();
@@ -152,14 +190,31 @@ public class DelayedAcceptanceOperator extends Operator {
     	double u = substitutionmodel.m_pU.get().getValue();
     	double v  = substitutionmodel.m_pV.get().getValue();
 
+    	
     	// TODO: do the real work here
-		
-    	return 0;
+    	double mu[][] = calcMu();
+    	
+    	// TODO: fill in this constant
+    	double K = 0;
+    	
+    	double approxL = 0;
+    	int nrOfTaxa = distance.length;
+		for (int i = 0; i < nrOfTaxa; i++) {
+			for (int j = i+ 1; j < nrOfTaxa; j++) {
+				// TODO: should be variance for each entry [i,j]?
+				approxL += (distance[i][j] - mu[i][j]) * (distance[i][j] - mu[i][j]) / var;   
+			}
+		}
+
+		return K  + approxL;
+	}
+	
+	private double[][] calcMu() {
+		// TODO calculate estimates of distance between taxa based on the 
+		// tree and other parameters
+		return null;
 	}
 
-	
-	
-	
 	// BEAST infrastructure stuff
 	@Override
 	public void accept() {
