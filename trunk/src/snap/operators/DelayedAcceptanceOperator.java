@@ -14,6 +14,7 @@ import beast.core.Operator;
 import beast.core.StateNode;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.distance.Distance;
+import beast.evolution.alignment.distance.HammingDistance;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
@@ -100,11 +101,12 @@ public class DelayedAcceptanceOperator extends Operator {
         calcDistanceAndVariance();
     }
 
+
     private void calcDistanceAndVariance() {
     	// set up distance matrix
     	
     	// TODO: verify this is the correct distance
-		Distance.Base d = new Distance.Base();
+		HammingDistance d = new HammingDistance();
 		d.setPatterns(data);
 		int nrOfTaxa = data.getNrTaxa();
 		distance = new double[nrOfTaxa][nrOfTaxa];
