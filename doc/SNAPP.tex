@@ -6,7 +6,7 @@
 
 \title{A rough guide to \SnAPhyl}
 \author{Remco Bouckaert, David Bryant\\
-\url{remco@cs.auckland.ac.nz, d.bryant@auckland.ac.nz}\\
+\url{remco@cs.auckland.ac.nz, david.bryant@otago.ac.nz}\\
 Auckland University\\
 }
 
@@ -215,10 +215,12 @@ will show up automatically under the 'prior' tab).
 \end{center}
 \end{minipage}
 
-The "non-polymorphic" checkbox indicates whether to use non-polymorphic data in the sequences.
-If true, constant-sites in the data will be used as part of the likelihood calculation. 
-If false (the default) constant sites will be removed from the sequence data and a normalization 
-factor is calculated for the likelihood.
+The ``non-polymorphic'' checkbox signals to SNAPP that only
+polymorphic (variable) sites have been included in the data
+(all constant sites are ignored). It is important to check this box if
+SNP data is being used, as the likelihood
+calculations are quite different if SNAPP assumes all constant sites
+have already been removed.
 
 The "mutationOnlyAtRoot" checkbox indicates conditioning on zero mutations, except 
 at root (default false).
