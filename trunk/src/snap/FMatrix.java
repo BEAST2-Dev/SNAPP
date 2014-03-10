@@ -53,7 +53,7 @@ public class FMatrix {
 		System.arraycopy(F,0,copy,1,F.length);
 		return copy;
 	}
-	public double [] asVector() {return F;}
+	//public double [] asVector() {return F;}
 	public FMatrix() {
 		m_n = 0;
 	}
@@ -80,11 +80,11 @@ public class FMatrix {
 		F = _F;
 	} // c'tor
 	
-	public void assign(double [][] other) {
-		for(int i=1;i<=m_n;i++) {
-			System.arraycopy(other[i], 0, F , i*(i+1)/2-1 , i+1);
-		}
-	} // copy
+	//public void assign(double [][] other) {
+	//	for(int i=1;i<=m_n;i++) {
+	//		System.arraycopy(other[i], 0, F , i*(i+1)/2-1 , i+1);
+	//	}
+	//} // copy
 	
 	void resize(int n) {
 		if (F != null && getSize() == n) {

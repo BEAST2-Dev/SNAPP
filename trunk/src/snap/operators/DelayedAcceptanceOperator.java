@@ -131,7 +131,7 @@ public class DelayedAcceptanceOperator extends Operator {
 						if (taxon1 != taxon2) {
 							d += weight * (rkx * (nky - rky) + rky * (nkx - rkx))/(nkx * nky);
 						} else {
-							d += weight * (2.0 * rkx * (nkx - rkx))/(nkx * (nkx - 1));
+							d += weight * (2.0 * rkx * (nkx - rkx))/(nkx * nkx);
 						}
 						Kxy += weight;
 					}
@@ -218,8 +218,10 @@ public class DelayedAcceptanceOperator extends Operator {
 	            // TODO: can we get the state nr?
 	            //state.store(-1);
 
-	        	// TODO: this is probably not the correct correction of the HR
-	            logHastingsRatio += newApproxLogLikelihood - oldApproxLogLikelihood;
+	        	// reset the HR
+	        	// no need to worry about HR of slave-operator
+	        	// note HR contains priors, that cancel out in MCMC loop
+	            logHastingsRatio = oldApproxLogLikelihood - newApproxLogLikelihood;
 	        	
 	        } else {
 	        	// reject;
@@ -238,6 +240,7 @@ public class DelayedAcceptanceOperator extends Operator {
     	}
     }
 
+	/** calculate approximate posterior **/
 	private double evaluate() throws Exception {
 		double logP = prior.calculateLogP();
 		logP  += approxLikelihood();
@@ -245,10 +248,11 @@ public class DelayedAcceptanceOperator extends Operator {
 	}
 	
 	
-	/* 
-	 * calculate approximate treelikelihood for tree & data 
+	/**
+	 * calculate approximate treelikelihood for tree & data
+	 * made public for testing purposes  
 	 * */
-	private double approxLikelihood() {
+	public double approxLikelihood() {
     	Double [] coalescenceRate = substitutionmodel.m_pCoalescenceRate.get().getValues();
     	double u = substitutionmodel.m_pU.get().getValue();
     	double v  = substitutionmodel.m_pV.get().getValue();
@@ -268,7 +272,8 @@ public class DelayedAcceptanceOperator extends Operator {
 		return K  + approxL;
 	}
 	
-	private double[][] calcMu(double u, double v, Double[] coalescenceRate) {
+	/** calc approximate distances between taxa **/
+    public double[][] calcMu(double u, double v, Double[] coalescenceRate) {
 		// calculate estimates of distance between taxa based on the 
 		// tree and other parameters
 		
@@ -285,11 +290,14 @@ public class DelayedAcceptanceOperator extends Operator {
 	List<Node> calcApproxDistance(double[][] mu, double[] M, Node node,
 			double u, double v, Double[] coalescenceRate) {
 		int x = node.getNr();
+		double t = node.getHeight();
 		double pi0 = v/(u+v);
 		double pi1 = 1.0 - pi0;
 		
 		if (node.isLeaf()) {
-			mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]);
+			// nx = nr of lineages for node x, does not matter whether they are missing
+			int nx = data.getStateCounts().get(x);
+			mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]);// * (nx-1)/nx;
 			List<Node> list = new ArrayList<Node>();
 			list.add(node);
 			return list;
@@ -300,7 +308,7 @@ public class DelayedAcceptanceOperator extends Operator {
 				for (Node rNode : right) {
 					int i = lNode.getNr();
 					int j = rNode.getNr();
-					mu[i][j] = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * node.getHeight()) * M[x]);
+					mu[i][j] = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * t) * M[x]);
 					mu[j][i] = mu[i][j];
 				}
 			}
@@ -315,19 +323,33 @@ public class DelayedAcceptanceOperator extends Operator {
 	 */
 	void calcMomentGeneratingFunction(double[] M, Node node, double u, double v, Double [] coalescenceRate) {
 		if (node.isRoot()) {
-			M[node.getNr()] = 1.0 / (1.0 - 2.0 * u * v/coalescenceRate[node.getNr()]);
+			// x = -2(u+v)
+			// Mroot = -1/(.5*theta(3)*x - 1); %MGF at root
+			// Mroot = -1/(theta(3)*x/2 - 1); %MGF at root
+			// Mroot = -1/(x/lambda - 1); %MGF at root
+			// Mroot = 1/(1 - x/lambda); %MGF at root
+			// Mroot = 1/(1 + 2(u+v)/lambda); %MGF at root
+			M[node.getNr()] = 1.0 / (1.0 + 2.0 * (u + v)/coalescenceRate[node.getNr()]);
 		} else {
+			// M=(exp(T*(x-(2/theta(1))))-1)/(.5*theta(1)*x-1) + M[parent]*exp(T*(x-(2/theta(1))));
+			// M=(exp(T*(x-lambda(1)))-1)/(x/lambda(1)-1) + M[parent]*exp(T*(x-lambda(1)));
+			// M=(exp(T*(x-lambda))-1)/(x/lambda-1) + exp((x-lambda)* T) * M[parent]
+			// M=(exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + exp((-pi-lambda)* tx) * M[parent]
+
 			double lambda = coalescenceRate[node.getNr()];
 			int x = node.getNr();
 			double tx = node.getLength();
 			double pi = 2.0 * (u + v);
+			int parent = node.getParent().getNr();
+			M[x]= (Math.exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + Math.exp((-pi-lambda)* tx) * M[parent];
 			
-			M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
-					(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
-			M[x] += Math.exp((-pi - lambda) * tx) * M[node.getParent().getNr()];
-			for (Node child : node.getAllChildNodes()) {
-				calcMomentGeneratingFunction(M, child, u, v, coalescenceRate);
-			}
+			//M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
+			//		(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
+			//M[x] += Math.exp((-pi - lambda) * tx) * M[node.getParent().getNr()];
+		}
+		if (!node.isLeaf()) {
+			calcMomentGeneratingFunction(M, node.getLeft(), u, v, coalescenceRate);
+			calcMomentGeneratingFunction(M, node.getRight(), u, v, coalescenceRate);
 		}
 	}
 
@@ -348,4 +370,9 @@ public class DelayedAcceptanceOperator extends Operator {
 		return operator.listStateNodes();
 	}
 
+	@Override
+	public boolean requiresStateInitialisation() {
+		return false;
+	}
+	
 } // class DelayedAcceptanceOperator
