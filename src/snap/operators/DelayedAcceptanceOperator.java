@@ -1,5 +1,6 @@
 package snap.operators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import snap.likelihood.SnapSubstitutionModel;
@@ -9,15 +10,14 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.Input.Validate;
-import beast.core.util.CompoundDistribution;
 import beast.core.Operator;
 import beast.core.StateNode;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.distance.Distance;
-import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
-import beast.evolution.tree.Tree;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.TreeInterface;
 import beast.util.Randomizer;
 
 
@@ -25,22 +25,23 @@ import beast.util.Randomizer;
 		"based on the approximate likleihood")
 public class DelayedAcceptanceOperator extends Operator {
 	public Input<Operator> operatorInput = new Input<Operator>("operator", "Operator for proposing moves", Validate.REQUIRED);
+
 	public Input<State> stateInput = new Input<State>("state", "state object for which we do proposals", Validate.REQUIRED);
 
-	// TODO: do we need the complete posterior? If so, we have to distinguish between prior and likelihood
-	public Input<Distribution> posteriorInput = new Input<Distribution>("posterior", "Distribution to be approximated", Validate.REQUIRED);
-
-	
+	public Input<Distribution> priorInput = new Input<Distribution>("prior", "prior used when likelihood is approximated", Validate.REQUIRED);
+	public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "tree used for apprximiate likelihood", Validate.REQUIRED);
+	public Input<Alignment> dataInput = new Input<Alignment>("data", "alignment used for apprximiate likelihood", Validate.REQUIRED);
     public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
 	
 	
 	Operator operator;
 	Distribution prior = null;
-	// data and tree used in approx treelikelihood
+	// data and tree used in approximate tree likelihood
 	Alignment data = null;
-	Tree tree = null;
+	TreeInterface tree = null;
 	
-	// TODO: take site model in account in approximation
+	// TODO: take site model in account in approximation?
+	// TODO: take clock model in account in approximation?
 	SiteModel.Base siteModel;
 	SnapSubstitutionModel substitutionmodel;
 	
@@ -48,7 +49,11 @@ public class DelayedAcceptanceOperator extends Operator {
     
     // empirical distance and variance between taxa
     double [][] distance;
-    double var;
+    double [][] var;
+
+
+	// log of constant in approximate tree likelihood
+	double K;
 
 	
 	public void initAndValidate() {
@@ -56,6 +61,11 @@ public class DelayedAcceptanceOperator extends Operator {
     	siteModel = (SiteModel.Base) siteModelInput.get();
     	substitutionmodel = ((SnapSubstitutionModel)siteModel.substModelInput.get());
 		
+    	prior = priorInput.get();
+    	tree = treeInput.get();
+    	data = dataInput.get();
+
+/*
         if (posteriorInput.get() instanceof CompoundDistribution) {
             final CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
             final List<Distribution> distrs = posterior.pDistributions.get();
@@ -87,7 +97,7 @@ public class DelayedAcceptanceOperator extends Operator {
         } else {
             throw new RuntimeException("DelayedAcceptanceOperator: Expected a CompoundDistribution as posterior input");
         }
-
+*/
         
         if (prior == null) {
         	throw new RuntimeException("DelayedAcceptanceOperator: could not identify prior in posterior input");
@@ -103,33 +113,86 @@ public class DelayedAcceptanceOperator extends Operator {
     private void calcDistanceAndVariance() {
     	// set up distance matrix
     	
-    	// TODO: verify this is the correct distance
-		Distance d = new Distance.Base();
+		Distance d = new Distance.Base() {
+			@Override
+			public double pairwiseDistance(int taxon1, int taxon2) {
+				double Kxy = 0;
+				double d = 0;
+				snap.Data _data = (snap.Data) data;
+				for (int k = 0; k < _data.getPatternCount(); k++) {
+					int [] lineageCounts = _data.getPatternLineagCounts(k);
+					int [] sitePattern = _data.getPattern(k);
+					double rkx = sitePattern[taxon1];
+					double rky = sitePattern[taxon2];
+					int nkx = lineageCounts[taxon1];
+					int nky = lineageCounts[taxon2];
+					double weight = _data.getPatternWeight(k);
+					if (weight > 0 && nkx > 0 && nky > 0) {
+						if (taxon1 != taxon2) {
+							d += weight * (rkx * (nky - rky) + rky * (nkx - rkx))/(nkx * nky);
+						} else {
+							d += weight * (2.0 * rkx * (nkx - rkx))/(nkx * (nkx - 1));
+						}
+						Kxy += weight;
+					}
+				}
+				return d / Kxy;
+			}
+		};
+		
+		Distance v = new Distance.Base() {
+			@Override
+			public double pairwiseDistance(int taxon1, int taxon2) {
+				double Kxy = 0;
+				double v = 0;
+				snap.Data _data = (snap.Data) data;
+				for (int k = 0; k < _data.getPatternCount(); k++) {
+					int [] lineageCounts = _data.getPatternLineagCounts(k);
+					int [] sitePattern = _data.getPattern(k);
+					double rkx = sitePattern[taxon1];
+					double rky = sitePattern[taxon2];
+					int nkx = lineageCounts[taxon1];
+					int nky = lineageCounts[taxon2];
+					double weight = _data.getPatternWeight(k);
+					if (weight > 0 && nkx > 0 && nky > 0) {
+						double v1 = (rkx * rky + (nkx - rkx) * (nky - rky))/(nkx * nky);
+						double v2 = (rkx * rkx * rky + (nkx - rkx) * (nkx - rkx) * (nky - rky))/(nkx * nkx * nky);
+						double v3 = (rkx * rky * rky + (nkx - rkx) * (nky - rky) * (nky - rky))/(nkx * nky * nky);
+						if (taxon1 != taxon2) {
+							v += weight * ((1 - nkx - nky) * v1 * v1 + (nkx - 1) * v2 + (nky - 1) * v3) /(nkx * nky);
+						} else {
+							v += weight * 2.0 * (nkx - 1)/(nkx * nkx) * ((3.0 - 2.0 * nkx) * v1 * v1 + 2.0 * (nkx - 2.0) * v2 + v1 /(nkx * nkx));
+						}
+						Kxy += weight;
+					}
+				}
+				return v / (Kxy * Kxy);			}
+		};
+		
 		((Distance.Base)d).setPatterns(data);
+		((Distance.Base)v).setPatterns(data);
+		
 		int nrOfTaxa = data.getNrTaxa();
 		distance = new double[nrOfTaxa][nrOfTaxa];
+		var = new double[nrOfTaxa][nrOfTaxa];
+		
 		for (int i = 0; i < nrOfTaxa; i++) {
-			for (int j = i+ 1; j < nrOfTaxa; j++) {
+			for (int j = i; j < nrOfTaxa; j++) {
 				distance[i][j] = d.pairwiseDistance(i,  j);
 				distance[j][i] = distance[i][j];
-			}
+				var[i][j] = v.pairwiseDistance(i, j);
+				var[j][i] = var[i][j];
+			} 
 		}
-		// TODO: normalise?
 		
-		// estimate variance
-		// TODO: should be variance for each entry [i,j]?
-		double v = 0;
-		double mean = 0;
+		
+		// calculate log of constant of approximate likelihood
+		K = Math.log(2.0 * Math.PI) * nrOfTaxa * (nrOfTaxa - 1.0)/4.0;
 		for (int i = 0; i < nrOfTaxa; i++) {
-			for (int j = i+ 1; j < nrOfTaxa; j++) {
-				mean += distance[i][j];
-				v += distance[i][j] * distance[i][j];
+			for (int j = i; j < nrOfTaxa; j++) {
+				K += var[i][j];
 			}
 		}
-		// TODO: should we take the diagonal in account (as is implemented) or not?
-		v = v * 2 / (nrOfTaxa * nrOfTaxa);
-		mean = mean * 2 / (nrOfTaxa * nrOfTaxa);
-		var = v - mean * mean; 
 	}
 
 	@Override
@@ -191,28 +254,81 @@ public class DelayedAcceptanceOperator extends Operator {
     	double v  = substitutionmodel.m_pV.get().getValue();
 
     	
-    	// TODO: do the real work here
-    	double mu[][] = calcMu();
-    	
-    	// TODO: fill in this constant
-    	double K = 0;
-    	
+    	// do the real work here
+    	double mu[][] = calcMu(u, v, coalescenceRate);
+    	    	
     	double approxL = 0;
     	int nrOfTaxa = distance.length;
 		for (int i = 0; i < nrOfTaxa; i++) {
 			for (int j = i+ 1; j < nrOfTaxa; j++) {
-				// TODO: should be variance for each entry [i,j]?
-				approxL += (distance[i][j] - mu[i][j]) * (distance[i][j] - mu[i][j]) / var;   
+				approxL += -0.5 * (distance[i][j] - mu[i][j]) * (distance[i][j] - mu[i][j]) / var[i][j];   
 			}
 		}
 
 		return K  + approxL;
 	}
 	
-	private double[][] calcMu() {
-		// TODO calculate estimates of distance between taxa based on the 
+	private double[][] calcMu(double u, double v, Double[] coalescenceRate) {
+		// calculate estimates of distance between taxa based on the 
 		// tree and other parameters
-		return null;
+		
+		// 1. calc moment generating function
+		double [] M = new double[tree.getNodeCount()];
+		calcMomentGeneratingFunction(M, tree.getRoot(), u, v, coalescenceRate);
+		
+		// 2. calc approx distances, store result in u
+		double [][] mu = new double[var.length][var.length];
+		calcApproxDistance(mu, M, tree.getRoot(), u, v, coalescenceRate);		
+		return mu;
+	}
+
+	List<Node> calcApproxDistance(double[][] mu, double[] M, Node node,
+			double u, double v, Double[] coalescenceRate) {
+		int x = node.getNr();
+		double pi0 = v/(u+v);
+		double pi1 = 1.0 - pi0;
+		
+		if (node.isLeaf()) {
+			mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]);
+			List<Node> list = new ArrayList<Node>();
+			list.add(node);
+			return list;
+		} else {
+			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1, coalescenceRate);
+			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1, coalescenceRate);
+			for (Node lNode : left) {
+				for (Node rNode : right) {
+					int i = lNode.getNr();
+					int j = rNode.getNr();
+					mu[i][j] = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * node.getHeight()) * M[x]);
+					mu[j][i] = mu[i][j];
+				}
+			}
+			left.addAll(right);
+			return left;
+		}
+	}
+
+	/**
+	 * calculate moment generating function for each node in the tree based on SNAPP parameters, 
+	 * and store results in M
+	 */
+	void calcMomentGeneratingFunction(double[] M, Node node, double u, double v, Double [] coalescenceRate) {
+		if (node.isRoot()) {
+			M[node.getNr()] = 1.0 / (1.0 - 2.0 * u * v/coalescenceRate[node.getNr()]);
+		} else {
+			double lambda = coalescenceRate[node.getNr()];
+			int x = node.getNr();
+			double tx = node.getLength();
+			double pi = 2.0 * (u + v);
+			
+			M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
+					(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
+			M[x] += Math.exp((-pi - lambda) * tx) * M[node.getParent().getNr()];
+			for (Node child : node.getAllChildNodes()) {
+				calcMomentGeneratingFunction(M, child, u, v, coalescenceRate);
+			}
+		}
 	}
 
 	// BEAST infrastructure stuff
