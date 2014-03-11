@@ -166,8 +166,10 @@ public class MCMC extends beast.core.MCMC {
 			//System.err.println(operator.getClass().getName() + " " + operator.getID());
 			double fLogHastingsRatio = operator.proposal();
 			if (fLogHastingsRatio != Double.NEGATIVE_INFINITY) {
-				state.storeCalculationNodes();
-                state.checkCalculationNodesDirtiness();
+				if (operator.requiresStateInitialisation()) {
+					state.storeCalculationNodes();
+					state.checkCalculationNodesDirtiness();
+				}
 				
 				double fNewLogLikelihood = posterior.calculateLogP();
 				
@@ -201,6 +203,10 @@ public class MCMC extends beast.core.MCMC {
 					operator.reject();
 				}
 				state.restore();
+				if (!operator.requiresStateInitialisation()) {
+                    state.setEverythingDirty(false);
+                    state.restoreCalculationNodes();
+				}
 			}
             log(iSample);
             

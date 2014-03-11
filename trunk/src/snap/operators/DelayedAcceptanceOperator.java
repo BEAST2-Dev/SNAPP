@@ -8,6 +8,7 @@ import snap.likelihood.SnapSubstitutionModel;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.OperatorSchedule;
 import beast.core.State;
 import beast.core.Input.Validate;
 import beast.core.Operator;
@@ -33,6 +34,9 @@ public class DelayedAcceptanceOperator extends Operator {
 	public Input<Alignment> dataInput = new Input<Alignment>("data", "alignment used for apprximiate likelihood", Validate.REQUIRED);
     public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
 	
+    
+    public boolean useMatLabFormulae = false;
+    
 	
 	Operator operator;
 	Distribution prior = null;
@@ -64,6 +68,7 @@ public class DelayedAcceptanceOperator extends Operator {
     	prior = priorInput.get();
     	tree = treeInput.get();
     	data = dataInput.get();
+    	state = stateInput.get();
 
 /*
         if (posteriorInput.get() instanceof CompoundDistribution) {
@@ -159,14 +164,17 @@ public class DelayedAcceptanceOperator extends Operator {
 						double v2 = (rkx * rkx * rky + (nkx - rkx) * (nkx - rkx) * (nky - rky))/(nkx * nkx * nky);
 						double v3 = (rkx * rky * rky + (nkx - rkx) * (nky - rky) * (nky - rky))/(nkx * nky * nky);
 						if (taxon1 != taxon2) {
-							v += weight * ((1 - nkx - nky) * v1 * v1 + (nkx - 1) * v2 + (nky - 1) * v3) /(nkx * nky);
+							v += weight * ((1 - nkx - nky) * v1 * v1 + (nkx - 1) * v2 + (nky - 1) * v3 + v1) /(nkx * nky);
 						} else {
-							v += weight * 2.0 * (nkx - 1)/(nkx * nkx) * ((3.0 - 2.0 * nkx) * v1 * v1 + 2.0 * (nkx - 2.0) * v2 + v1 /(nkx * nkx));
+							v += weight * 2.0 * (nkx - 1)/(nkx * nkx) * ((3.0 - 2.0 * nkx) * v1 * v1 + 2.0 * (nkx - 2.0) * v2 + v1);
 						}
 						Kxy += weight;
 					}
 				}
-				return v / (Kxy * Kxy);			}
+				v = v / (Kxy * Kxy);
+				//if (true) return 0.00005;
+				return v;			
+				}
 		};
 		
 		((Distance.Base)d).setPatterns(data);
@@ -200,13 +208,21 @@ public class DelayedAcceptanceOperator extends Operator {
     	try {
 	    	double oldApproxLogLikelihood = evaluate();
 	    	double logHastingsRatio = operator.proposal();
-	    	if (logHastingsRatio == Double.NEGATIVE_INFINITY) {
+            
+	    	// could skip till after checking logHR == -infinity
+	    	// but since the proposal can return -infinity in two different cases
+	    	// (if slave-operator return -infinity, OR if proposal is rejected)
+	    	// that would make it difficult to deal with in the main MCMC loop
+	    	// to distinguish between those two cases.
+	    	state.storeCalculationNodes();
+            state.checkCalculationNodesDirtiness();
+
+            if (logHastingsRatio == Double.NEGATIVE_INFINITY) {
 	    		// instant reject
+	    		// need to store state, so it is restored properly
 	    		return Double.NEGATIVE_INFINITY;
 	    	}
 
-            state.storeCalculationNodes();
-            state.checkCalculationNodesDirtiness();
 	    	double newApproxLogLikelihood = evaluate();
 
 	    	double logAlpha = newApproxLogLikelihood - oldApproxLogLikelihood + logHastingsRatio; //CHECK HASTINGS
@@ -225,13 +241,14 @@ public class DelayedAcceptanceOperator extends Operator {
 	        	
 	        } else {
 	        	// reject;
-	            state.restore();
+	            //state.restore();
 	            // TODO: can we get the state nr?
-	            state.store(-1);
+	            //state.store(-1);
 	        	return Double.NEGATIVE_INFINITY;
 	        }
 	    	return logHastingsRatio;
     	} catch (Exception e) {
+    		e.printStackTrace();
     		System.err.println("DelayedAcceptanceOperator.proposal " + e.getMessage());
             state.restore();
             // TODO: can we get the state nr?
@@ -297,7 +314,11 @@ public class DelayedAcceptanceOperator extends Operator {
 		if (node.isLeaf()) {
 			// nx = nr of lineages for node x, does not matter whether they are missing
 			int nx = data.getStateCounts().get(x);
-			mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]);// * (nx-1)/nx;
+			if (useMatLabFormulae) {
+				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]);
+			} else {
+				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (nx-1)/nx;
+			}
 			List<Node> list = new ArrayList<Node>();
 			list.add(node);
 			return list;
@@ -321,7 +342,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	 * calculate moment generating function for each node in the tree based on SNAPP parameters, 
 	 * and store results in M
 	 */
-	void calcMomentGeneratingFunction(double[] M, Node node, double u, double v, Double [] coalescenceRate) {
+	public void calcMomentGeneratingFunction(double[] M, Node node, double u, double v, Double [] coalescenceRate) {
 		if (node.isRoot()) {
 			// x = -2(u+v)
 			// Mroot = -1/(.5*theta(3)*x - 1); %MGF at root
@@ -341,11 +362,13 @@ public class DelayedAcceptanceOperator extends Operator {
 			double tx = node.getLength();
 			double pi = 2.0 * (u + v);
 			int parent = node.getParent().getNr();
-			M[x]= (Math.exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + Math.exp((-pi-lambda)* tx) * M[parent];
-			
-			//M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
-			//		(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
-			//M[x] += Math.exp((-pi - lambda) * tx) * M[node.getParent().getNr()];
+			if (useMatLabFormulae) {
+				M[x]= (Math.exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + Math.exp((-pi-lambda)* tx) * M[parent];
+			} else {		
+				M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
+						(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
+				M[x] += Math.exp((-pi - lambda) * tx) * M[node.getParent().getNr()];
+			}	
 		}
 		if (!node.isLeaf()) {
 			calcMomentGeneratingFunction(M, node.getLeft(), u, v, coalescenceRate);
@@ -354,6 +377,11 @@ public class DelayedAcceptanceOperator extends Operator {
 	}
 
 	// BEAST infrastructure stuff
+	@Override
+    public void setOperatorSchedule(final OperatorSchedule operatorSchedule) {
+        operator.setOperatorSchedule(operatorSchedule);
+    }
+	
 	@Override
 	public void accept() {
 		// TODO do we want operator tuning? If not, comment out this line as well as in reject() below 
@@ -373,6 +401,20 @@ public class DelayedAcceptanceOperator extends Operator {
 	@Override
 	public boolean requiresStateInitialisation() {
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		String s = operator.toString();
+		String label = operator.getName();
+		int i = label.indexOf("operator");
+		if (i >= 0) {
+			label = label.substring(0, i) + "DAOprtr" + label.substring(i + 8);
+		} else {
+			label = this.getClass().getName();
+		}
+		s = s.replaceAll(operator.getName(), label);
+		return s;
 	}
 	
 } // class DelayedAcceptanceOperator
