@@ -19,6 +19,42 @@ import junit.framework.TestCase;
 public class TestDelayedAcceptanceOperator extends TestCase {
 
 	@Test
+	public void testMomentGeneratingFunction() throws Exception {
+		// check that moment generating function = 1 at x = 0 = -2*(u+v)
+		snap.Data data = getTwoTaxaNoData();
+		Tree tree = BEASTTestCase.getTree(data, "(A:" + 0.1 +",B:" + 0.1 +")");
+		ScaleOperator dummyoperator = new ScaleOperator();
+		Distribution prior = new CompoundDistribution();
+		
+		
+		RealParameter uParameter = new RealParameter(0.0 + "");
+		RealParameter vParameter = new RealParameter(0.0 + "");
+		Double [] coalescenceRate = new Double[]{0.1,0.2,0.3};
+		RealParameter coalescenceRateParameter = new RealParameter(coalescenceRate);
+		
+		SnapSubstitutionModel substModel = new SnapSubstitutionModel();
+		substModel.initByName("mutationRateU", uParameter,
+				"mutationRateV", vParameter,
+				"coalescenceRate", coalescenceRateParameter);
+		SiteModel siteModel = new SiteModel();
+		siteModel.initByName("substModel", substModel);
+		
+		DelayedAcceptanceOperator operator = new DelayedAcceptanceOperator();
+		operator.initByName("tree", tree,
+				"data", data,
+				"operator", dummyoperator,
+				"prior", prior,
+				"siteModel", siteModel);
+
+		double [] M = new double[3];
+		// u = v = 0
+		operator.calcMomentGeneratingFunction(M, tree.getRoot(), 0.0, 0.0, coalescenceRate);
+		assertEquals(1.0, M[0]);
+		assertEquals(1.0, M[1]);
+		assertEquals(1.0, M[2]);
+	}
+	
+	@Test
 	public void testApproximateLikelihood() throws Exception {
 /*
  		double [][] mu = new double[2][2];
@@ -92,7 +128,9 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 				"operator", dummyoperator,
 				"prior", prior,
 				"siteModel", siteModel);
-
+		
+		operator.useMatLabFormulae = true;
+		
 		double [][] mu = operator.calcMu(u, v, coalescenceRate);
 		for (int i = 0; i < mu.length; i++) {
 			for (int j = 0; j < mu.length; j++) {
