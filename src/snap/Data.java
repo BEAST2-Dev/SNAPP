@@ -39,6 +39,11 @@ import beast.core.parameter.Map;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.datatype.Binary;
+import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.IntegerData;
+import beast.evolution.datatype.IntegerData2;
+import beast.evolution.datatype.Nucleotide;
 
 
 
@@ -81,35 +86,74 @@ public class Data extends beast.evolution.alignment.Alignment {
 		
 		// amalgamate binary sequences into count sequences by taxon sets
 		if (m_taxonsets.get().size() > 0) {
-			// sequences are defined through taxon sets, so construct
-			// SNPSequences from binary sequences as defined by the taxon sets
 			List<Sequence> sequences = m_rawData.get().sequenceInput.get();
 			List<Sequence> SNPsequences = sequenceInput.get();
-			for(TaxonSet set : m_taxonsets.get()) {
-				SNPSequence SNPSequence = new SNPSequence();
-				SNPSequence.setID(set.getID());
-				SNPSequence.taxonInput.setValue(set.getID(), SNPSequence);
-				for (Taxon taxon : set.taxonsetInput.get()) {
-					boolean bFound = false;
-					for (int i = 0; i < sequences.size() && !bFound; i++) {
-						if (sequences.get(i).taxonInput.get().equals(taxon.getID())) {
-							SNPSequence.m_sequences.setValue(sequences.get(i), SNPSequence);
-							bFound = true;
+			
+			DataType rawDataType = m_rawData.get().getDataType();
+			if (rawDataType instanceof Binary || rawDataType instanceof IntegerData) {
+		
+				// sequences are defined through taxon sets, so construct
+				// SNPSequences from binary sequences as defined by the taxon sets
+				for(TaxonSet set : m_taxonsets.get()) {
+					SNPSequence SNPSequence = new SNPSequence();
+					SNPSequence.setID(set.getID());
+					SNPSequence.taxonInput.setValue(set.getID(), SNPSequence);
+					for (Taxon taxon : set.taxonsetInput.get()) {
+						boolean bFound = false;
+						for (int i = 0; i < sequences.size() && !bFound; i++) {
+							if (sequences.get(i).taxonInput.get().equals(taxon.getID())) {
+								SNPSequence.m_sequences.setValue(sequences.get(i), SNPSequence);
+								bFound = true;
+							}
+						}
+						if (!bFound) {
+							String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
+							if (seq != null) {
+								Sequence sequence = new Sequence(taxon.getID(), seq);
+								sequence.totalCountInput.setValue(2, sequence);
+								SNPSequence.m_sequences.setValue(sequence, SNPSequence);
+							} else {
+								throw new Exception("Could not find taxon " + taxon.getID() + " in alignment");
+							}
 						}
 					}
-					if (!bFound) {
-						String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
-						if (seq != null) {
-							Sequence sequence = new Sequence(taxon.getID(), seq);
-							sequence.totalCountInput.setValue(2, sequence);
-							SNPSequence.m_sequences.setValue(sequence, SNPSequence);
-						} else {
-							throw new Exception("Could not find taxon " + taxon.getID() + " in alignment");
-						}
-					}
+					SNPSequence.initAndValidate();
+					SNPsequences.add(SNPSequence);
 				}
-				SNPSequence.initAndValidate();
-				SNPsequences.add(SNPSequence);
+			} else if (rawDataType instanceof Nucleotide) {
+				// call SNPs by setting first sequence to all zero
+				// any character in subsequent sequences that is not the same will be set to one
+				String refferenceSeq = sequences.get(0).dataInput.get().replaceAll("\\s", "");
+				
+				for(TaxonSet set : m_taxonsets.get()) {
+					SNPSequence SNPSequence = new SNPSequence();
+					SNPSequence.setID(set.getID());
+					SNPSequence.taxonInput.setValue(set.getID(), SNPSequence);
+					for (Taxon taxon : set.taxonsetInput.get()) {
+						boolean bFound = false;
+						for (int i = 0; i < sequences.size() && !bFound; i++) {
+							if (sequences.get(i).taxonInput.get().equals(taxon.getID())) {
+								Sequence binarySequence = toBinarySequence(taxon.getID(), refferenceSeq, sequences.get(i).dataInput.get());
+								SNPSequence.m_sequences.setValue(binarySequence, SNPSequence);
+								bFound = true;
+							}
+						}
+						if (!bFound) {
+							String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
+							if (seq != null) {
+								Sequence binarySequence = toBinarySequence(taxon.getID(), refferenceSeq, seq);
+								SNPSequence.m_sequences.setValue(binarySequence, SNPSequence);
+							} else {
+								throw new Exception("Could not find taxon " + taxon.getID() + " in alignment");
+							}
+						}
+					}
+					SNPSequence.initAndValidate();
+					SNPsequences.add(SNPSequence);
+				}
+			} else {
+				throw new RuntimeException("Cannot handle data of type " + rawDataType.getDescription() +
+						". Use binary or nucleotide data instead.");
 			}
 		}
 		
@@ -120,6 +164,25 @@ public class Data extends beast.evolution.alignment.Alignment {
 		}
 	} // initAndValidate
 	
+	private Sequence toBinarySequence(String id, String refferenceSeq,
+			String seqStr) throws Exception {
+		Sequence binarySequence = new Sequence();
+		binarySequence.setID(id);
+		seqStr = seqStr.replaceAll("\\s", "");
+		StringBuilder binStr = new StringBuilder();
+		for (int i = 0; i < refferenceSeq.length(); i++) {
+			if (refferenceSeq.charAt(i) == seqStr.charAt(i)) {
+				binStr.append('0');
+			} else {
+				binStr.append('1');
+			}
+		}
+		binarySequence.initByName("value", binStr.toString(),
+				"taxon", id,
+				"totalcount", 2);
+		return binarySequence;
+	}
+
 	/** guesses taxon sets based on pattern in sRegExp based
 	 * on the taxa in m_rawData 
 	 */
