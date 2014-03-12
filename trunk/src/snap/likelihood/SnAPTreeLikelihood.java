@@ -332,4 +332,12 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			out.append(m_fP1 + "\t");
 		}
 	}
+
+	public double getProbVariableSites() {
+		if (!m_bUsenNonPolymorphic) {
+			return 1.0 - m_fP0 - m_fP1;
+		} else {
+			return 1.0;
+		}
+	}
 } // class SSSTreeLikelihood

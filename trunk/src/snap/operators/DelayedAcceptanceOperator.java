@@ -3,6 +3,7 @@ package snap.operators;
 import java.util.ArrayList;
 import java.util.List;
 
+import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
 import beast.core.Description;
@@ -30,12 +31,16 @@ public class DelayedAcceptanceOperator extends Operator {
 	public Input<State> stateInput = new Input<State>("state", "state object for which we do proposals", Validate.REQUIRED);
 
 	public Input<Distribution> priorInput = new Input<Distribution>("prior", "prior used when likelihood is approximated", Validate.REQUIRED);
-	public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "tree used for apprximiate likelihood", Validate.REQUIRED);
-	public Input<Alignment> dataInput = new Input<Alignment>("data", "alignment used for apprximiate likelihood", Validate.REQUIRED);
-    public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+//	public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "tree used for apprximiate likelihood", Validate.REQUIRED);
+//	public Input<Alignment> dataInput = new Input<Alignment>("data", "alignment used for apprximiate likelihood", Validate.REQUIRED);
+//    public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    public Input<SnAPTreeLikelihood> treeLikelihoodInput = new Input<SnAPTreeLikelihood>("treelikelihood", "SNAPP tree likelihood for the tree", Validate.REQUIRED);
 	
     
     public boolean useMatLabFormulae = false;
+    
+    /** probability that sites are variable for the state of the tree before operating on it **/
+    double probVariableSites = 1.0;
     
 	
 	Operator operator;
@@ -48,6 +53,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	// TODO: take clock model in account in approximation?
 	SiteModel.Base siteModel;
 	SnapSubstitutionModel substitutionmodel;
+	SnAPTreeLikelihood treelikelihood;
 	
     State state;
     
@@ -62,12 +68,13 @@ public class DelayedAcceptanceOperator extends Operator {
 	
 	public void initAndValidate() {
 		operator = operatorInput.get();
-    	siteModel = (SiteModel.Base) siteModelInput.get();
+		treelikelihood = treeLikelihoodInput.get();
+    	siteModel = (SiteModel.Base) treelikelihood.siteModelInput.get();
     	substitutionmodel = ((SnapSubstitutionModel)siteModel.substModelInput.get());
 		
     	prior = priorInput.get();
-    	tree = treeInput.get();
-    	data = dataInput.get();
+    	tree = treelikelihood.treeInput.get();
+    	data = treelikelihood.dataInput.get();
     	state = stateInput.get();
 
 /*
@@ -205,6 +212,9 @@ public class DelayedAcceptanceOperator extends Operator {
 
 	@Override
     public double proposal()  {
+
+		probVariableSites = treelikelihood.getProbVariableSites();
+		
     	try {
 	    	double oldApproxLogLikelihood = evaluate();
 	    	double logHastingsRatio = operator.proposal();
@@ -315,9 +325,9 @@ public class DelayedAcceptanceOperator extends Operator {
 			// nx = nr of lineages for node x, does not matter whether they are missing
 			int nx = data.getStateCounts().get(x);
 			if (useMatLabFormulae) {
-				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]);
+				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) / probVariableSites;
 			} else {
-				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (nx-1)/nx;
+				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (nx-1) / nx / probVariableSites;
 			}
 			List<Node> list = new ArrayList<Node>();
 			list.add(node);
@@ -329,7 +339,7 @@ public class DelayedAcceptanceOperator extends Operator {
 				for (Node rNode : right) {
 					int i = lNode.getNr();
 					int j = rNode.getNr();
-					mu[i][j] = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * t) * M[x]);
+					mu[i][j] = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * t) * M[x]) / probVariableSites;
 					mu[j][i] = mu[i][j];
 				}
 			}
