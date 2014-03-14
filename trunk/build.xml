@@ -91,6 +91,7 @@
 		</jar>
 
 		<!-- Put everything + beastii in ${build} into the snapii.jar file -->
+<!--
 		<jar jarfile="${dist}/snapii.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
@@ -108,7 +109,7 @@
 				<include name="beast/**/*.class" />
 			</fileset>
 		</jar>
-
+-->
 		<jar jarfile="${dist}/snap.addon.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

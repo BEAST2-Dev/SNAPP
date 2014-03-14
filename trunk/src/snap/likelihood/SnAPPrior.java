@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import snap.distribution.ChiSquareNoncentralDist;
+
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -39,8 +41,6 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
-import snap.distribution.ChiSquareNoncentralDist;
-
 
 @Description("Standard prior for SnAP analysis, consisting of a Yule prior on the tree " +
         "(parameterized by lambda) " +
@@ -48,11 +48,11 @@ import snap.distribution.ChiSquareNoncentralDist;
         "(with parameters alpha and beta). " +
         "Thetas are represented by the coalescenceRate parameter where values are theta=2/coalescenceRate")
 public class SnAPPrior extends Distribution {
-    public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "prior parameter -- see docs for details", Validate.REQUIRED);
-    public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "prior parameter -- see docs for details", Validate.REQUIRED);
+    public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "Alpha parameter for the gamma prior on population size (theta) values", Validate.REQUIRED);
+    public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "Beta parameter for the gamma prior on population size (theta) values", Validate.REQUIRED);
     public Input<RealParameter> m_pKappa = new Input<RealParameter>("kappa", "prior parameter -- see docs for details");
     public Input<RealParameter> m_pCoalescenceRate = new Input<RealParameter>("coalescenceRate", "Populations sizes for the nodes in the tree", Validate.REQUIRED);
-    public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "parameter for Yule birth process");//, Validate.REQUIRED);
+    public Input<RealParameter> m_pLambda = new Input<RealParameter>("lambda", "Birth rate for the Yule model prior on the species tree");//, Validate.REQUIRED);
     public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations"); //, Validate.REQUIRED);
 
     

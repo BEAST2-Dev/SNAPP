@@ -61,12 +61,15 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	public Input<Boolean> m_bInitFromTree = new Input<Boolean>("initFromTree", "whether to initialize coalescenceRate from starting tree values (if true), or vice versa (if false)");
 	public Input<String> m_pPattern = new Input<String>("pattern", "pattern of metadata element associated with this parameter in the tree");
 
-	public Input<Boolean> m_usenNonPolymorphic = new Input<Boolean>("non-polymorphic", "Whether to use non-polymorphic data in the sequences. " +
-			"If true, constant-sites in the data will be used as part of the likelihood calculation. " +
-			"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
-			"calculated for the likelihood.", false);
+	public Input<Boolean> m_usenNonPolymorphic = new Input<Boolean>("non-polymorphic", "Check box only if constant sites have been left in the data and are to be included in the likelihood calculation. " +
+			"Leave unchecked if all but the variable sites have been removed.",
+			//"Whether to use non-polymorphic data in the sequences. " +
+			//"If true, constant-sites in the data will be used as part of the likelihood calculation. " +
+			//"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
+			//"calculated for the likelihood.", 
+			false);
 	
-	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Conditioning on zero mutations, except at root (default false)", false);
+	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Emulate the likelihood calculation of RoyChoudhury et al (2008) which assumes that mutations occur only in the ancestral (root) population", false);
 	public Input<Boolean> hasDominantMarkers = new Input<Boolean>("dominant", "indicate that alleles are dominant (default false)", false);
 	public Input<Boolean> showPatternLikelihoodsAndQuit = new Input<Boolean>("showPatternLikelihoodsAndQuit", "print out likelihoods for all patterns for the starting state, then quit", false);
 	public Input<Boolean> useLogLikelihoodCorrection = new Input<Boolean>("useLogLikelihoodCorrection", "use correction of log likelihood for the purpose of calculating " +
