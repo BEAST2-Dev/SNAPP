@@ -5,14 +5,16 @@ import org.junit.Test;
 import beast.core.Distribution;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.operators.ScaleOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
+import beast.util.TreeParser;
 
 import snap.likelihood.SnapSubstitutionModel;
 import snap.operators.DelayedAcceptanceOperator;
-import test.beast.BEASTTestCase;
+//import test.beast.BEASTTestCase;
 
 import junit.framework.TestCase;
 
@@ -22,7 +24,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 	public void testMomentGeneratingFunction() throws Exception {
 		// check that moment generating function = 1 at x = 0 = -2*(u+v)
 		snap.Data data = getTwoTaxaNoData();
-		Tree tree = BEASTTestCase.getTree(data, "(A:" + 0.1 +",B:" + 0.1 +")");
+		Tree tree = getTree(data, "(A:" + 0.1 +",B:" + 0.1 +")");
 		ScaleOperator dummyoperator = new ScaleOperator();
 		Distribution prior = new CompoundDistribution();
 		
@@ -54,6 +56,13 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		assertEquals(1.0, M[2]);
 	}
 	
+    Tree getTree(Alignment data, String tree) throws Exception {
+        TreeParser t = new TreeParser();
+        t.initByName("taxa", data,
+                "newick", tree);
+        return t;
+    }
+
 	@Test
 	public void testApproximateLikelihood() throws Exception {
 /*
@@ -106,7 +115,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 	
 	void testSingleCase(double t, double u, double v, Double [] coalescenceRate, double[][] expectedMu, double expectedLogL) throws Exception {
 		snap.Data data = getTwoTaxaNoData();
-		Tree tree = BEASTTestCase.getTree(data, "(A:" + t +",B:" + t +")");
+		Tree tree = getTree(data, "(A:" + t +",B:" + t +")");
 		ScaleOperator dummyoperator = new ScaleOperator();
 		Distribution prior = new CompoundDistribution();
 		

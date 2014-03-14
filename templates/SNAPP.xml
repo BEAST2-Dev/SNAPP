@@ -13,7 +13,8 @@
             beast.core.parameter.RealParameter.estimate=Sample,
             beast.core.parameter.IntegerParameter.estimate=Sample,
             beast.core.parameter.BooleanParameter.estimate=Sample,
-	        snap.MCMC.preBurnin=Burn in'
+	        snap.MCMC.preBurnin=Burn in,
+			snap.likelihood.SnAPTreeLikelihood.non-polymorphic=Include non-polymorphic sites'
         inlinePlugins ='beast.core.MCMC.distribution,
 	        snap.MCMC.distribution,
 	        beast.core.MCMC.logger,
@@ -72,7 +73,7 @@
             beast.app.beauti.BeautiInitDlg.Beast file:=SNAP file:,
             beast.app.beauti.TaxonSetInputEditor.Guess taxon sets=Guess species,
             beast.app.beauti.Beauti.Taxon sets=Species,
-            beast.app.beauti.Beauti.Site Model=Mutation Model
+            beast.app.beauti.Beauti.Site Model=Model Parameters
             '
         disableMenus='View.Show Data panel,View.Show Tip Dates panel,View.Show Clock Model panel,View.Show Tree prior panel,Mode'
     >
@@ -89,7 +90,7 @@
             isVisible='false'
         />
 -->
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
+		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Model Parameters" tiptext="Specification of model parameters"
             path='distribution/distribution[id="likelihood"]/distribution'
             hasPartitions="none" icon='4.png' forceExpansion='TRUE'
             buttonStatus='NONE' type='snap.likelihood.SnAPTreeLikelihood'
