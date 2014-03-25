@@ -140,7 +140,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		
 		operator.useMatLabFormulae = true;
 		
-		double [][] mu = operator.calcMu(u, v, coalescenceRate);
+		double [][] mu = operator.calcMu(tree.getRoot(), u, v, coalescenceRate);
 		for (int i = 0; i < mu.length; i++) {
 			for (int j = 0; j < mu.length; j++) {
 				assertEquals(expectedMu[i][j], mu[i][j], 1e-5);
