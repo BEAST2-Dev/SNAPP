@@ -192,6 +192,40 @@ public class SnAPLikelihoodCore  {
     } // computeLogLikelihood
 
 
+	public double[] computeConstantSitesLogLikelihood(NodeData root, double u, double v, int[] sampleSizes, Data data, Double[] coalescenceRate,
+			boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean bUseCache, boolean dprint) throws Exception {
+
+		m_lineageCountCalculator.computeCountProbabilities(root, sampleSizes, coalescenceRate, bHasDominantMarkers, dprint);
+
+		// TODO: Partial subtree updates over all sites.
+		// double forwardLogL = 0.0;
+		int numPatterns = data.getPatternCount();
+
+		// Temporarily store pattern probabilities... used for numerical checks.
+		double[] patternProb = new double[numPatterns];
+		m_siteProbabilityCalculator.clearCache(root.getNodeCount(), data.getMaxStateCount());
+
+		for (int id = numPatterns - 2; id < numPatterns; id++) {
+			int[] thisSite = data.getPattern(id);
+			int[] lineageCounts = data.getPatternLineagCounts(id);
+			patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, lineageCounts,
+					bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache, dprint);
+		}
+
+		if (dprint) {
+			for (int id = 0; id < numPatterns; id++) {
+				int[] thisSite = data.getPattern(id);
+				System.out.print("this Site = ");
+				for (int j = 0; j < thisSite.length; j++)
+					System.out.print(" " + thisSite[j]);
+				System.out.println(" " + patternProb[id]);
+			}
+			System.exit(0);
+		}
+
+		return patternProb;
+	} // computeConstantSitesLogLikelihood
+    
     int traverse(Node node) {
         int nState = Tree.IS_CLEAN;
         if (node.isLeaf()) {
