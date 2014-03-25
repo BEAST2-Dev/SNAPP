@@ -343,4 +343,56 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			return 1.0;
 		}
 	}
+
+	public double getNewProbVariableSites() {
+		if (!m_bUsenNonPolymorphic) {
+			try {
+			NodeData root = (NodeData) treeInput.get().getRoot();
+	    	Double [] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
+	    	double u = m_substitutionmodel.m_pU.get().getValue();
+	    	double v  = m_substitutionmodel.m_pV.get().getValue();
+			boolean useCache = true;
+			//boolean useCache = false;
+			boolean dprint = showPatternLikelihoodsAndQuit.get();
+			if (dprint) {
+				System.out.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);
+			}
+			
+			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
+			double [] fCategoryProportions = m_siteModel.getCategoryProportions(null);
+			double [][] patternProbs = new double[m_siteModel.getCategoryCount()][];
+			int nCategories = m_siteModel.getCategoryCount();
+
+			// calculate pattern probabilities for all categories
+			for (int iCategory = 0; iCategory < nCategories; iCategory++) {
+				patternProbs[iCategory] = m_core.computeConstantSitesLogLikelihood(root, 
+						u * fCategoryRates[iCategory], 
+						v * fCategoryRates[iCategory], 
+		    			m_nSampleSizes, 
+		    			m_data2,
+		    			coalescenceRate,
+		    			m_bMutationOnlyAtRoot,
+						m_bHasDominantMarkers,											  
+		    			useCache,
+		    			dprint /*= false*/);
+			}
+			
+			// amalgamate site probabilities over categories
+			int numPatterns = m_data2.getPatternCount();
+			double constSiteProbabiliy = 0;
+			for (int i = 0; i < nCategories; i++) {
+				double[] patternProb = patternProbs[i]; 
+				constSiteProbabiliy += patternProb[numPatterns - 2] * fCategoryProportions[i];
+				constSiteProbabiliy += patternProb[numPatterns - 1] * fCategoryProportions[i];
+			}
+			
+			return 1.0 - constSiteProbabiliy;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 1.0;
+			}
+		} else {
+			return 1.0;
+		}
+	}
 } // class SSSTreeLikelihood

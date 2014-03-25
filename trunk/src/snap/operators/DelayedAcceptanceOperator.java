@@ -45,6 +45,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	
 	Operator operator;
 	Distribution prior = null;
+	double priorValue;
 	// data and tree used in approximate tree likelihood
 	Alignment data = null;
 	TreeInterface tree = null;
@@ -214,11 +215,25 @@ public class DelayedAcceptanceOperator extends Operator {
     public double proposal()  {
 
 		probVariableSites = treelikelihood.getProbVariableSites();
+
+		
 		
     	try {
-	    	double oldApproxLogLikelihood = evaluate();
+    		Node oldRoot = tree.getRoot();
+        	Double [] oldCoalescenceRate = substitutionmodel.m_pCoalescenceRate.get().getValues();
+        	double oldU = substitutionmodel.m_pU.get().getValue();
+        	double oldV  = substitutionmodel.m_pV.get().getValue();
+
+        	double oldApproxLogLikelihood = evaluate(oldRoot, oldCoalescenceRate, oldU, oldV);
+	    	double oldPrior = priorValue;
 	    	double logHastingsRatio = operator.proposal();
             
+			Node newRoot = tree.getRoot();
+	    	Double [] newCoalescenceRate = substitutionmodel.m_pCoalescenceRate.get().getValues();
+	    	double newU = substitutionmodel.m_pU.get().getValue();
+	    	double newV  = substitutionmodel.m_pV.get().getValue();
+
+	    	
 	    	// could skip till after checking logHR == -infinity
 	    	// but since the proposal can return -infinity in two different cases
 	    	// (if slave-operator return -infinity, OR if proposal is rejected)
@@ -233,7 +248,8 @@ public class DelayedAcceptanceOperator extends Operator {
 	    		return Double.NEGATIVE_INFINITY;
 	    	}
 
-	    	double newApproxLogLikelihood = evaluate();
+	    	double newApproxLogLikelihood = evaluate(newRoot, newCoalescenceRate, newU, newV);
+	    	double newPrior = priorValue;
 
 	    	double logAlpha = newApproxLogLikelihood - oldApproxLogLikelihood + logHastingsRatio; //CHECK HASTINGS
 	        if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
@@ -247,7 +263,26 @@ public class DelayedAcceptanceOperator extends Operator {
 	        	// reset the HR
 	        	// no need to worry about HR of slave-operator
 	        	// note HR contains priors, that cancel out in MCMC loop
-	            logHastingsRatio = oldApproxLogLikelihood - newApproxLogLikelihood;
+	        	
+	        	if (probVariableSites == 1.0) {
+		            logHastingsRatio = oldApproxLogLikelihood - newApproxLogLikelihood;
+	        	} else {
+	        		// we need to correct for non-constant site probability in the newly proposed site
+		    		if (logAlpha < 0) {
+		    			logHastingsRatio = -logAlpha;
+		    		} else {
+		    			logHastingsRatio = 0;	
+		    		}
+		    		probVariableSites = treelikelihood.getNewProbVariableSites();
+			    	oldApproxLogLikelihood = oldPrior + approxLikelihood(oldRoot, oldCoalescenceRate, oldU, oldV);
+			    	newApproxLogLikelihood = newPrior + approxLikelihood(newRoot, newCoalescenceRate, newU, newV);
+			    	double ratio = oldApproxLogLikelihood - newApproxLogLikelihood - logHastingsRatio;
+			    	if (ratio < 0) {
+			    		logHastingsRatio += ratio;
+			    	}
+			    	return logHastingsRatio;
+	        	}
+	        	
 	        	
 	        } else {
 	        	// reject;
@@ -268,9 +303,10 @@ public class DelayedAcceptanceOperator extends Operator {
     }
 
 	/** calculate approximate posterior **/
-	private double evaluate() throws Exception {
-		double logP = prior.calculateLogP();
-		logP  += approxLikelihood();
+	private double evaluate(Node root, Double [] coalescenceRate, double u, double v) throws Exception {
+		priorValue = prior.calculateLogP();
+		double logP = priorValue;
+		logP  += approxLikelihood(root, coalescenceRate, u, v);
 		return logP;
 	}
 	
@@ -279,14 +315,9 @@ public class DelayedAcceptanceOperator extends Operator {
 	 * calculate approximate treelikelihood for tree & data
 	 * made public for testing purposes  
 	 * */
-	public double approxLikelihood() {
-    	Double [] coalescenceRate = substitutionmodel.m_pCoalescenceRate.get().getValues();
-    	double u = substitutionmodel.m_pU.get().getValue();
-    	double v  = substitutionmodel.m_pV.get().getValue();
-
-    	
+	public double approxLikelihood(Node root, Double [] coalescenceRate, double u, double v) {
     	// do the real work here
-    	double mu[][] = calcMu(u, v, coalescenceRate);
+    	double mu[][] = calcMu(root, u, v, coalescenceRate);
     	    	
     	double approxL = 0;
     	int nrOfTaxa = distance.length;
@@ -300,17 +331,17 @@ public class DelayedAcceptanceOperator extends Operator {
 	}
 	
 	/** calc approximate distances between taxa **/
-    public double[][] calcMu(double u, double v, Double[] coalescenceRate) {
+    public double[][] calcMu(Node root, double u, double v, Double[] coalescenceRate) {
 		// calculate estimates of distance between taxa based on the 
 		// tree and other parameters
 		
 		// 1. calc moment generating function
 		double [] M = new double[tree.getNodeCount()];
-		calcMomentGeneratingFunction(M, tree.getRoot(), u, v, coalescenceRate);
+		calcMomentGeneratingFunction(M, root, u, v, coalescenceRate);
 		
 		// 2. calc approx distances, store result in u
 		double [][] mu = new double[var.length][var.length];
-		calcApproxDistance(mu, M, tree.getRoot(), u, v, coalescenceRate);		
+		calcApproxDistance(mu, M, root, u, v, coalescenceRate);		
 		return mu;
 	}
 
