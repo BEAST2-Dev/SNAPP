@@ -219,13 +219,14 @@ public class DelayedAcceptanceOperator extends Operator {
 		
 		
     	try {
-    		Node oldRoot = tree.getRoot();
+    		Node oldRoot = tree.getRoot().copy();
         	Double [] oldCoalescenceRate = substitutionmodel.m_pCoalescenceRate.get().getValues();
         	double oldU = substitutionmodel.m_pU.get().getValue();
         	double oldV  = substitutionmodel.m_pV.get().getValue();
 
         	double oldApproxLogLikelihood = evaluate(oldRoot, oldCoalescenceRate, oldU, oldV);
 	    	double oldPrior = priorValue;
+	    	
 	    	double logHastingsRatio = operator.proposal();
             
 			Node newRoot = tree.getRoot();
@@ -267,20 +268,23 @@ public class DelayedAcceptanceOperator extends Operator {
 	        	if (probVariableSites == 1.0) {
 		            logHastingsRatio = oldApproxLogLikelihood - newApproxLogLikelihood;
 	        	} else {
+	        		double operatorLogHastingsRatio = logHastingsRatio;
 	        		// we need to correct for non-constant site probability in the newly proposed site
 		    		if (logAlpha < 0) {
 		    			logHastingsRatio = -logAlpha;
 		    		} else {
 		    			logHastingsRatio = 0;	
 		    		}
+//System.err.print(operator.getName() + " " + oldApproxLogLikelihood + " " +  newApproxLogLikelihood + " " + oldPrior + " " + newPrior + " ");			    	
 		    		probVariableSites = treelikelihood.getNewProbVariableSites();
 			    	oldApproxLogLikelihood = oldPrior + approxLikelihood(oldRoot, oldCoalescenceRate, oldU, oldV);
 			    	newApproxLogLikelihood = newPrior + approxLikelihood(newRoot, newCoalescenceRate, newU, newV);
-			    	double ratio = oldApproxLogLikelihood - newApproxLogLikelihood - logHastingsRatio;
+			    	double ratio = oldApproxLogLikelihood - newApproxLogLikelihood - operatorLogHastingsRatio;
 			    	if (ratio < 0) {
 			    		logHastingsRatio += ratio;
 			    	}
-			    	return logHastingsRatio;
+//System.err.println(" " + logHastingsRatio + " ");			    	
+ 			    	return operatorLogHastingsRatio + logHastingsRatio;
 	        	}
 	        	
 	        	
@@ -406,9 +410,12 @@ public class DelayedAcceptanceOperator extends Operator {
 			if (useMatLabFormulae) {
 				M[x]= (Math.exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + Math.exp((-pi-lambda)* tx) * M[parent];
 			} else {		
-				M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
-						(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
-				M[x] += Math.exp((-pi - lambda) * tx) * M[node.getParent().getNr()];
+				//M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
+				//		(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
+
+				M[x] = lambda * (1.0 - Math.exp(-(lambda + pi) * tx)) / (lambda + pi);
+
+				M[x] += Math.exp(-(lambda + pi) * tx) * M[node.getParent().getNr()];
 			}	
 		}
 		if (!node.isLeaf()) {
@@ -436,7 +443,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	
 	@Override
 	public void optimize(double logAlpha) {
-		operator.optimize(logAlpha);
+		//operator.optimize(logAlpha);
 	}
 	
 	@Override
