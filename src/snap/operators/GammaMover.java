@@ -62,4 +62,13 @@ public class GammaMover extends Operator {
 		m_fScale = Math.exp(fDelta);
     }
 	
+    @Override
+    public double getCoercableParameterValue() {
+    	return m_fScale;
+    }
+
+    @Override
+    public void setCoercableParameterValue(final double value) {
+		m_fScale = value;
+    }
 } // class GammaMover 

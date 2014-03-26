@@ -435,6 +435,11 @@ public class DelayedAcceptanceOperator extends Operator {
 	}
 	
 	@Override
+	public void optimize(double logAlpha) {
+		operator.optimize(logAlpha);
+	}
+	
+	@Override
 	public List<StateNode> listStateNodes() throws Exception {
 		return operator.listStateNodes();
 	}

@@ -232,4 +232,13 @@ public class ScaleOperator extends Operator {
         //System.err.println("ScaleOperator " + m_fScaleFactor);
     }
 
+	@Override
+    public double getCoercableParameterValue() {
+    	return m_fScaleFactor;
+    }
+
+	@Override
+    public void setCoercableParameterValue(final double value) {
+		m_fScaleFactor = value;
+    }
 } // class ScaleOperator

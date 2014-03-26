@@ -83,4 +83,15 @@ public class RateMixer extends Operator {
 		fDelta += Math.log(m_fMixScale);
 		m_fMixScale = Math.exp(fDelta);
     }
+	
+	@Override
+    public double getCoercableParameterValue() {
+    	return m_fMixScale;
+    }
+
+	@Override
+    public void setCoercableParameterValue(final double value) {
+		m_fMixScale = value;
+    }
+
 } // class RateMixer
