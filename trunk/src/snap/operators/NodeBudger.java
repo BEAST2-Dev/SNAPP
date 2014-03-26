@@ -138,4 +138,13 @@ public class NodeBudger extends NodeSwapper {
 		//System.err.println("NodeBudger " + m_fWindowSize);
     }
 	
+	@Override
+    public double getCoercableParameterValue() {
+    	return m_fWindowSize;
+    }
+
+	@Override
+    public void setCoercableParameterValue(final double value) {
+		m_fWindowSize = value;
+    }
 } // class NodeBudger
