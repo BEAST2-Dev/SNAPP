@@ -345,12 +345,12 @@ public class DelayedAcceptanceOperator extends Operator {
 		
 		// 2. calc approx distances, store result in u
 		double [][] mu = new double[var.length][var.length];
-		calcApproxDistance(mu, M, root, u, v, coalescenceRate);		
+		calcApproxDistance(mu, M, root, u, v);		
 		return mu;
 	}
 
 	List<Node> calcApproxDistance(double[][] mu, double[] M, Node node,
-			double u, double v, Double[] coalescenceRate) {
+			double u, double v) {
 		int x = node.getNr();
 		double t = node.getHeight();
 		double pi0 = v/(u+v);
@@ -368,8 +368,8 @@ public class DelayedAcceptanceOperator extends Operator {
 			list.add(node);
 			return list;
 		} else {
-			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1, coalescenceRate);
-			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1, coalescenceRate);
+			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1);
+			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1);
 			for (Node lNode : left) {
 				for (Node rNode : right) {
 					int i = lNode.getNr();

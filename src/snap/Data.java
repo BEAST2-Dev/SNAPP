@@ -156,11 +156,15 @@ public class Data extends beast.evolution.alignment.Alignment {
 						". Use binary or nucleotide data instead.");
 			}
 		}
-		
+		String oldSiteWeights = siteWeightsInput.get(); 
+		if (oldSiteWeights == null && m_rawData.get() != null) {
+			siteWeightsInput.setValue(m_rawData.get().siteWeightsInput.get(), this);
+		}		
 		super.initAndValidate();
 
 		if (m_rawData.get() != null) {
 			sequenceInput.get().clear();
+			siteWeightsInput.setValue(oldSiteWeights, this);
 		}
 	} // initAndValidate
 	
@@ -314,6 +318,12 @@ public class Data extends beast.evolution.alignment.Alignment {
 					counts.get(j).remove(i);
 					nrOfLineages.get(j).remove(i);
 				}
+				if (siteWeights != null) {
+					int [] tmp = new int[siteWeights.length-1];
+					System.arraycopy(siteWeights, 0, tmp, 0, i - 1);
+					System.arraycopy(siteWeights, i + 1, tmp, i, siteWeights.length - i);
+					siteWeights = tmp;
+				}
 				i--;
 			}
 		}
@@ -331,6 +341,12 @@ public class Data extends beast.evolution.alignment.Alignment {
 				for (int j = 0; j < nTaxa; j++) {
 					counts.get(j).remove(i);
 					nrOfLineages.get(j).remove(i);
+				}
+				if (siteWeights != null) {
+					int [] tmp = new int[siteWeights.length-1];
+					System.arraycopy(siteWeights, 0, tmp, 0, i - 1);
+					System.arraycopy(siteWeights, i + 1, tmp, i, siteWeights.length - i);
+					siteWeights = tmp;
 				}
 				removed++;
 				i--;
@@ -404,7 +420,12 @@ public class Data extends beast.evolution.alignment.Alignment {
             }
         }
 		
-		
+        if (siteWeights != null) {
+        	Arrays.fill(patternWeight, 0);
+            for (int i = 0; i < nSites; i++) {
+            	patternWeight[patternIndex[i]] += siteWeights[i];
+            }        	
+        }
 		
 		maxStateCount = 0;
 		for (int i = 0; i < stateCounts.size(); i++) {
@@ -438,9 +459,15 @@ public class Data extends beast.evolution.alignment.Alignment {
 //			}
 //			System.out.println();
 //		}
-		System.err.println(getMaxStateCount() + " states max");
-		System.err.println(getSiteCount() + " sites");
-		System.err.println(getPatternCount() + " patterns (including 2 dummies)");
+
+        int totalWeight = 0;
+        for (int weight : patternWeight) {
+        	totalWeight += weight;
+        }
+        
+        System.out.println(getNrTaxa() + " taxa");
+        System.out.println(getSiteCount() + " sites" + (totalWeight == getSiteCount() ? "" : " with weight " + totalWeight));
+        System.out.println(getPatternCount() + " patterns");
 	} // calc
 
 
