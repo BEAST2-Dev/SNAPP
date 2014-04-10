@@ -59,7 +59,8 @@ public class TestDelayedAcceptanceOperator extends TestCase {
     Tree getTree(Alignment data, String tree) throws Exception {
         TreeParser t = new TreeParser();
         t.initByName("taxa", data,
-                "newick", tree);
+                "newick", tree,
+                "IsLabelledNewick", true);
         return t;
     }
 
