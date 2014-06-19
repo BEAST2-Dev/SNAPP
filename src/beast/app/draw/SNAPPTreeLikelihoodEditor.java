@@ -8,10 +8,9 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.ParameterInputEditor;
+import beast.core.BEASTInterface;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.evolution.sitemodel.SiteModel;
-
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
@@ -29,7 +28,7 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     SnapSubstitutionModel substModel;
     
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
 		m_bExpandOption = bExpand;
         m_input = input;

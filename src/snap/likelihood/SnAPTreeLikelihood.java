@@ -41,7 +41,6 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 
 
@@ -230,8 +229,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			// calculate pattern probabilities for all categories
 			for (int iCategory = 0; iCategory < nCategories; iCategory++) {
 				patternProbs[iCategory] = m_core.computeLogLikelihood(root, 
-						u * fCategoryRates[iCategory], 
-						v * fCategoryRates[iCategory], 
+						u, 
+						v, 
+						fCategoryRates[iCategory], 
 		    			m_nSampleSizes, 
 		    			m_data2,
 		    			coalescenceRate,
@@ -366,8 +366,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			// calculate pattern probabilities for all categories
 			for (int iCategory = 0; iCategory < nCategories; iCategory++) {
 				patternProbs[iCategory] = m_core.computeConstantSitesLogLikelihood(root, 
-						u * fCategoryRates[iCategory], 
-						v * fCategoryRates[iCategory], 
+						u, 
+						v,
+						fCategoryRates[iCategory], 
 		    			m_nSampleSizes, 
 		    			m_data2,
 		    			coalescenceRate,

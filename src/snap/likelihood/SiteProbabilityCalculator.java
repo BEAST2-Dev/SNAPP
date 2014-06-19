@@ -182,8 +182,8 @@ public class SiteProbabilityCalculator {
 		
     }
 
-    void doCachedTopOfBranchLikelihood(NodeData node, double u, double v, Double [] coalescenceRate) throws Exception {
-        FCache.CacheObject o = m_cache.getTopOfBrancheF(node.getCacheIDB(), node, u, v, coalescenceRate, this);
+    void doCachedTopOfBranchLikelihood(NodeData node, double u, double v, double rate, Double [] coalescenceRate) throws Exception {
+        FCache.CacheObject o = m_cache.getTopOfBrancheF(node.getCacheIDB(), node, u, v, rate, coalescenceRate, this);
         node.setCacheIDT(o.m_nCacheID);
         //node.assignFt(o.getF());
         node.initFt(o.getF());
@@ -418,7 +418,7 @@ public class SiteProbabilityCalculator {
      * @throws Exception
 
      **/
-    void doTopOfBranchLikelihood(NodeData node, double u, double v, Double [] coalescenceRate, boolean dprint) throws Exception {
+    void doTopOfBranchLikelihood(NodeData node, double u, double v, double rate, Double [] coalescenceRate, boolean dprint) throws Exception {
 
         //int N = node.m_n;
         if (dprint) {
@@ -435,7 +435,7 @@ public class SiteProbabilityCalculator {
 		//System.err.println("node.gamma = "+coalescenceRate[node.getNr()]+"\tnot t = "+node.t() + "\t2/node.gamma = "+(2.0/coalescenceRate[node.getNr()]));
 		
         //FMatrix tmp = MatrixExponentiator.expQTtx(node.m_n, u, v, coalescenceRate[node.getNr()], node.t(), node.getFb());
-        FMatrix tmp = MatrixExponentiator.expQTtx(node.getSize(), u, v, coalescenceRate[node.getNr()], node.t(), node.getFb());
+        FMatrix tmp = MatrixExponentiator.expQTtx(node.getSize(), u, v, coalescenceRate[node.getNr()], rate * node.t(), node.getFb());
         //TODO: What is the effect of the tolerance?
 
         node.initFt(tmp);
@@ -461,47 +461,47 @@ public class SiteProbabilityCalculator {
       * @throws Exception
      @bool updateAll Update the partial likelihoods for all nodes.
      */
-    void computeSiteLikelihood2(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bHasDominantMarkers, boolean dprint/*=false*/) throws Exception {
+    void computeSiteLikelihood2(NodeData tree, double u, double v, double rate, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bHasDominantMarkers, boolean dprint/*=false*/) throws Exception {
         //Post-order traversal
         if (tree.isLeaf()) {
             doLeafLikelihood(tree, redCount[tree.getNr()], lineageCount[tree.getNr()], bHasDominantMarkers, dprint);
         } else if (tree.getNrOfChildren() == 1) {
             NodeData p = tree.getChild(0);
-            computeSiteLikelihood2(p, u, v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
-            doTopOfBranchLikelihood(p, u,v, coalescenceRate, dprint);
+            computeSiteLikelihood2(p, u, v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
+            doTopOfBranchLikelihood(p, u,v, rate, coalescenceRate, dprint);
             doInternalLikelihood(p, tree, dprint);
         } else { // assume two children
             NodeData leftChild = tree.getChild(0);
             NodeData rightChild = tree.getChild(1);
-            computeSiteLikelihood2(leftChild, u, v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
-            computeSiteLikelihood2(rightChild, u, v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
-            doTopOfBranchLikelihood(leftChild, u,v,coalescenceRate, dprint);
-            doTopOfBranchLikelihood(rightChild, u,v,coalescenceRate, dprint);
+            computeSiteLikelihood2(leftChild, u, v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
+            computeSiteLikelihood2(rightChild, u, v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
+            doTopOfBranchLikelihood(leftChild, u, v, rate, coalescenceRate, dprint);
+            doTopOfBranchLikelihood(rightChild, u, v, rate, coalescenceRate, dprint);
             doInternalLikelihood(leftChild, rightChild, tree, dprint);
         }
     } // computeSiteLikelihood2
 
-    void computeCachedSiteLikelihood2(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bHasDominantMarkers, boolean dprint/*=false*/) throws Exception {
+    void computeCachedSiteLikelihood2(NodeData tree, double u, double v, double rate, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bHasDominantMarkers, boolean dprint/*=false*/) throws Exception {
         //Post-order traversal
         if (tree.isLeaf()) {
             doCachedLeafLikelihood(tree, redCount[tree.getNr()], lineageCount[tree.getNr()], bHasDominantMarkers);
         } else if (tree.getNrOfChildren() == 1) {
             NodeData p = tree.getChild(0);
-            computeCachedSiteLikelihood2(p, u, v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
-            doCachedTopOfBranchLikelihood(p, u,v, coalescenceRate);
+            computeCachedSiteLikelihood2(p, u, v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
+            doCachedTopOfBranchLikelihood(p, u,v, rate, coalescenceRate);
             doInternalLikelihood(p, tree, false);
         } else { // assume two children
             NodeData leftChild = tree.getChild(0);
             NodeData rightChild = tree.getChild(1);
-            computeCachedSiteLikelihood2(leftChild, u, v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
-            computeCachedSiteLikelihood2(rightChild, u, v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
-            doCachedTopOfBranchLikelihood(leftChild, u,v, coalescenceRate);
-            doCachedTopOfBranchLikelihood(rightChild, u,v, coalescenceRate);
+            computeCachedSiteLikelihood2(leftChild, u, v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
+            computeCachedSiteLikelihood2(rightChild, u, v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint);
+            doCachedTopOfBranchLikelihood(leftChild, u,v, rate, coalescenceRate);
+            doCachedTopOfBranchLikelihood(rightChild, u,v, rate, coalescenceRate);
             doCachedInternalLikelihood(leftChild, rightChild, tree);
         }
     } // computeSiteLikelihood2
 
-    public double computeSiteLikelihood(NodeData tree, double u, double v, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean useCache, boolean dprint/*=false*/) throws Exception {
+    public double computeSiteLikelihood(NodeData tree, double u, double v, double rate, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean useCache, boolean dprint/*=false*/) throws Exception {
   
 		//For some models, we want to allow mutation at the root but not along the branches. 
 		double branch_u = u;
@@ -510,9 +510,9 @@ public class SiteProbabilityCalculator {
 			branch_u = branch_v = 0.0;
 				
 		if (useCache) {
-            computeCachedSiteLikelihood2(tree, branch_u, branch_v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint/*=false*/);
+            computeCachedSiteLikelihood2(tree, branch_u, branch_v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint/*=false*/);
         } else {
-            computeSiteLikelihood2(tree, branch_u, branch_v, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint/*=false*/);
+            computeSiteLikelihood2(tree, branch_u, branch_v, rate, coalescenceRate, redCount, lineageCount, bHasDominantMarkers, dprint/*=false*/);
         }
 
         if (dprint)

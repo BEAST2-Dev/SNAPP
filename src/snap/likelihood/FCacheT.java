@@ -56,14 +56,14 @@ public class FCacheT extends FCache {
 		return m_leafCache[node.getNr()][numReds][totalCount];
 	} // getLeafF
 	
-	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, Double [] coalescenceRate, SiteProbabilityCalculatorT spc) throws Exception {
+	CacheObject getTopOfBrancheF(int nCacheID, NodeData node, double u, double v, double rate, Double [] coalescenceRate, SiteProbabilityCalculatorT spc) throws Exception {
 		while (nCacheID >= m_TopOfBranche.size()) {
 			m_TopOfBranche.add(null);
 		}
 		CacheObject o = m_TopOfBranche.elementAt(nCacheID);//m_TopOfBrancheMap.get(nCacheID);
 		if (o == null) {
 			// it's not in the cache yet, so create the object
-			spc.doTopOfBranchLikelihood(node, u, v, coalescenceRate, false);
+			spc.doTopOfBranchLikelihood(node, u, v, rate, coalescenceRate, false);
 			//FMatrix Ft = node.cloneFt(); 
 			synchronized (this) {
 				if (m_TopOfBranche.elementAt(nCacheID) == null) {
