@@ -59,12 +59,13 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 		NodeData m_root;
 		double m_u;
 		double m_v;
+		double m_rate;
 		boolean m_bMutationOnlyAtRoot;
 		boolean m_bHasDominantMarkers;
 		boolean m_bUseCache;
 		Double [] m_coalescenceRate;
 		
-	  SSSRunnable(int iStart, int iStep, int iMax, Data data, Double [] coalescenceRate, NodeData root, double u, double v, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean bUseCache) {
+	  SSSRunnable(int iStart, int iStep, int iMax, Data data, Double [] coalescenceRate, NodeData root, double u, double v, double rate, boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean bUseCache) {
 	    m_iStart = iStart;
 	    m_iStep = iStep;
 	    m_iMax = iMax;
@@ -72,6 +73,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	    m_root = root;
 	    m_u = u;
 	    m_v = v;
+	    m_rate = rate;
 		m_bMutationOnlyAtRoot = bMutationOnlyAtRoot;
 		m_bHasDominantMarkers = bHasDominantMarkers;
 	    m_bUseCache = bUseCache;
@@ -89,7 +91,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 				int [] thisSite = m_data.getPattern(id);
 				int [] lineageCounts = m_data.getPatternLineagCounts(id);
 				//siteL =  SiteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, thisSite, m_bUseCache, false, m_iStart);
-				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_coalescenceRate, thisSite, lineageCounts, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, m_bUseCache, false, 0);
+				siteL =  m_siteProbabilityCalculatorT.computeSiteLikelihood(m_root, m_u, m_v, m_rate, m_coalescenceRate, thisSite, lineageCounts, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, m_bUseCache, false, 0);
 
 			}
 			catch (Exception ex) {
@@ -119,7 +121,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	 * @throws Exception 
 	 **/
 	@Override
-	public double [] computeLogLikelihood(NodeData root, double u, double v, 
+	public double [] computeLogLikelihood(NodeData root, double u, double v, double rate, 
 			int [] sampleSizes, 
 			Data data, 
 			Double [] coalescenceRate,
@@ -146,7 +148,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			m_lock = new ReentrantLock[nThreads];
 			for (int i = 0; i < nThreads; i++) {
 				m_lock[i] = new ReentrantLock();
-				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache));
+				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, rate, bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache));
 			}
 
 			// correction for constant sites

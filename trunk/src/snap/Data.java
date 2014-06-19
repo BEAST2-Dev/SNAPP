@@ -152,7 +152,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 					SNPsequences.add(SNPSequence);
 				}
 			} else {
-				throw new RuntimeException("Cannot handle data of type " + rawDataType.getDescription() +
+				throw new RuntimeException("Cannot handle data of type " + rawDataType.getTypeDescription() +
 						". Use binary or nucleotide data instead.");
 			}
 		}

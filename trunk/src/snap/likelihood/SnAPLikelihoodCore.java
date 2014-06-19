@@ -64,7 +64,7 @@ public class SnAPLikelihoodCore  {
       * @throws Exception
      **/
 
-    public double [] computeLogLikelihood(NodeData root, double u, double v,
+    public double [] computeLogLikelihood(NodeData root, double u, double v, double rate,
                                           int [] sampleSizes,
                                           Data data,
                                           Double [] coalescenceRate,
@@ -106,7 +106,7 @@ public class SnAPLikelihoodCore  {
         for(int id = 0; id < numPatterns; id++) {
             int [] thisSite = data.getPattern(id);
             int [] lineageCounts = data.getPatternLineagCounts(id);
-            patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, lineageCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
+            patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, rate, coalescenceRate, thisSite, lineageCounts, bMutationOnlyAtRoot, bHasDominantMarkers,bUseCache, dprint);
         }
 
         if (dprint) {
@@ -192,7 +192,7 @@ public class SnAPLikelihoodCore  {
     } // computeLogLikelihood
 
 
-	public double[] computeConstantSitesLogLikelihood(NodeData root, double u, double v, int[] sampleSizes, Data data, Double[] coalescenceRate,
+	public double[] computeConstantSitesLogLikelihood(NodeData root, double u, double v, double rate, int[] sampleSizes, Data data, Double[] coalescenceRate,
 			boolean bMutationOnlyAtRoot, boolean bHasDominantMarkers, boolean bUseCache, boolean dprint) throws Exception {
 
 		m_lineageCountCalculator.computeCountProbabilities(root, sampleSizes, coalescenceRate, bHasDominantMarkers, dprint);
@@ -208,7 +208,7 @@ public class SnAPLikelihoodCore  {
 		for (int id = numPatterns - 2; id < numPatterns; id++) {
 			int[] thisSite = data.getPattern(id);
 			int[] lineageCounts = data.getPatternLineagCounts(id);
-			patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, coalescenceRate, thisSite, lineageCounts,
+			patternProb[id] = m_siteProbabilityCalculator.computeSiteLikelihood(root, u, v, rate, coalescenceRate, thisSite, lineageCounts,
 					bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache, dprint);
 		}
 

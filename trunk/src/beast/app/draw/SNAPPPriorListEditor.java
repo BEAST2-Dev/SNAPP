@@ -6,9 +6,8 @@ import javax.swing.Box;
 
 import beast.app.beauti.BeautiDoc;
 import beast.app.draw.ListInputEditor;
+import beast.core.BEASTInterface;
 import beast.core.Input;
-import beast.core.BEASTObject;
-
 import snap.likelihood.SnAPPrior;
 
 public class SNAPPPriorListEditor extends ListInputEditor {
@@ -23,7 +22,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
     }
     
     @Override
-    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
 		m_bAddButtons = bAddButtons;
     	m_bExpandOption = bExpand;
         m_input = input;
