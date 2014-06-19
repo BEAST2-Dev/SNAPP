@@ -10,25 +10,39 @@ while ($header !~ /CHROM/) {
 	$header = <>;
 }
 
+$offset = 9;
+
 @s = split('\s+', $header);
-for ($i = 15; $i <= $#s; $i++) {
-	$taxon[$i-15] = $s[$i];
+for ($i = $offset; $i <= $#s; $i++) {
+	$taxon[$i-$offset] = $s[$i];
 }
+
+#foreach $s (@taxon) {
+#	print STDERR ">$s<\n";
+#}
+$n = $#taxon + 1;
 
 # process body
 $k = 0;
 while ($s = <>) {
-	@s = split("[\\s:]+", $s);
-	for ($i = 15; $i < $#s; $i +=3) {
+	@s = split("[\\s]+", $s);
+$start = $#s+1-$n;
+$offset2 = $start;
+$div = 1;
+#print STDERR "$start $s\n";
+
+	for ($i = $start; $i <= $#s; $i += $div) {
 		$s = $s[$i];
-		if ($s =~ /(.*)\/(.*)/) {
-			$data[$i/3-5][0] = $data[$i/3-5][0].$1;
-			$data[$i/3-5][1] = $data[$i/3-5][1].$2;
+		if ($s =~ /^([^:\/]*)\/([^:\/]*)/) {
+#print STDERR ">$1 $2<";
+			$data[$i/$div-$offset2][0] = $data[$i/$div-$offset2][0].$1;
+			$data[$i/$div-$offset2][1] = $data[$i/$div-$offset2][1].$2;
 		} else {
-			$data[$i/3-5][0] = $data[$i/3-5][0].'?';
-			$data[$i/3-5][1] = $data[$i/3-5][1].'?';
+			$data[$i/$div-$offset2][0] = $data[$i/$div-$offset2][0].'?';
+			$data[$i/$div-$offset2][1] = $data[$i/$div-$offset2][1].'?';
 		}	
 	}
+#print STDERR "\n";
 	$k++;
 }
 
