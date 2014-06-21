@@ -55,4 +55,4 @@ for ($i = 0; $i <= $#taxon; $i++) {
 	print "$taxon[$i]_1  $data[$i][0]\n";
 	print "$taxon[$i]_2  $data[$i][1]\n";
 }
-print "End;\n"
+print ";\nEnd;\n"
