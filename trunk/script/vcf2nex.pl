@@ -52,6 +52,10 @@ print "        Dimensions ntax=".(2*$#taxon+2)." nchar=$k;\n";
 print "        Format datatype=binary symbols=\"01\" gap=-;\n";
 print "        Matrix\n";
 for ($i = 0; $i <= $#taxon; $i++) {
+    # correct for sites with more than 2 characters
+    $data[$i][0] =~ s/[23]/1/g;
+    $data[$i][1] =~ s/[23]/1/g;
+
 	print "$taxon[$i]_1  $data[$i][0]\n";
 	print "$taxon[$i]_2  $data[$i][1]\n";
 }
