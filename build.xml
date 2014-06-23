@@ -465,6 +465,9 @@
 		<mkdir dir="${Add_on_dir}" />
 		<mkdir dir="${Add_on_dir}/lib" />
 		<mkdir dir="${Add_on_dir}/templates" />
+		<mkdir dir="${Add_on_dir}/examples" />
+		<mkdir dir="${Add_on_dir}/examples/nexus" />
+		<mkdir dir="${Add_on_dir}/doc" />
 
 		<copy todir="${Add_on_dir}">
 			<fileset file="version.xml"/>
@@ -478,6 +481,14 @@
 		<copy todir="${Add_on_dir}/templates">
 			<fileset file="templates/SNAPP.xml" />
 		</copy>
+        <copy file="doc/SNAPP.pdf" tofile="${Add_on_dir}/doc/SNAPP.pdf" />
+        <copy todir="${Add_on_dir}/examples" >
+			<fileset dir="examples" includes="*.xml" />
+			<fileset dir="examples" includes="*.json" />
+		</copy>
+        <copy todir="${Add_on_dir}/examples/nexus" >
+			<fileset dir="examples/nexus" includes="*.nex" />
+			</copy>
 
 		<jar jarfile="${dist}/SNAPP.addon.zip">
 			<fileset dir="${Add_on_dir}">
