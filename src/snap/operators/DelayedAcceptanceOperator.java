@@ -206,7 +206,7 @@ public class DelayedAcceptanceOperator extends Operator {
 		
 		
 		// calculate log of constant of approximate likelihood
-		K = Math.log(2.0 * Math.PI) * nrOfTaxa * (nrOfTaxa - 1.0)/4.0;
+		K = -Math.log(2.0 * Math.PI) * nrOfTaxa * (nrOfTaxa + 1.0)/4.0;
 		for (int i = 0; i < nrOfTaxa; i++) {
 			for (int j = i; j < nrOfTaxa; j++) {
 				K -= Math.sqrt(var[i][j]);
