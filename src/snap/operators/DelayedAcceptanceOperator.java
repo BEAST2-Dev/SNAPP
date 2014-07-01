@@ -28,11 +28,14 @@ import beast.util.Randomizer;
 public class DelayedAcceptanceOperator extends Operator {
 	public Input<Operator> operatorInput = new Input<Operator>("operator", "Operator for proposing moves", Validate.REQUIRED);
 
+	public Input<Double> tuningInput = new Input<Double>("tuning", "tuning parameter for approx likelihood", Validate.REQUIRED);
+
+	
 	public Input<State> stateInput = new Input<State>("state", "state object for which we do proposals", Validate.REQUIRED);
 
 	public Input<Distribution> priorInput = new Input<Distribution>("prior", "prior used when likelihood is approximated", Validate.REQUIRED);
-//	public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "tree used for apprximiate likelihood", Validate.REQUIRED);
-//	public Input<Alignment> dataInput = new Input<Alignment>("data", "alignment used for apprximiate likelihood", Validate.REQUIRED);
+//	public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "tree used for approximate likelihood", Validate.REQUIRED);
+//	public Input<Alignment> dataInput = new Input<Alignment>("data", "alignment used for approximate likelihood", Validate.REQUIRED);
 //    public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     public Input<SnAPTreeLikelihood> treeLikelihoodInput = new Input<SnAPTreeLikelihood>("treelikelihood", "SNAPP tree likelihood for the tree", Validate.REQUIRED);
 	
@@ -170,11 +173,11 @@ public class DelayedAcceptanceOperator extends Operator {
 					if (weight > 0 && nkx > 0 && nky > 0) {
 						double v1 = (rkx * rky + (nkx - rkx) * (nky - rky))/(nkx * nky);
 						double v2 = (rkx * rkx * rky + (nkx - rkx) * (nkx - rkx) * (nky - rky))/(nkx * nkx * nky);
-						double v3 = (rkx * rky * rky + (nkx - rkx) * (nky - rky) * (nky - rky))/(nkx * nky * nky);
 						if (taxon1 != taxon2) {
+							double v3 = (rkx * rky * rky + (nkx - rkx) * (nky - rky) * (nky - rky))/(nkx * nky * nky);
 							v += weight * ((1 - nkx - nky) * v1 * v1 + (nkx - 1) * v2 + (nky - 1) * v3 + v1) /(nkx * nky);
 						} else {
-							v += weight * 2.0 * (nkx - 1)/(nkx * nkx) * ((3.0 - 2.0 * nkx) * v1 * v1 + 2.0 * (nkx - 2.0) * v2 + v1);
+							v += weight * 2.0 * ((nkx - 1)/(nkx * nkx)) * ((3.0 - 2.0 * nkx) * v1 * v1 + 2.0 * (nkx - 2.0) * v2 + v1);
 						}
 						Kxy += weight;
 					}
@@ -206,7 +209,7 @@ public class DelayedAcceptanceOperator extends Operator {
 		K = Math.log(2.0 * Math.PI) * nrOfTaxa * (nrOfTaxa - 1.0)/4.0;
 		for (int i = 0; i < nrOfTaxa; i++) {
 			for (int j = i; j < nrOfTaxa; j++) {
-				K += var[i][j];
+				K -= Math.sqrt(var[i][j]);
 			}
 		}
 	}
@@ -252,7 +255,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	    	double newApproxLogLikelihood = evaluate(newRoot, newCoalescenceRate, newU, newV);
 	    	double newPrior = priorValue;
 
-	    	double logAlpha = newApproxLogLikelihood - oldApproxLogLikelihood + logHastingsRatio; //CHECK HASTINGS
+	    	double logAlpha = newApproxLogLikelihood + newPrior - oldApproxLogLikelihood - oldPrior + logHastingsRatio; //CHECK HASTINGS
 	        if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
 	        	// accept
 	        	
@@ -359,11 +362,11 @@ public class DelayedAcceptanceOperator extends Operator {
 		if (node.isLeaf()) {
 			// nx = nr of lineages for node x, does not matter whether they are missing
 			int nx = data.getStateCounts().get(x);
-			if (useMatLabFormulae) {
-				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) / probVariableSites;
-			} else {
-				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (nx-1) / nx / probVariableSites;
-			}
+//			if (useMatLabFormulae) {
+//				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) / probVariableSites;
+//			} else {
+				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (1.0 - 1.0/nx)  / probVariableSites;
+//			}
 			List<Node> list = new ArrayList<Node>();
 			list.add(node);
 			return list;
