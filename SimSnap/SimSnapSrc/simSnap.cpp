@@ -10,6 +10,7 @@
 
 
 
+#include <unistd.h>
 #include "sortingSimulation.h"
 #include "characterData.h"
 //#include "posteriorCheck.h"
