@@ -13,6 +13,7 @@
 #ifndef RANDOM_H_INCLUDE
 #define RANDOM_H_INCLUDE
 
+#include <unistd.h>
 #include"../global/stdIncludes.h"
 
 namespace Phylib {
