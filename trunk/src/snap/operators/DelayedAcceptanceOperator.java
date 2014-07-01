@@ -28,7 +28,7 @@ import beast.util.Randomizer;
 public class DelayedAcceptanceOperator extends Operator {
 	public Input<Operator> operatorInput = new Input<Operator>("operator", "Operator for proposing moves", Validate.REQUIRED);
 
-	public Input<Double> tuningInput = new Input<Double>("tuning", "tuning parameter for approx likelihood", Validate.REQUIRED);
+	public Input<Double> tuningInput = new Input<Double>("tuning", "tuning parameter for approx likelihood");
 
 	
 	public Input<State> stateInput = new Input<State>("state", "state object for which we do proposals", Validate.REQUIRED);
