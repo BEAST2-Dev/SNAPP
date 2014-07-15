@@ -74,7 +74,7 @@ Start likelihood: = -136.37703731926786 for no missing data
 		</rawdata>
 	</data>
 
-<run id="mcmc" spec='snap.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='0' killAfter='0'>
+<run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0">
         <state storeEvery='1000'>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
 
@@ -103,7 +103,6 @@ Start likelihood: = -136.37703731926786 for no missing data
             </snaptreelikelihood>
         </distribution>
 
-        <stateDistribution idref='prior'/>
 
 
         <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>
