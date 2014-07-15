@@ -16,7 +16,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 		<sequence taxon='D' totalcount='2'>2,2,2,1,0,0,0,0,2,2,2,2,1</sequence>
 	</data>
 
-<run id="mcmc" spec='snap.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='0' killAfter='0'>
+<run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0">
         <state storeEvery='1000'>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
 
@@ -41,7 +41,6 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             </snaptreelikelihood>
         </distribution>
 
-        <stateDistribution idref='prior'/>
 
 
         <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>

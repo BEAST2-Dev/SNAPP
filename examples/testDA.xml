@@ -57,7 +57,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
-<run id="mcmc" spec='snap.MCMC' chainLength="200000" preBurnin="0" stateBurnin='0' killAfter='0'>
+<run id="mcmc" spec='beast.core.MCMC' chainLength="200000" preBurnin="0" >
         <state storeEvery='1000' id='state'>
           <parameter name='stateNode' id='coalescenceRate' value='20 20 20 20 20 20 20'/>
 
@@ -96,7 +96,6 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             </snaptreelikelihood>
         </distribution>
 
-        <stateDistribution idref='prior'/>
 
         <operator spec='operators.DelayedAcceptanceOperator' weight='0.25' tuning='0.43'
         	treelikelihood='@treeLikelihood' state='@state' prior='@prior'

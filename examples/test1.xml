@@ -25,7 +25,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
-<run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0" stateBurnin='10'>
+<run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0">
         <state storeEvery='1000'>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
 
@@ -50,8 +50,9 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             </snaptreelikelihood>
         </distribution>
 
+<!--
         <stateDistribution idref='prior'/>
-
+-->
 
         <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>
         <operator spec='operators.NodeBudger' weight='5' size='0.5' tree='@tree'/>
