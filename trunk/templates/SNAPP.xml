@@ -16,20 +16,19 @@
 	        snap.MCMC.preBurnin=Burn in,
 			snap.likelihood.SnAPTreeLikelihood.non-polymorphic=Include non-polymorphic sites'
         inlinePlugins ='beast.core.MCMC.distribution,
-	        snap.MCMC.distribution,
 	        beast.core.MCMC.logger,
 	        beast.evolution.sitemodel.SiteModel.substModel,
 	        beast.evolution.tree.coalescent.ExponentialGrowth,
 	        beast.evolution.tree.coalescent.ConstantPopulation,
 	        beast.evolution.tree.coalescent.Coalescent'
-        collapsedPlugins ='snap.MCMC.logger'
-        suppressPlugins = 'snap.MCMC.operator,
-	        snap.MCMC.state,
-	        snap.MCMC.distribution,
-	        snap.MCMC.stateDistribution,
-	        snap.MCMC.init,
-	        snap.MCMC.sampleFromPrior,
-	        snap.MCMC.operatorschedule,
+        collapsedPlugins ='beast.core.MCMC.logger'
+        suppressPlugins = 'beast.core.MCMC.operator,
+	        beast.core.MCMC.state,
+	        beast.core.MCMC.distribution,
+	        beast.core.MCMC.stateDistribution,
+	        beast.core.MCMC.init,
+	        beast.core.MCMC.sampleFromPrior,
+	        beast.core.MCMC.operatorschedule,
 	        snap.likelihood.SnAPPrior.tree,
 	        snap.likelihood.SnapSubstitutionModel.frequencies,
 			beast.core.Logger.sanitiseHeaders,
@@ -190,7 +189,7 @@
         <log id='ThetaLogger' spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
         <log id='TreeHeightLogger' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
-        <logger spec='Logger' logEvery='1000' fileName='snap.$(seed).trees' mode='tree'  id='treelog'>  
+        <logger spec='Logger' logEvery='1000' fileName='snap.trees' mode='tree'  id='treelog'>  
 	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
 	            <metadata spec='snap.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
 	        </log>
@@ -389,7 +388,7 @@
 
 <!-- framework for main model -->
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000" storeEvery='1000'>
+    <run spec="beast.core.MCMC" id="mcmc" chainLength="10000000" storeEvery='1000'>
 
         <state id='state'>
         </state>
@@ -400,11 +399,11 @@
             <distribution spec="CompoundDistribution" id="likelihood">
             </distribution>
         </distribution>
-
+<!--
         <stateDistribution idref='prior'/>
+-->
 
-
-        <logger id='tracelog' logEvery="1000" fileName="snap.$(seed).log">
+        <logger id='tracelog' logEvery="1000" fileName="snap.log">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
