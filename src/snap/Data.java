@@ -334,6 +334,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 
 		// remove sites that have no data in some branches
 		int removed = 0;
+		int weightRemoved = 0;
 		for (int i = 0; i < counts.get(0).size(); i++) {
 			boolean hasZeroCount = false;
 			for (int j = 0; j < nTaxa; j++) {
@@ -346,18 +347,21 @@ public class Data extends beast.evolution.alignment.Alignment {
 					counts.get(j).remove(i);
 					nrOfLineages.get(j).remove(i);
 				}
+				removed++;
 				if (siteWeights != null) {
+				    weightRemoved += siteWeights[i];
 					int [] tmp = new int[siteWeights.length-1];
 					System.arraycopy(siteWeights, 0, tmp, 0, i - 1);
 					System.arraycopy(siteWeights, i + 1, tmp, i, siteWeights.length - i);
 					siteWeights = tmp;
+				} else {
+				    weightRemoved ++;
 				}
-				removed++;
 				i--;
 			}
 		}
 		if (removed > 0) {
-			System.out.println("WARNING: removed " + removed + " sites becaues they have one or more branches without data.");
+			System.out.println("WARNING: removed " + removed + " patterns (" + weightRemoved + " sites) becaues they have one or more branches without data.");
 		}
 		
 		// find unique patterns

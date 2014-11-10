@@ -180,8 +180,8 @@
 	
 	
 	<!-- Release -->
-	<property name="version" value="1.1.1" />
-	<property name="version_number" value="1.1.1" />
+	<property name="version" value="1.1.8" />
+	<property name="version_number" value="1.1.8" />
 	<property name="release_dir" value="release" />
 	<property name="copyright" value="SNAPP development team 2011-2012" />
 
@@ -490,7 +490,7 @@
 			<fileset dir="examples/nexus" includes="*.nex" />
 			</copy>
 
-		<jar jarfile="${dist}/SNAPP.addon.zip">
+		<jar jarfile="${dist}/SNAPP.addon.v${version}.zip">
 			<fileset dir="${Add_on_dir}">
 				<include name="**/*" />
 			</fileset>
