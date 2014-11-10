@@ -249,6 +249,9 @@ public class Data extends beast.evolution.alignment.Alignment {
 	}
 
 	/** check whether a pattern is all red or all green **/
+	// TODO: needs to return whether patterns are all red or all green
+	// to deal with zero nrOfLineages when all sites are missing for a 
+	// species 
 	private boolean isConstant(int iSite) {
 		int nTaxa = counts.size();
 		boolean bAllZero = true;
@@ -308,6 +311,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 		int nZeroSitesCount = 0;
 		int nAllSitesCount = 0;
 		for (int i = 0; i < counts.get(0).size(); i++) {
+			// TODO: isConstant should return ALL_REDS ALL_GREEN or MIXED
 			if (isConstant(i)) {
 				if (counts.get(0).get(i) == 0) {
 					nZeroSitesCount++;
@@ -355,7 +359,6 @@ public class Data extends beast.evolution.alignment.Alignment {
 		if (removed > 0) {
 			System.out.println("WARNING: removed " + removed + " sites becaues they have one or more branches without data.");
 		}
-		
 		
 		// find unique patterns
 		int nSites = counts.get(0).size();
