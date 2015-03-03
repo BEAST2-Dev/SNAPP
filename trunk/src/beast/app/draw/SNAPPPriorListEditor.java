@@ -34,7 +34,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
         for (Object o : (List<?>) input.get()) {
             if (o instanceof SnAPPrior) {
             	SnAPPrior plugin2 = (SnAPPrior) o;
-            	doc.getInpuEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
+            	doc.getInputEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
 		add(m_listBox);

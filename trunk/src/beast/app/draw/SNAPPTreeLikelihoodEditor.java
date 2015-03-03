@@ -41,8 +41,8 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
             if (o instanceof SnAPTreeLikelihood) {
             	SnAPTreeLikelihood plugin2 = (SnAPTreeLikelihood) o;
             	substModel = (SnapSubstitutionModel) ((SiteModel.Base) plugin2.siteModelInput.get()).substModelInput.get();
-            	doc.getInpuEditorFactory().addInputs(m_listBox, substModel, this, null, doc);
-            	doc.getInpuEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
+            	doc.getInputEditorFactory().addInputs(m_listBox, substModel, this, null, doc);
+            	doc.getInputEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
 		add(m_listBox);
@@ -51,7 +51,7 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     
 
     public InputEditor createMutationRateVEditor() throws Exception {
-    	ParameterInputEditor editor = (ParameterInputEditor) doc.getInpuEditorFactory().createInputEditor(substModel.m_pV, substModel, doc);
+    	ParameterInputEditor editor = (ParameterInputEditor) doc.getInputEditorFactory().createInputEditor(substModel.m_pV, substModel, doc);
     	editor.m_isEstimatedBox.setVisible(false);
     	return editor;
     }

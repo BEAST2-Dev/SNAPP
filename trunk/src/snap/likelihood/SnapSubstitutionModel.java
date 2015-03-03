@@ -33,6 +33,6 @@ public class SnapSubstitutionModel extends SubstitutionModel.Base {
 	public boolean canReturnComplexDiagonalization() {return false;}
 
 	@Override
-	public boolean canHandleDataType(DataType dataType) throws Exception {return true;}
+	public boolean canHandleDataType(DataType dataType) {return true;}
 
 }
