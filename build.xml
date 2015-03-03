@@ -12,13 +12,19 @@
 	<property name="build" location="build" />
 	<property name="lib" location="lib" />
 	<property name="dist" location="dist" />
-
+        <property name="beast2path" location="../beast2" />
+        <property name="libBeast2" location="${beast2path}/lib" />
+        <property name="srcBeast2" location="${beast2path}/src" />
+        <property name="beast2classpath" location="${beast2path}/build" />
+        
 	<property name="main_class_SnAP" value="snap.app.mcmc.SNAPPMCMC" />
 	<property name="main_class_TSA" value="snap.app.analysis.TreeSetAnalyser" />
 	<property name="report"  value="${build}/junitreport"/>
 
 	<path id="classpath">
 		<fileset dir="${lib}" includes="**/*.jar"/>
+		<fileset dir="${libBeast2}" includes="jam.jar"/>
+		<pathelement path="${beast2classpath}"/>
 	</path>
 
 	<!-- start -->
@@ -180,8 +186,8 @@
 	
 	
 	<!-- Release -->
-	<property name="version" value="1.1.9" />
-	<property name="version_number" value="1.1.9" />
+	<property name="version" value="1.1.10" />
+	<property name="version_number" value="1.1.10" />
 	<property name="release_dir" value="release" />
 	<property name="copyright" value="SNAPP development team 2011-2012" />
 
