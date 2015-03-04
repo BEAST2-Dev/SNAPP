@@ -133,7 +133,7 @@
 			  <parameter name='beta' id='beta'   value='109.73' lower='0.0' estimate='false'/>
 			  <parameter name='lambda' id='lambda' value='0.00765' lower='0.0' estimate='false'/>
 	          <parameter name='kappa' id='kappa' value='1.0' lower='0.0' estimate='false'/>
-		      <tree spec='beast.util.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma'>
+		      <tree spec='beast.util.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma' clock.rate="1.0">
 		            <input name='taxa' idref='snap.$(n)'/>
 		      </tree>
 		      <parameter name='coalescenceRate' id='coalescenceRate' value='10'/>
