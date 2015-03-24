@@ -1,6 +1,6 @@
-SNAPP is a BEAST 2 package.
+A package for BEAST2 implementing SNAPP
 
-Documentation can be found here: http://www.beast2.org/wiki/index.php/SNAPP
+Documentation: http://www.beast2.org/wiki/index.php/SNAPP
 
 To compile from source, 
 1. check out BEAST from https://github.com/CompEvol/beast2
