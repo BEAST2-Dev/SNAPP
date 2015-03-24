@@ -92,6 +92,7 @@
 			<fileset dir="${beast2build}">
 				<include name="/**/*"/>
 			</fileset>
+			<zipgroupfileset dir="${libBeast2}" includes="jam.jar"/>
 			<fileset dir="${build}">
 				<include name="snap/**/*.class" />
 				<include name="snap/**/*.png" />
