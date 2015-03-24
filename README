@@ -1,1 +1,8 @@
-To compile from source, run ant from the snap directory containing this file.
+SNAPP is a BEAST 2 package.
+
+Documentation can be found here: http://www.beast2.org/wiki/index.php/SNAPP
+
+To compile from source, 
+1. check out BEAST from https://github.com/CompEvol/beast2
+2. check out SNAPP from https://github.com/BEAST2-Dev/SNAPP in the same same directory (so that beast2/../SNAPP/../beast2/ == beast2/)
+3. run ant from the snap directory containing this file.
