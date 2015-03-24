@@ -35,14 +35,12 @@ import java.util.regex.Pattern;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.parameter.Map;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.Binary;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.IntegerData;
-import beast.evolution.datatype.IntegerData2;
 import beast.evolution.datatype.Nucleotide;
 
 
