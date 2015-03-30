@@ -68,7 +68,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			//"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
 			//"calculated for the likelihood.", 
 			false);
-	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("siteCount", "Counts for number of ascertained sites", Validate.REQUIRED);
+	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("ascSiteCount", "Counts for number of ascertained sites", Validate.REQUIRED);
 
 	
 	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Emulate the likelihood calculation of RoyChoudhury et al (2008) which assumes that mutations occur only in the ancestral (root) population", false);
@@ -356,6 +356,13 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		} else {
 			return 1.0;
 		}
+	}
+
+	// return site probability
+	public double getSitesProbs(int pattern) {
+		if (pattern >= 0)
+			return fSiteProbs[pattern];
+		return fSiteProbs[fSiteProbs.length + pattern];
 	}
 
 	public double getNewProbVariableSites() {
