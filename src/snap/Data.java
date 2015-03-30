@@ -42,6 +42,7 @@ import beast.evolution.datatype.Binary;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.IntegerData;
 import beast.evolution.datatype.Nucleotide;
+import beast.evolution.datatype.StandardData;
 
 
 
@@ -88,7 +89,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 			List<Sequence> SNPsequences = sequenceInput.get();
 			
 			DataType rawDataType = m_rawData.get().getDataType();
-			if (rawDataType instanceof Binary || rawDataType instanceof IntegerData) {
+			if (rawDataType instanceof Binary || rawDataType instanceof IntegerData || rawDataType instanceof StandardData) {
 		
 				// sequences are defined through taxon sets, so construct
 				// SNPSequences from binary sequences as defined by the taxon sets
