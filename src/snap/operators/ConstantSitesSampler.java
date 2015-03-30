@@ -1,5 +1,6 @@
 package snap.operators;
 
+import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.GammaDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
@@ -38,11 +39,16 @@ public class ConstantSitesSampler extends Operator {
 		double alpha = n;
 		double beta = 1.0/alpha;
 		int d = 6; // digits of precission
-		double m = GammaDist.cdf(alpha, beta, d, Randomizer.nextDouble());
+		double m = GammaDist.inverseF(alpha, beta, d, Randomizer.nextDouble());
 		
 		// alternative implementation -- find out which one is fastest
-		//GammaDistribution gamma = new GammaDistributionImpl(alpha, beta);
-		//double m = gamma.cumulativeProbability(Randomizer.nextDouble())
+//		GammaDistribution gamma = new GammaDistributionImpl(alpha, 1/beta);
+//		double m = -1;
+//		try {
+//			m = gamma.inverseCumulativeProbability(Randomizer.nextDouble());
+//		} catch (MathException e) {
+//			return Double.NEGATIVE_INFINITY;
+//		}
 		
 		double logHR = 0.0;
 		double q0  = treeLikelihood.getSitesProbs(-2);
@@ -56,6 +62,7 @@ public class ConstantSitesSampler extends Operator {
 		n1 = (int) Randomizer.nextPoisson(lambda1 * m);
 		ascSiteCount.setValue(0, n0);
 		ascSiteCount.setValue(1, n1);
+		System.out.println("NEW: " + n0 + " " + n1);
 		return logHR;
 	}
 

@@ -302,6 +302,16 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		}
     } // calculateLogLikelihood
 
+    
+    @Override
+    protected boolean requiresRecalculation() {
+    	boolean isDirty = super.requiresRecalculation();
+    	if (ascSiteCount != null && ascSiteCount.somethingIsDirty()) {
+    		isDirty = true;
+    	}
+    	return isDirty;
+    }
+    
     /** CalculationNode methods **/
 	@Override
 	public void store() {
