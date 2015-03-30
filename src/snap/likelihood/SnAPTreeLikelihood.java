@@ -38,12 +38,11 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.Input.Validate;
+import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.TreeInterface;
-
-
 import snap.Data;
 import snap.NodeData;
 import snap.likelihood.SnAPLikelihoodCore;
@@ -60,13 +59,17 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	public Input<Boolean> m_bInitFromTree = new Input<Boolean>("initFromTree", "whether to initialize coalescenceRate from starting tree values (if true), or vice versa (if false)");
 	public Input<String> m_pPattern = new Input<String>("pattern", "pattern of metadata element associated with this parameter in the tree");
 
-	public Input<Boolean> m_usenNonPolymorphic = new Input<Boolean>("non-polymorphic", "Check box only if constant sites have been left in the data and are to be included in the likelihood calculation. " +
+
+	public Input<Boolean> m_usenNonPolymorphic = new Input<Boolean>("non-polymorphic", 
+			"Check box only if constant sites have been left in the data and are to be included in the likelihood calculation. " +
 			"Leave unchecked if all but the variable sites have been removed.",
 			//"Whether to use non-polymorphic data in the sequences. " +
 			//"If true, constant-sites in the data will be used as part of the likelihood calculation. " +
 			//"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
 			//"calculated for the likelihood.", 
 			false);
+	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("siteCount", "Counts for number of ascertained sites", Validate.REQUIRED);
+
 	
 	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Emulate the likelihood calculation of RoyChoudhury et al (2008) which assumes that mutations occur only in the ancestral (root) population", false);
 	public Input<Boolean> hasDominantMarkers = new Input<Boolean>("dominant", "indicate that alleles are dominant (default false)", false);
@@ -103,9 +106,14 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	// of a sufficient statistic for the likelihood
 	double m_fLogLikelihoodCorrection = 0;
 	
-    @Override
-    public void initAndValidate() throws Exception {
-    	// check that alignment has same taxa as tree
+	// represents number of constant sites
+	IntegerParameter ascSiteCount;
+	
+	@Override
+	public void initAndValidate() throws Exception {
+		ascSiteCount = ascSiteCountInput.get();
+
+		// check that alignment has same taxa as tree
     	if (!(dataInput.get() instanceof Data)) {
     		throw new Exception("The data input should be a snap.Data object");
     	}
@@ -265,7 +273,13 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			if (!m_bUsenNonPolymorphic) {
 				m_fP0 =  fSiteProbs[numPatterns - 2];
 				m_fP1 =  fSiteProbs[numPatterns - 1];
-				logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
+				if (ascSiteCount != null) {
+					logP += (double)ascSiteCount.getValue(0) * Math.log(m_fP0);
+					logP += (double)ascSiteCount.getValue(1) * Math.log(m_fP1);
+					
+				} else {
+					logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
+				}
 			}				
 			
 			if (useLogLikelihoodCorrection.get()) {
