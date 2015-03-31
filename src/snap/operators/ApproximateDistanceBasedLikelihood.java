@@ -6,6 +6,7 @@ import java.util.List;
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 import beast.core.BEASTObject;
+import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -15,7 +16,8 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeInterface;
 
-public class DistanceBasedLikelihood extends BEASTObject implements ApproximateLikelihood {
+@Description("Approximate Likelihood based on distances between lineages")
+public class ApproximateDistanceBasedLikelihood extends BEASTObject implements ApproximateLikelihood {
 	public Input<Distribution> priorInput = new Input<Distribution>("prior", "prior used when likelihood is approximated", Validate.REQUIRED);
 	public Input<SnAPTreeLikelihood> treeLikelihoodInput = new Input<SnAPTreeLikelihood>("treelikelihood", "SNAPP tree likelihood for the tree", Validate.REQUIRED);
 
@@ -168,7 +170,7 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
 	 * calculate approximate treelikelihood for tree & data
 	 * made public for testing purposes  
 	 * */
-    @Override
+    //@Override
 	public double approxLikelihood(Node root, Double [] coalescenceRate, double u, double v) {
     	// do the real work here
     	double mu[][] = calcMu(root, u, v, coalescenceRate);

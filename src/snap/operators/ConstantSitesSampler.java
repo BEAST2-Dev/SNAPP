@@ -34,9 +34,9 @@ public class ConstantSitesSampler extends Operator {
 		int n1 = ascSiteCount.getValue(1);
 		int n = n0 + n1;
 		double alpha = n;
-		double beta = 1.0/alpha;
+		//double beta = 1.0/alpha;
 		int d = 6; // digits of precission
-		double m = GammaDist.inverseF(alpha, beta, d, Randomizer.nextDouble());
+		double m = GammaDist.inverseF(alpha, 1.0, d, Randomizer.nextDouble());
 		
 		// alternative implementation -- find out which one is fastest
 //		GammaDistribution gamma = new GammaDistributionImpl(alpha, 1/beta);
@@ -56,9 +56,12 @@ public class ConstantSitesSampler extends Operator {
 		
 		n0 = (int) Randomizer.nextPoisson(lambda0 * m);
 		n1 = (int) Randomizer.nextPoisson(lambda1 * m);
+		if (n0 <= ascSiteCount.getLower() || n1 <= ascSiteCount.getLower() || n0 > ascSiteCount.getUpper() || n1 > ascSiteCount.getUpper()) {
+			return Double.NEGATIVE_INFINITY;
+		}
 		ascSiteCount.setValue(0, n0);
 		ascSiteCount.setValue(1, n1);
-		System.out.println("NEW: " + n0 + " " + n1);
+		//System.out.println("NEW: " + n0 + " " + n1 + " " + ascSiteCount);
 		return Double.POSITIVE_INFINITY;
 	}
 

@@ -25,7 +25,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
-<run id="mcmc" spec='beast.core.MCMC' chainLength="10000" preBurnin="0">
+<run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0">
         <state storeEvery='1000'>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
 
@@ -65,17 +65,18 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 	    <operator spec='operators.MutationMover' window='0.1' weight='0.25' u='@u' v='@v'/>
 
 <!-- estimate ascertainment counts -->
-        <operator spec='operators.ConstantSitesSampler' weight='0.5' ascSiteCount='@ascSiteCount' treelikelihood="@treeLikelihood"/>
+        <operator spec='operators.ConstantSitesSampler' weight='0.001' ascSiteCount='@ascSiteCount' treelikelihood="@treeLikelihood"/>
 
         <logger logEvery="1000">
-            <log idref="u"/>
-            <log idref="v"/>
-            <log idref="prior"/>
-            <log idref="treeLikelihood"/>
+            <!--log idref="u"/>
+            <log idref="v"/-->
             <log idref="posterior"/>
+            <log idref="treeLikelihood"/>
+            <log idref="prior"/>
             <log idref="normalised.Likelihood"/>
             <log idref="normalised.Posterior"/>
-	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+    	    <log idref='ascSiteCount'/>
+	        <!--log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/-->
         </logger>
         <logger logEvery="1000" fileName="testAsc.log">
 	        <model idref='posterior'/>

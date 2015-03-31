@@ -57,6 +57,19 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	</data>
 
+	<!--
+	<approxLikelihood id='approxLikelihood' spec='snap.operators.ApproximateDistanceBasedLikelihood' prior='@prior' treelikelihood='@treeLikelihood'/>
+	-->
+	<!--
+    -->	
+	<approxLikelihood id='approxLikelihood' spec='snap.operators.ApproximateSampledLikelihood' prior='@prior'>
+             <treelikelihood id='approxTreeLikelihood' spec='snap.likelihood.SnAPTreeLikelihood' 
+                initFromTree='false' siteModel="@siteModel" 
+				pattern='theta' tree='@tree' non-polymorphic="false">
+				<data id='subsample' spec='snap.SubSampledData' data='@alignment'/>
+            </treelikelihood>
+    </approxLikelihood>
+	
 <run id="mcmc" spec='beast.core.MCMC' chainLength="200000" preBurnin="0" >
         <state storeEvery='1000' id='state'>
           <parameter name='stateNode' id='coalescenceRate' value='20 20 20 20 20 20 20'/>
@@ -97,37 +110,40 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
         </distribution>
 
 
-        <operator spec='operators.DelayedAcceptanceOperator' weight='0.25' tuning='0.43'
-        	treelikelihood='@treeLikelihood' state='@state' prior='@prior'
+        
+        
+        
+        <operator spec='operators.DelayedAcceptanceOperator' weight='0.25' tuning='0.43' 
+        	treelikelihood='@treeLikelihood' approxLikelihood='@approxLikelihood' state='@state' 
         	>
         	<operator spec='operators.ScaleOperator' scaleFactor='0.25' weight='1' tree='@tree'/>
         </operator>
         <operator spec='operators.DelayedAcceptanceOperator' weight='0.5' 
-        	treelikelihood='@treeLikelihood' state='@state' prior='@prior'
+        	treelikelihood='@treeLikelihood' approxLikelihood='@approxLikelihood' state='@state'
         	>
 	        <operator spec='operators.GammaMover' scale='0.5' weight='0.5' coalescenceRate='@coalescenceRate'/>
         </operator>
         <operator spec='operators.DelayedAcceptanceOperator' weight='5' 
-        	treelikelihood='@treeLikelihood' state='@state' prior='@prior'
+        	treelikelihood='@treeLikelihood' approxLikelihood='@approxLikelihood' state='@state'
         	>
 			<operator spec='operators.NodeBudger' weight='5' size='0.5' tree='@tree'/>
         </operator>
         <operator spec='operators.DelayedAcceptanceOperator' weight='0.5' 
-        	treelikelihood='@treeLikelihood' state='@state' prior='@prior'
+        	treelikelihood='@treeLikelihood' approxLikelihood='@approxLikelihood' state='@state'
         	>
 	        <operator spec='operators.GammaMover' scale='0.5' weight='0.5' coalescenceRate='@coalescenceRate'/>
         </operator>
         <operator spec='operators.DelayedAcceptanceOperator' weight='0.25' 
-        	treelikelihood='@treeLikelihood' state='@state' prior='@prior'
+        	treelikelihood='@treeLikelihood' approxLikelihood='@approxLikelihood' state='@state'
         	>
 	        <operator spec='operators.RateMixer' scaleFactors='0.25' weight='1' tree='@tree'  coalescenceRate='@coalescenceRate'/>
         </operator>
         <operator spec='operators.DelayedAcceptanceOperator' weight='0.25' 
-        	treelikelihood='@treeLikelihood' state='@state' prior='@prior'
+        	treelikelihood='@treeLikelihood' approxLikelihood='@approxLikelihood' state='@state'
         	>
 		    <operator spec='operators.MutationMover' window='0.1' weight='0.25' u='@u' v='@v'/>
         </operator>
-	
+
 <!--
         <operator spec='operators.NodeSwapper' weight='0.5' tree='@tree'/>
 		<operator spec='operators.NodeBudger' weight='5' size='0.5' tree='@tree'/>
@@ -145,7 +161,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
 	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="1000" fileName="test.log">
+        <logger logEvery="1000" fileName="testDA.log">
 	        <model idref='posterior'/>
             <log idref="u"/>
             <log idref="v"/>
@@ -157,7 +173,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
     	    <log spec='TreeLengthLogger' tree='@tree'/>
         </logger>
-        <logger logEvery="1000" fileName="test.trees" mode='tree'>
+        <logger logEvery="1000" fileName="testDA.trees" mode='tree'>
             <log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
         </logger>
         

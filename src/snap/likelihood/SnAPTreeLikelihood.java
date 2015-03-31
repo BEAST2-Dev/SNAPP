@@ -68,7 +68,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			//"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
 			//"calculated for the likelihood.", 
 			false);
-	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("ascSiteCount", "Counts for number of ascertained sites", Validate.REQUIRED);
+	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("ascSiteCount", "Counts for number of ascertained sites");
 
 	
 	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Emulate the likelihood calculation of RoyChoudhury et al (2008) which assumes that mutations occur only in the ancestral (root) population", false);

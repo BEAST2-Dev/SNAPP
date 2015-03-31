@@ -14,7 +14,7 @@ import beast.util.TreeParser;
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
-import snap.operators.DistanceBasedLikelihood;
+import snap.operators.ApproximateDistanceBasedLikelihood;
 import junit.framework.TestCase;
 
 public class TestDelayedAcceptanceOperator extends TestCase {
@@ -43,7 +43,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		SnAPTreeLikelihood likelihood = new SnAPTreeLikelihood();
 		likelihood.initByName("data", data, "siteModel", siteModel, "tree", tree, "pattern","theta");
 		
-		DistanceBasedLikelihood operator = new DistanceBasedLikelihood();
+		ApproximateDistanceBasedLikelihood operator = new ApproximateDistanceBasedLikelihood();
 		operator.initByName(//"tree", tree,
 				//"data", data,
 				//"operator", dummyoperator,
@@ -139,7 +139,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		SnAPTreeLikelihood likelihood = new SnAPTreeLikelihood();
 		likelihood.initByName("data", data, "siteModel", siteModel, "tree", tree, "pattern","theta");
 
-		DistanceBasedLikelihood operator = new DistanceBasedLikelihood();
+		ApproximateDistanceBasedLikelihood operator = new ApproximateDistanceBasedLikelihood();
 		operator.initByName(
 				"prior", prior,
 				"treelikelihood", likelihood);

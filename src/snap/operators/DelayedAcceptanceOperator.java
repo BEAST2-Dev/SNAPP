@@ -125,7 +125,7 @@ public class DelayedAcceptanceOperator extends Operator {
 			Node newRoot = tree.getRoot();
 	    	Double [] newCoalescenceRate = substitutionmodel.m_pCoalescenceRate.get().getValues();
 	    	double newU = substitutionmodel.m_pU.get().getValue();
-	    	double newV  = substitutionmodel.m_pV.get().getValue();
+	    	double newV = substitutionmodel.m_pV.get().getValue();
 
 	    	
 	    	// could skip till after checking logHR == -infinity
@@ -170,8 +170,9 @@ public class DelayedAcceptanceOperator extends Operator {
 		    		}
 //System.err.print(operator.getName() + " " + oldApproxLogLikelihood + " " +  newApproxLogLikelihood + " " + oldPrior + " " + newPrior + " ");			    	
 		    		probVariableSites = treelikelihood.getNewProbVariableSites();
-			    	oldApproxLogLikelihood = oldPrior + approxLiklihood.approxLikelihood(oldRoot, oldCoalescenceRate, oldU, oldV);
-			    	newApproxLogLikelihood = newPrior + approxLiklihood.approxLikelihood(newRoot, newCoalescenceRate, newU, newV);
+		    		// no need to recalculate: no parameter changed in between
+			    	//oldApproxLogLikelihood = oldPrior + approxLiklihood.approxLikelihood(oldRoot, oldCoalescenceRate, oldU, oldV);
+			    	//newApproxLogLikelihood = newPrior + approxLiklihood.approxLikelihood(newRoot, newCoalescenceRate, newU, newV);
 			    	double ratio = oldApproxLogLikelihood - newApproxLogLikelihood - operatorLogHastingsRatio;
 			    	if (ratio < 0) {
 			    		logHastingsRatio += ratio;
@@ -206,6 +207,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	@Override
     public void setOperatorSchedule(final OperatorSchedule operatorSchedule) {
         operator.setOperatorSchedule(operatorSchedule);
+        super.setOperatorSchedule(operatorSchedule);
     }
 	
 	@Override
