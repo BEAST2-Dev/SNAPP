@@ -73,7 +73,8 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             <log idref="prior"/>
             <log idref="treeLikelihood"/>
             <log idref="posterior"/>
-    	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
+            <log idref="normalised.Likelihood"/>
+            <log idref="normalised.Posterior"/>
 	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
         </logger>
         <logger logEvery="1000" fileName="testAsc.log">
@@ -81,6 +82,8 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             <log idref="u"/>
             <log idref="v"/>
             <log idref="prior"/>
+            <log id="normalised.Likelihood" spec='snap.likelihood.NormalisedDistributionLogger' treelikelihood='@treeLikelihood' distribution='@treeLikelihood'/>
+            <log id="normalised.Posterior" spec='snap.likelihood.NormalisedDistributionLogger' treelikelihood='@treeLikelihood' distribution='@posterior'/>
             <log idref="treeLikelihood"/>
             <log idref="posterior"/>
     	    <log idref='coalescenceRate'/>

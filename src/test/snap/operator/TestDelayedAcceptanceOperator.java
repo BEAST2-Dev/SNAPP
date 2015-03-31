@@ -1,5 +1,6 @@
 package test.snap.operator;
 
+
 import org.junit.Test;
 
 import beast.core.Distribution;
@@ -7,15 +8,13 @@ import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.operators.ScaleOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
-
+import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
-import snap.operators.DelayedAcceptanceOperator;
-//import test.beast.BEASTTestCase;
 
+import snap.operators.DistanceBasedLikelihood;
 import junit.framework.TestCase;
 
 public class TestDelayedAcceptanceOperator extends TestCase {
@@ -25,7 +24,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		// check that moment generating function = 1 at x = 0 = -2*(u+v)
 		snap.Data data = getTwoTaxaNoData();
 		Tree tree = getTree(data, "(A:" + 0.1 +",B:" + 0.1 +")");
-		ScaleOperator dummyoperator = new ScaleOperator();
+		//ScaleOperator dummyoperator = new ScaleOperator();
 		Distribution prior = new CompoundDistribution();
 		
 		
@@ -41,12 +40,15 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		SiteModel siteModel = new SiteModel();
 		siteModel.initByName("substModel", substModel);
 		
-		DelayedAcceptanceOperator operator = new DelayedAcceptanceOperator();
-		operator.initByName("tree", tree,
-				"data", data,
-				"operator", dummyoperator,
+		SnAPTreeLikelihood likelihood = new SnAPTreeLikelihood();
+		likelihood.initByName("data", data, "siteModel", siteModel, "tree", tree, "pattern","theta");
+		
+		DistanceBasedLikelihood operator = new DistanceBasedLikelihood();
+		operator.initByName(//"tree", tree,
+				//"data", data,
+				//"operator", dummyoperator,
 				"prior", prior,
-				"siteModel", siteModel);
+				"treelikelihood", likelihood);
 
 		double [] M = new double[3];
 		// u = v = 0
@@ -60,7 +62,9 @@ public class TestDelayedAcceptanceOperator extends TestCase {
         TreeParser t = new TreeParser();
         t.initByName("taxa", data,
                 "newick", tree,
-                "IsLabelledNewick", true);
+                "IsLabelledNewick", true,
+                "nodetype", "snap.NodeData");
+        
         return t;
     }
 
@@ -117,7 +121,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 	void testSingleCase(double t, double u, double v, Double [] coalescenceRate, double[][] expectedMu, double expectedLogL) throws Exception {
 		snap.Data data = getTwoTaxaNoData();
 		Tree tree = getTree(data, "(A:" + t +",B:" + t +")");
-		ScaleOperator dummyoperator = new ScaleOperator();
+		//ScaleOperator dummyoperator = new ScaleOperator();
 		Distribution prior = new CompoundDistribution();
 		
 		
@@ -132,12 +136,13 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 		SiteModel siteModel = new SiteModel();
 		siteModel.initByName("substModel", substModel);
 		
-		DelayedAcceptanceOperator operator = new DelayedAcceptanceOperator();
-		operator.initByName("tree", tree,
-				"data", data,
-				"operator", dummyoperator,
+		SnAPTreeLikelihood likelihood = new SnAPTreeLikelihood();
+		likelihood.initByName("data", data, "siteModel", siteModel, "tree", tree, "pattern","theta");
+
+		DistanceBasedLikelihood operator = new DistanceBasedLikelihood();
+		operator.initByName(
 				"prior", prior,
-				"siteModel", siteModel);
+				"treelikelihood", likelihood);
 		
 		operator.useMatLabFormulae = true;
 		

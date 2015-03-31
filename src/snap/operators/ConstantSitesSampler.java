@@ -1,8 +1,5 @@
 package snap.operators;
 
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.GammaDistribution;
-import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import snap.distribution.GammaDist;
 import snap.likelihood.SnAPTreeLikelihood;
@@ -13,7 +10,7 @@ import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
 import beast.util.Randomizer;
 
-@Description("Samples the numberof constant sites from a negative multinomial distribution")
+@Description("Gibbs sampler for the number of constant sites, sampling from a negative multinomial distribution")
 public class ConstantSitesSampler extends Operator {
 
 	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("ascSiteCount", "Counts for number of ascertained sites", Validate.REQUIRED);
@@ -50,7 +47,6 @@ public class ConstantSitesSampler extends Operator {
 //			return Double.NEGATIVE_INFINITY;
 //		}
 		
-		double logHR = 0.0;
 		double q0  = treeLikelihood.getSitesProbs(-2);
 		double q1  = treeLikelihood.getSitesProbs(-1);
 
@@ -63,7 +59,7 @@ public class ConstantSitesSampler extends Operator {
 		ascSiteCount.setValue(0, n0);
 		ascSiteCount.setValue(1, n1);
 		System.out.println("NEW: " + n0 + " " + n1);
-		return logHR;
+		return Double.POSITIVE_INFINITY;
 	}
 
 }

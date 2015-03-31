@@ -21,7 +21,7 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
 
     public boolean useMatLabFormulae = false;
     /** probability that sites are variable for the state of the tree before operating on it **/
-    double probVariableSites = 1.0;
+    //double probVariableSites = 1.0;
 
     // empirical distance and variance between taxa
     double [][] distance;
@@ -36,11 +36,12 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
 	Distribution prior = null;
 	// data and tree used in approximate tree likelihood
 	Alignment data = null;
+	SnAPTreeLikelihood treelikelihood;
 	TreeInterface tree = null;
 
 	@Override
 	public void initAndValidate() throws Exception {
-		SnAPTreeLikelihood treelikelihood = treeLikelihoodInput.get();
+		treelikelihood = treeLikelihoodInput.get();
 		SiteModel.Base siteModel = (SiteModel.Base) treelikelihood.siteModelInput.get();
 		SnapSubstitutionModel substitutionmodel = ((SnapSubstitutionModel)siteModel.substModelInput.get());
 		
@@ -54,12 +55,10 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
         if (data == null || tree == null) {
         	throw new RuntimeException("DelayedAcceptanceOperator: could not identify data or tree in treelikelihood in posterior input");
         }
-	}
 
-	@Override
-	public void initialise() {
         calcDistanceAndVariance();
 	}
+
 
     private void calcDistanceAndVariance() {
     	// set up distance matrix
@@ -157,7 +156,7 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
     
 	/** calculate approximate posterior **/
     @Override
-	public double evaluate(Node root, Double [] coalescenceRate, double u, double v) throws Exception {
+	public double approxPosterior(Node root, Double [] coalescenceRate, double u, double v) throws Exception {
 		priorValue = prior.calculateLogP();
 		double logP = priorValue;
 		logP  += approxLikelihood(root, coalescenceRate, u, v);
@@ -196,16 +195,18 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
 		
 		// 2. calc approx distances, store result in u
 		double [][] mu = new double[var.length][var.length];
-		calcApproxDistance(mu, M, root, u, v);		
+		double probVariableSites = treelikelihood.getProbVariableSites();
+		calcApproxDistance(mu, M, root, u, v, probVariableSites);		
 		return mu;
 	}
 
-	List<Node> calcApproxDistance(double[][] mu, double[] M, Node node,
-			double u, double v) {
+	List<Node> calcApproxDistance(double[][] mu, double[] M, final Node node,
+			final double u, final double v, final double probVariableSites) {
 		int x = node.getNr();
 		double t = node.getHeight();
 		double pi0 = v/(u+v);
 		double pi1 = 1.0 - pi0;
+		
 		
 		if (node.isLeaf()) {
 			// nx = nr of lineages for node x, does not matter whether they are missing
@@ -219,8 +220,8 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
 			list.add(node);
 			return list;
 		} else {
-			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1);
-			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1);
+			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1, probVariableSites);
+			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1, probVariableSites);
 			for (Node lNode : left) {
 				for (Node rNode : right) {
 					int i = lNode.getNr();
@@ -273,11 +274,6 @@ public class DistanceBasedLikelihood extends BEASTObject implements ApproximateL
 			calcMomentGeneratingFunction(M, node.getLeft(), u, v, coalescenceRate);
 			calcMomentGeneratingFunction(M, node.getRight(), u, v, coalescenceRate);
 		}
-	}
-	
-	@Override
-	public void setProbVariableSites(double probVariableSites) {
-		this.probVariableSites = probVariableSites;
 	}
 
 }

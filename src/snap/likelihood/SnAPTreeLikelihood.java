@@ -56,7 +56,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 //	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
 //	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");
 
-	public Input<Boolean> m_bInitFromTree = new Input<Boolean>("initFromTree", "whether to initialize coalescenceRate from starting tree values (if true), or vice versa (if false)");
+	public Input<Boolean> m_bInitFromTree = new Input<Boolean>("initFromTree", "whether to initialize coalescenceRate from starting tree values (if true), or vice versa (if false)", false);
 	public Input<String> m_pPattern = new Input<String>("pattern", "pattern of metadata element associated with this parameter in the tree");
 
 
@@ -99,6 +99,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	double m_fP0 = 0.0, m_fP1 = 0.0;
 	double m_fStoredP0 = 0.0, m_fStoredP1 = 0.0;
+	double ascLogP = Double.NaN, storedAscLogP = Double.NaN;
 	
 	SnapSubstitutionModel m_substitutionmodel;
 	
@@ -274,8 +275,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				m_fP0 =  fSiteProbs[numPatterns - 2];
 				m_fP1 =  fSiteProbs[numPatterns - 1];
 				if (ascSiteCount != null) {
-					logP += (double)ascSiteCount.getValue(0) * Math.log(m_fP0);
-					logP += (double)ascSiteCount.getValue(1) * Math.log(m_fP1);
+					ascLogP = (double)ascSiteCount.getValue(0) * Math.log(m_fP0) +
+							  (double)ascSiteCount.getValue(1) * Math.log(m_fP1);
+					logP += ascLogP;
 					
 				} else {
 					logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
@@ -322,6 +324,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	//super.store();
     	m_fStoredP0 = m_fP0;
     	m_fStoredP1 = m_fP1;
+    	storedAscLogP = ascLogP; 
     }
 
 	@Override
@@ -335,6 +338,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	//super.restore();
     	m_fP0 = m_fStoredP0;
     	m_fP1 = m_fStoredP1;
+    	ascLogP = storedAscLogP; 
     }
 
 	
@@ -425,6 +429,15 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			}
 		} else {
 			return 1.0;
+		}
+	}
+	
+	// return contribution of ascertained sites to log likelihood
+	public double getAscSitesLogP() {
+		if (ascSiteCount != null) {
+			return ascLogP;
+		} else {
+			return 0.0;
 		}
 	}
 } // class SSSTreeLikelihood

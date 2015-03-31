@@ -66,7 +66,6 @@ public class DelayedAcceptanceOperator extends Operator {
     	state = stateInput.get();
     	
     	approxLiklihood = approxLiklihoodInput.get();
-    	approxLiklihood.initialise();
 
 /*
         if (posteriorInput.get() instanceof CompoundDistribution) {
@@ -111,7 +110,6 @@ public class DelayedAcceptanceOperator extends Operator {
     public double proposal()  {
 
 		double probVariableSites = treelikelihood.getProbVariableSites();
-		approxLiklihood.setProbVariableSites(probVariableSites);
 		
     	try {
     		Node oldRoot = tree.getRoot().copy();
@@ -119,7 +117,7 @@ public class DelayedAcceptanceOperator extends Operator {
         	double oldU = substitutionmodel.m_pU.get().getValue();
         	double oldV  = substitutionmodel.m_pV.get().getValue();
 
-        	double oldApproxLogLikelihood = approxLiklihood.evaluate(oldRoot, oldCoalescenceRate, oldU, oldV);
+        	double oldApproxLogLikelihood = approxLiklihood.approxPosterior(oldRoot, oldCoalescenceRate, oldU, oldV);
 	    	double oldPrior = approxLiklihood.getPriorValue();
 	    	
 	    	double logHastingsRatio = operator.proposal();
@@ -144,7 +142,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	    		return Double.NEGATIVE_INFINITY;
 	    	}
 
-	    	double newApproxLogLikelihood = approxLiklihood.evaluate(newRoot, newCoalescenceRate, newU, newV);
+	    	double newApproxLogLikelihood = approxLiklihood.approxPosterior(newRoot, newCoalescenceRate, newU, newV);
 	    	double newPrior = approxLiklihood.getPriorValue();
 
 	    	double logAlpha = newApproxLogLikelihood + newPrior - oldApproxLogLikelihood - oldPrior + logHastingsRatio; //CHECK HASTINGS
