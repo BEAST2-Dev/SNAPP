@@ -27,6 +27,8 @@ package snap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -285,7 +287,16 @@ public class Data extends beast.evolution.alignment.Alignment {
 	protected void calcPatterns() {
         // determine # lineages for each site for each taxon
 		nrOfLineages = new ArrayList<List<Integer>>();
-        for (Sequence seq : sequenceInput.get()) {
+		List<Sequence> seqs = sequenceInput.get();
+		Collections.sort(seqs, new Comparator<Sequence>() {
+			@Override
+			public int compare(Sequence o1, Sequence o2) {
+				return o1.taxonInput.get().compareTo(o2.taxonInput.get());
+			}
+		});
+		
+		
+        for (Sequence seq : seqs) {
         	if (seq instanceof SNPSequence) {
         		// it can vary over sites
         		try {

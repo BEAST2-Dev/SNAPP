@@ -222,7 +222,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	    	
 	    	double u = m_substitutionmodel.m_pU.get().getValue();
 	    	double v  = m_substitutionmodel.m_pV.get().getValue();
-			boolean useCache = true;
+			boolean useCache = false;
 			//boolean useCache = false;
 			boolean dprint = showPatternLikelihoodsAndQuit.get();
 			if (dprint) {
