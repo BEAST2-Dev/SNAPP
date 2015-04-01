@@ -288,13 +288,7 @@ public class Data extends beast.evolution.alignment.Alignment {
         // determine # lineages for each site for each taxon
 		nrOfLineages = new ArrayList<List<Integer>>();
 		List<Sequence> seqs = sequenceInput.get();
-		Collections.sort(seqs, new Comparator<Sequence>() {
-			@Override
-			public int compare(Sequence o1, Sequence o2) {
-				return o1.taxonInput.get().compareTo(o2.taxonInput.get());
-			}
-		});
-		
+		sortByTaxonName(seqs);
 		
         for (Sequence seq : seqs) {
         	if (seq instanceof SNPSequence) {

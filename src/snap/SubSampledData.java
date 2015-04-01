@@ -53,8 +53,7 @@ public class SubSampledData extends Data {
 				int site = (int)(datacounts.get(i).get(j) * fraction + 0.45);
 				seq.add(site);
 				if (site > totalCount) {
-					int h = 3;
-					h++;
+					throw new RuntimeException("SubSampledData: site > totalCount");
 				}
 			}
 			counts.add(seq);

@@ -1,24 +1,31 @@
 package snap.operators;
 
 
+
 import java.util.List;
 
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
 import beast.core.Description;
-import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.OperatorSchedule;
 import beast.core.State;
 import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.StateNode;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeInterface;
 import beast.util.Randomizer;
+
+//Things to measure:
+//	time of full calculation over all samples
+//  time of approx calculation
+//  rate of rejection rate
+//  final acceptance rate
+
+
 
 
 @Description("An operator that uses an approximate likelihood and filters out proposales with low acceptance " +
