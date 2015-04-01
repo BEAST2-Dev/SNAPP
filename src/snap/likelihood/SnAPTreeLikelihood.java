@@ -118,7 +118,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	if (!(dataInput.get() instanceof Data)) {
     		throw new Exception("The data input should be a snap.Data object");
     	}
-    	if (dataInput.get().getNrTaxa() != treeInput.get().getLeafNodeCount()) {
+    	if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
     		throw new Exception("The number of nodes in the tree does not match the number of sequences");
     	}
 

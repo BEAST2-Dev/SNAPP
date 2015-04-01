@@ -6,6 +6,7 @@ import java.util.List;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.TaxonSet;
 
 @Description("Alignment where within species lineages are sampled in order to reduce the dataset")
@@ -19,13 +20,15 @@ public class SubSampledData extends Data {
 		Data data = dataInput.get();
 		m_dataType = data.getDataType();
 		List<TaxonSet> taxa = data.m_taxonsets.get();
-		List<TaxonSet> subtaxa = new ArrayList<>();
+		taxaNames = new ArrayList<>();
 		
 		double sampleProportion = proportionInput.get();
 		int minLineages = minLineagesInput.get();
 		
 		List<List<Integer>> datacounts = data.getCounts();
+        stateCounts.clear();
 
+        
 		for (int i = 0; i < taxa.size(); i++) {
 			TaxonSet orgSet = taxa.get(i);
 			if (minLineages > orgSet.getTaxonCount()) {
@@ -34,22 +37,30 @@ public class SubSampledData extends Data {
 			}
 			
 			TaxonSet subset = new TaxonSet();
-			String seqid = orgSet.getID()+ "subset";
+			String seqid = orgSet.getID() + "subset";
 			subset.setID(seqid);
 			
 
-			// select sampleProportion fraction of lineages without replacement
 			List<Integer> seq = new ArrayList<Integer>();
-			SNPSequence s = new SNPSequence();
+			Sequence s = new Sequence();
 			s.taxonInput.setValue(seqid, s);
 			int totalCount = (int) Math.max(minLineages, sampleProportion * orgSet.getTaxonCount()+ 0.5);
-			s.totalCountInput.setValue(totalCount, s);
+			s.totalCountInput.setValue(totalCount + 1, s);
+			stateCounts.add(totalCount + 1);
+			
 			double fraction = Math.max((double)minLineages / orgSet.getTaxonCount(), sampleProportion);
 			for (int j = 0; j < datacounts.get(i).size(); j++) {
-				seq.add((int)(datacounts.get(i).get(j) * fraction + 0.5));
+				int site = (int)(datacounts.get(i).get(j) * fraction + 0.45);
+				seq.add(site);
+				if (site > totalCount) {
+					int h = 3;
+					h++;
+				}
 			}
 			counts.add(seq);
 			sequenceInput.setValue(s, this);
+
+			// select sampleProportion fraction of lineages without replacement
 //			boolean [] done = new boolean[orgSet.getTaxonCount()];
 //			for (int j = 0; j < Math.max(minLineages, sampleProportion * orgSet.getTaxonCount() + 0.5); j++) {
 //				int k = Randomizer.nextInt(orgSet.getTaxonCount());
@@ -59,11 +70,8 @@ public class SubSampledData extends Data {
 //				subset.taxonsetInput.setValue(orgSet.getTaxonId(k), subset);
 //				done[k] = true;
 //			}
-			subtaxa.add(subset);
+			taxaNames.add(orgSet.getID());
 		}
-		
-		m_taxonsets.get().clear();
-		m_taxonsets.get().addAll(subtaxa);
 		calcPatterns();
 		sequenceInput.get().clear();
 	}
