@@ -189,7 +189,9 @@ public class ML extends beast.core.MCMC {
 					bDebug = false;
 				}
 			} else {
-				operator.optimize(logAlpha);
+				if (iSample > 0) {
+					operator.optimize(logAlpha);
+				}
 			}
 		}
 		operatorSchedule.showOperatorRates(System.out);

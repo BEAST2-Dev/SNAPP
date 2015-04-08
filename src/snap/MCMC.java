@@ -226,7 +226,9 @@ public class MCMC extends beast.core.MCMC {
 					bDebug = false;
 				}
 			} else {
-				operator.optimize(logAlpha);
+				if (iSample >0) {
+					operator.optimize(logAlpha);
+				}
 			}
 			if (nKillAfterXSeconds > 0) {
 				long tEnd = System.currentTimeMillis();
