@@ -11,13 +11,15 @@ import beast.inference.HeatedMCMC;
 @Description("Heated chain for Metropolis coupled MCMC. "
 		+ "Chains are heated by subsampling numbers of lineages")
 public class SNAPPHeatedMCMC extends HeatedMCMC {
-
+	int chainNr = 0;
+	
 	@Override
 	public void setChainNr(int i, int resampleEvery) throws Exception {
 		if (i > 0) {
+			posterior = posteriorInput.get();
 			List<Distribution> distrs = ((CompoundDistribution)posterior).pDistributions.get();
 			int j = 0;
-			while (distrs.get(j).getID().equals("likelihood")) {
+			while (!distrs.get(j).getID().equals("likelihood")) {
 				j++;
 			}
 			if (j >= distrs.size()) {
@@ -32,7 +34,7 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 			SubSampledData subSample = new SubSampledData();
 			try {
 				subSample.initByName("data", data, 
-						"proportion", 2.0/ Math.pow(2,i),
+						"proportion", 1.0 / (i + 1.0),
 						"taxonset", data.m_taxonsets.get());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -45,6 +47,15 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 			likelihood.initAndValidate();
 		}
 		this.resampleEvery = resampleEvery;
+		
+		this.chainNr = i;
 	} // setChainNr
+
+	@Override
+	public void optimiseRunTime(long startTime, long endTime, long endTimeMainChain) {
+		double factor = ((double) endTimeMainChain - startTime) / ((double)endTime - startTime);
+		this.resampleEvery = 1 + (int)(this.resampleEvery * factor);
+		System.err.println(this.resampleEvery);
+	}
 
 } // SNAPPHeatedMCMC
