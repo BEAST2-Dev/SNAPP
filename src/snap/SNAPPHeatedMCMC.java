@@ -34,7 +34,7 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 			SubSampledData subSample = new SubSampledData();
 			try {
 				subSample.initByName("data", data, 
-						"proportion", 1.0 / (i + 1.0),
+						"proportion", 4.0 / (i + 4.0),
 						"taxonset", data.m_taxonsets.get());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -55,7 +55,7 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 	public void optimiseRunTime(long startTime, long endTime, long endTimeMainChain) {
 		double factor = ((double) endTimeMainChain - startTime) / ((double)endTime - startTime);
 		this.resampleEvery = 1 + (int)(this.resampleEvery * factor);
-		System.err.println(this.resampleEvery);
+		//System.err.println(this.resampleEvery);
 	}
 
 } // SNAPPHeatedMCMC
