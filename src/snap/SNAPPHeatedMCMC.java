@@ -34,7 +34,7 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 			SubSampledData subSample = new SubSampledData();
 			try {
 				subSample.initByName("data", data, 
-						"proportion", 4.0 / (i + 4.0),
+						"proportion", 1.0, //3.0 / (i + 3.0),
 						"taxonset", data.m_taxonsets.get());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -49,6 +49,7 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 		this.resampleEvery = resampleEvery;
 		
 		this.chainNr = i;
+		temperature = 1 + i * 1.0;
 	} // setChainNr
 
 	@Override

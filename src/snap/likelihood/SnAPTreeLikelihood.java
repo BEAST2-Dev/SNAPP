@@ -384,6 +384,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			try {
 			NodeData root = (NodeData) treeInput.get().getRoot();
 	    	Double [] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
+	    	Double [] scaledCoalescenceRates = new Double[coalescenceRate.length]; 
 	    	double u = m_substitutionmodel.m_pU.get().getValue();
 	    	double v  = m_substitutionmodel.m_pV.get().getValue();
 			boolean useCache = true;
@@ -400,13 +401,16 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 
 			// calculate pattern probabilities for all categories
 			for (int iCategory = 0; iCategory < nCategories; iCategory++) {
+				for (int i = 0; i < scaledCoalescenceRates.length; i++) {
+					scaledCoalescenceRates[i] = coalescenceRate[i] / fCategoryRates[iCategory];
+				}
 				patternProbs[iCategory] = m_core.computeConstantSitesLogLikelihood(root, 
 						u, 
 						v,
 						fCategoryRates[iCategory], 
 		    			m_nSampleSizes, 
 		    			m_data2,
-		    			coalescenceRate,
+		    			scaledCoalescenceRates,
 		    			m_bMutationOnlyAtRoot,
 						m_bHasDominantMarkers,											  
 		    			useCache,
