@@ -3,6 +3,7 @@ package snap.likelihood;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.substitutionmodel.SubstitutionModel;
@@ -18,7 +19,15 @@ public class SnapSubstitutionModel extends SubstitutionModel.Base {
 	}
 	
     @Override
-    public void initAndValidate() {}
+    public void initAndValidate() {
+    	double u = m_pU.get().getValue();
+    	double v  = m_pV.get().getValue();
+    	if (Math.abs(2*u*v-u-v) > 1e-6) {
+    		Log.warning.println("WARNING: Mutation rates are not normalised. "
+    				+ "This means that the tree height may not be in units of substitution any more. "
+    				+ "To ensure mutation rates are normalised, check that 2 * u * v = u + v, where v and u are the mutation rates.");
+    	}
+    }
     
 	@Override
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {}

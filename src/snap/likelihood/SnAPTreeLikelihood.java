@@ -67,7 +67,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			//"If true, constant-sites in the data will be used as part of the likelihood calculation. " +
 			//"If false (the default) constant sites will be removed from the sequence data and a normalization factor is " +
 			//"calculated for the likelihood.", 
-			false);
+			true);
 	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("ascSiteCount", "Counts for number of ascertained sites");
 
 	

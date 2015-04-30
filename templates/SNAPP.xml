@@ -131,7 +131,7 @@
         <distribution spec='snap.likelihood.SnAPPrior' name='distribution' id='snapprior.$(n)' rateprior='gamma'>
 			  <parameter name='alpha' id='alpha'  value='11.750' lower='0.0' estimate='false'/>
 			  <parameter name='beta' id='beta'   value='109.73' lower='0.0' estimate='false'/>
-			  <parameter name='lambda' id='lambda' value='0.00765' lower='0.0' estimate='false'/>
+			  <parameter name='lambda' id='lambda' value='0.01' lower='0.0' estimate='true'/>
 	          <parameter name='kappa' id='kappa' value='1.0' lower='0.0' estimate='false'/>
 		      <tree spec='beast.util.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma' clock.rate="1.0">
 		            <input name='taxa' idref='snap.$(n)'/>
@@ -146,14 +146,14 @@
         <distribution id='vPrior.$(n)' spec='Prior' x='@v'><distr spec='OneOnX'/></distribution>
 
 
-         <snaptreelikelihood spec='snap.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate'>
+         <snaptreelikelihood spec='snap.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate' non-polymorphic='true'>
             <siteModel spec='sitemodel.SiteModel' id="MutationSiteModel.$(n)">
                 <parameter name='mutationRate' id='mutationRate' value='1.0' estimate='false'/>
                 <parameter name='proportionInvariant' id='proportionInvariant' value='0.0' estimate='false'/>
                 <parameter name='shape' value='2.0' id='shape' estimate='false'/>
                 <substModel spec='snap.likelihood.SnapSubstitutionModel' id='MutationModel' coalescenceRate='@coalescenceRate'>
-					  <parameter name='mutationRateV' id='v' value='0.588235' lower='0.0' estimate='false'/>
-					  <parameter name='mutationRateU' id='u' value='3.33333' lower='0.0' estimate='false'/>
+					  <parameter name='mutationRateV' id='v' value='1.0' lower='0.0' estimate='true'/>
+					  <parameter name='mutationRateU' id='u' value='1.0' lower='0.0' estimate='true'/>
                 </substModel>
             </siteModel>
             <data idref='snap.$(n)'/>
