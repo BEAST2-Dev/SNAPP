@@ -64,6 +64,7 @@
             snap.likelihood.SnAPTreeLikelihood.useAmbiguities,
             snap.likelihood.SnAPTreeLikelihood.tree,
             snap.likelihood.SnAPTreeLikelihood.dominant,
+            snap.likelihood.SnAPTreeLikelihood.ascSiteCount,
             snap.likelihood.SnAPPrior.coalescenceRate
 '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
@@ -138,12 +139,12 @@
 		      </tree>
 		      <parameter name='coalescenceRate' id='coalescenceRate' value='10'/>
         </distribution>
-        <distribution id='alphaPrior.$(n)' spec='Prior' x='@alpha'><distr spec='OneOnX'/></distribution>
-        <distribution id='betaPrior.$(n)' spec='Prior' x='@beta'><distr spec='OneOnX'/></distribution>
-        <distribution id='lambdaPrior.$(n)' spec='Prior' x='@lambda'><distr spec='OneOnX'/></distribution>
-        <distribution id='kappaPrior.$(n)' spec='Prior' x='@kappa'><distr spec='OneOnX'/></distribution>
-        <distribution id='uPrior.$(n)' spec='Prior' x='@u'><distr spec='OneOnX'/></distribution>
-        <distribution id='vPrior.$(n)' spec='Prior' x='@v'><distr spec='OneOnX'/></distribution>
+        <distribution id='alphaPrior.$(n)' spec='beast.math.distributions.Prior' x='@alpha'><distr spec='OneOnX'/></distribution>
+        <distribution id='betaPrior.$(n)' spec='beast.math.distributions.Prior' x='@beta'><distr spec='OneOnX'/></distribution>
+        <distribution id='lambdaPrior.$(n)' spec='beast.math.distributions.Prior' x='@lambda'><distr spec='OneOnX'/></distribution>
+        <distribution id='kappaPrior.$(n)' spec='beast.math.distributions.Prior' x='@kappa'><distr spec='OneOnX'/></distribution>
+        <distribution id='uPrior.$(n)' spec='beast.math.distributions.Prior' x='@u'><distr spec='OneOnX'/></distribution>
+        <distribution id='vPrior.$(n)' spec='beast.math.distributions.Prior' x='@v'><distr spec='OneOnX'/></distribution>
 
 
          <snaptreelikelihood spec='snap.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate' non-polymorphic='true'>
