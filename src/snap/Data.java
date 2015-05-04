@@ -500,4 +500,20 @@ public class Data extends beast.evolution.alignment.Alignment {
     public int[] getPatternLineagCounts(int id) {
         return m_nPatternLineageCounts[id];
     }
+    
+    public double getProportionZeros() {
+    	int zeroCount = 0;
+    	int oneCount  = 0;
+    	for (int i = 0; i < sitePatterns.length; i++) {
+    		int [] p = getPattern(i);
+    		int [] n = getPatternLineagCounts(i);
+    		int w = getPatternWeight(i);
+    		for (int j = 0; j < p.length; j++) {
+    			oneCount += w * p[j];
+    			zeroCount += w * (n[j] - p[j]);
+    		}
+    	}
+    	return (double) zeroCount / ((double) zeroCount + oneCount);
+    }
+
 }
