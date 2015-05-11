@@ -510,7 +510,7 @@ public class Data extends beast.evolution.alignment.Alignment {
     		int w = getPatternWeight(i);
     		for (int j = 0; j < p.length; j++) {
     			oneCount += w * p[j];
-    			zeroCount += w * (n[j] - p[j]);
+    			zeroCount += w * (n[j] - 1 - p[j]);
     		}
     	}
     	return (double) zeroCount / ((double) zeroCount + oneCount);
