@@ -22,7 +22,11 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 	
 	Tree tree;
+<<<<<<< HEAD
 	Double rootAlpha; //Parameter for root distribution. 
+=======
+	Double rootTheta; //Parameter for root distribution. 
+>>>>>>> 998524460c43138ca5124e4ba57b30d99803bf95
 	Data data;	
 	
 	int nPoints;    //Size of mesh used in integration
@@ -62,6 +66,10 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
         nPoints = 20; //TODO: read this from the xml
         int nNodes = tree.getNodeCount();
         partialIntegral = new double[nPoints][nNodes];
+<<<<<<< HEAD
+=======
+        rootTheta = 0.5; //We should get this from the PARAMETERS.
+>>>>>>> 998524460c43138ca5124e4ba57b30d99803bf95
         
         hasDirt = Tree.IS_FILTHY;
 	}
@@ -231,7 +239,11 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	}
 	
 	private double rootProb(double x) {
+<<<<<<< HEAD
 		return betaDensity(x,rootAlpha,rootAlpha);
+=======
+		return betaDensity(x,rootTheta,rootTheta);
+>>>>>>> 998524460c43138ca5124e4ba57b30d99803bf95
 	}
 	
 	
