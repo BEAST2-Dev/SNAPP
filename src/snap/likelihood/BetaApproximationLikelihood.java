@@ -1,32 +1,31 @@
 package snap.likelihood;
 
 
+
 import snap.Data;
 import beast.core.Citation;
 import beast.core.Description;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.branchratemodel.StrictClockModel;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.parameter.RealParameter;
 import beast.evolution.likelihood.GenericTreeLikelihood;
-import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.Binomial;
 import beast.math.GammaFunction;
 
-import org.apache.commons.math.distribution.BetaDistribution;
 
 @Description("Implementation of Siren et al. Beta SNP approximation using Hiscott et al. integrator")
 @Citation("")
 public class BetaApproximationLikelihood extends GenericTreeLikelihood {
+	public Input<RealParameter> coalescenceRateInput = new Input<RealParameter>("coalescenceRate", "population size parameter with one value for each node in the tree");
 
+	public BetaApproximationLikelihood() {
+		siteModelInput.setRule(Validate.OPTIONAL);
+	}
 	
 	Tree tree;
-<<<<<<< HEAD
-	Double rootAlpha; //Parameter for root distribution. 
-=======
 	Double rootTheta; //Parameter for root distribution. 
->>>>>>> 998524460c43138ca5124e4ba57b30d99803bf95
 	Data data;	
 	
 	int nPoints;    //Size of mesh used in integration
@@ -55,21 +54,20 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
      */
     protected double[] m_branchLengths;
     protected double[] storedBranchLengths;
+    
+    RealParameter coalescenceRate;
 
 	
 	@Override
 	public void initAndValidate() throws Exception {
 		tree = (Tree) treeInput.get();
-		data = dataInput.get();
+		data = (Data) dataInput.get();
 		patternLogLikelihoods = new double[data.getPatternCount()];
+		coalescenceRate = coalescenceRateInput.get();
 		
-        nPoints = 20; //TODO: read this from the xml
+        nPoints = data.getTaxonCount();//20; //TODO: read this from the xml
         int nNodes = tree.getNodeCount();
         partialIntegral = new double[nPoints][nNodes];
-<<<<<<< HEAD
-=======
-        rootTheta = 0.5; //We should get this from the PARAMETERS.
->>>>>>> 998524460c43138ca5124e4ba57b30d99803bf95
         
         hasDirt = Tree.IS_FILTHY;
 	}
@@ -82,7 +80,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
      */
     @Override
     public double calculateLogP() {
-    	
+        rootTheta = coalescenceRate.getValue(tree.getRoot().getNr()); //We should get this from the PARAMETERS.
     	
     	double logL=0.0;
     	
@@ -239,11 +237,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	}
 	
 	private double rootProb(double x) {
-<<<<<<< HEAD
-		return betaDensity(x,rootAlpha,rootAlpha);
-=======
 		return betaDensity(x,rootTheta,rootTheta);
->>>>>>> 998524460c43138ca5124e4ba57b30d99803bf95
 	}
 	
 	
