@@ -68,6 +68,7 @@
 			<include name="beast/**/**" />
 			<!-- compile JUnit test classes -->
 			<include name="test/snap/**" />
+			<exclude name="snap/SNAPPHeatedMCMC.java"/>
 		</javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties"/>
@@ -191,8 +192,8 @@
 	
 	
 	<!-- Release -->
-	<property name="version" value="1.1.10" />
-	<property name="version_number" value="1.1.10" />
+	<property name="version" value="1.2.0" />
+	<property name="version_number" value="1.2.0" />
 	<property name="release_dir" value="release" />
 	<property name="copyright" value="SNAPP development team 2011-2012" />
 
