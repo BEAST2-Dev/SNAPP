@@ -36,7 +36,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
         </state>
 
         <distribution id="posterior" spec='CompoundDistribution'>
-     	     <snapprior name='distribution' id='prior' alpha='@alpha' beta='@beta' lambda='@lambda' tree='@tree' coalescenceRate='@coalescenceRate'/>
+     	     <snapprior name='distribution' id='prior' alpha='@alpha' beta='@beta' lambda='@lambda' tree='@tree' coalescenceRate='@coalescenceRate' rateprior="gamma"/>
              <snaptreelikelihood name='distribution' id='treeLikelihood' data='@alignment' tree='@tree' coalescenceRate='@coalescenceRate'/>
         </distribution>
 
