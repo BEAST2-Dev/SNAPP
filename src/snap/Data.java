@@ -162,6 +162,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 			siteWeightsInput.setValue(m_rawData.get().siteWeightsInput.get(), this);
 		}		
 		super.initAndValidate();
+        calcPatterns();
 
 		if (m_rawData.get() != null) {
 			sequenceInput.get().clear();
