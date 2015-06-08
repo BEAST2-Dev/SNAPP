@@ -31,9 +31,12 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
           <parameter name='stateNode' id='u' value='1.0' lower='0.0'/>
           <parameter name='stateNode' id='alpha'  value='2' lower='0.0'/>
           <parameter name='stateNode' id='beta'   value='200' lower='0.0'/>
-          <parameter name='stateNode' id='lambda' value='10' lower='0.0'/>
-		  <stateNode clusterType="upgma" estimate="true" id="tree" nodetype="snap.NodeData" spec="beast.util.ClusterTree" taxa='@alignment'/>
+          <parameter name='stateNode' id='lambda' value='100' lower='0.0'/>
+          <stateNode spec='beast.util.TreeParser' id=‘tree’ estimate = 'true' IsLabelledNewick='true' adjustTipHeights='true' nodetype='snap.NodeData' taxa='@alignment'
+ newick='((A:0.01,B:0.01):0.01,C:0.02);'/>
         </state>
+
+
 
         <distribution id="posterior" spec='CompoundDistribution'>
      	     <snapprior name='distribution' id='prior' alpha='@alpha' beta='@beta' lambda='@lambda' tree='@tree' coalescenceRate='@coalescenceRate' rateprior="gamma"/>
