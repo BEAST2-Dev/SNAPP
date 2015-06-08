@@ -27,8 +27,6 @@ package snap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,12 +35,14 @@ import java.util.regex.Pattern;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.Binary;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.IntegerData;
+import beast.evolution.datatype.IntegerData2;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.datatype.StandardData;
 
@@ -160,10 +160,12 @@ public class Data extends beast.evolution.alignment.Alignment {
 		String oldSiteWeights = siteWeightsInput.get(); 
 		if (oldSiteWeights == null && m_rawData.get() != null) {
 			siteWeightsInput.setValue(m_rawData.get().siteWeightsInput.get(), this);
-		}		
+		}
+		
+		findDataTypes();
 		super.initAndValidate();
         calcPatterns();
-
+		
 		if (m_rawData.get() != null) {
 			sequenceInput.get().clear();
 			siteWeightsInput.setValue(oldSiteWeights, this);
@@ -289,7 +291,7 @@ public class Data extends beast.evolution.alignment.Alignment {
         // determine # lineages for each site for each taxon
 		nrOfLineages = new ArrayList<List<Integer>>();
 		List<Sequence> seqs = sequenceInput.get();
-		sortByTaxonName(seqs);
+		//sortByTaxonName(seqs);
 		
         for (Sequence seq : seqs) {
         	if (seq instanceof SNPSequence) {

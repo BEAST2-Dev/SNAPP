@@ -192,10 +192,10 @@
 	
 	
 	<!-- Release -->
-	<property name="version" value="1.2.0" />
-	<property name="version_number" value="1.2.0" />
+	<property name="version" value="1.2.1" />
+	<property name="version_number" value="1.2.1" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="SNAPP development team 2011-2012" />
+	<property name="copyright" value="SNAPP development team 2011-2015" />
 
 	<property name="SNAPP_name" value="SNAPP" />
 	<property name="BEAUti_name" value="BEAUti" />
