@@ -37,6 +37,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	protected int[] redCounts; //Red allele counts for each leaf, for current pattern.
 	protected double[] patternLogLikelihoods;
 
+	private static final double EPSILON = 1e-10;
 	/**
 	 * flag to indicate the
 	 * // when CLEAN=0, nothing needs to be recalculated for the node
@@ -68,12 +69,12 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		coalescenceRate = coalescenceRateInput.get();
 
 		nPoints = 50; //We need to add a new parameter here. Note that nPoints higher -> more accurate, so we could make
-						//approximations by keeping npoints small.
+		//approximations by keeping npoints small.
 		int nNodes = tree.getNodeCount();
-		partialIntegral = new double[nPoints][nNodes];
+		partialIntegral = new double[nNodes][nPoints];
 
 		//testSolve();
-		
+
 		hasDirt = Tree.IS_FILTHY;
 	}
 
@@ -153,7 +154,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 			for (int j=1;j<i;j++)
 				z[i-1] = z[i-1] - A[i-1][j-1] * z[j-1];
 		}
-			
+
 		//solve Ux = z
 		for (int i=n;i>=1;i--) {
 			x[i-1] = z[i-1];
@@ -161,7 +162,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 				x[i-1] -= A[i-1][j-1]*x[j-1];
 			x[i-1] = x[i-1]/A[i-1][i-1];	
 		}
-		
+
 		return x;
 
 	}
@@ -251,10 +252,15 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	 */
 	private double betaDensityQuadrature(double[] X, double[] F, double alpha, double beta) {
 		//X = [X0,X1,...,XN], X0 = 0, XN = 1
-		double Bab = Math.exp(GammaFunction.lnGamma(alpha) + GammaFunction.lnGamma(beta) - GammaFunction.lnGamma(alpha+beta));
+
+
 		int N = F.length-1;
 		int[] Ns;
 		int K = 7;
+
+
+		double Bab = Math.exp(GammaFunction.lnGamma(alpha) + GammaFunction.lnGamma(beta) - GammaFunction.lnGamma(alpha+beta));
+
 
 		//Divide points into blocks of size K=7.
 		if (N<=K) {
@@ -379,18 +385,33 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 				}
 			}
 
+			/** 
+			 * Variance of Beta(alpha,alpha) = 1/(2*alpha+1)/4.
+			 * Variance of Bernoulli is 1/4, difference is 1/4[1 - 1/(2alpha+1)]  approx alpha/2.
+			 */
 			double alpha,beta;
 			if (node.isRoot()) {
 				alpha = rootTheta/(1-2.0*rootTheta);
 				beta = alpha;
+				if (alpha*alpha<2*EPSILON) 
+					partialIntegral[iNode][s] = 0.5*fvals[0]+0.5*fvals[nPoints-1];
+				else
+					partialIntegral[iNode][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
 			} else {
 				double coalRate=coalescenceRate.getValue(node.getNr());
 				double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
-				alpha = xvals[s]*(1-delta)/delta;
-				beta = (1-xvals[s])*(1-delta)/delta;
+				if (delta<EPSILON) {
+					partialIntegral[iNode][s] = fvals[s]; //Zero branch length - copy probability.
+				} else if (xvals[s]<EPSILON || xvals[s]>1.0-EPSILON || delta>1.0-EPSILON) {   //Saturation/Fixation with expected frequency xvals[s]. 
+					partialIntegral[iNode][s] = xvals[s]*fvals[nPoints-1] + (1.0-xvals[s])*fvals[0]; 
+				} else {
+					alpha = xvals[s]*(1-delta)/delta;
+					beta = (1-xvals[s])*(1-delta)/delta;
+					partialIntegral[iNode][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
+				}
 			}
 
-			partialIntegral[iNode][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
+
 		}			
 	}
 
@@ -406,14 +427,33 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 		double logBinom = Binomial.logChoose(n, r);
 		for (int j=0;j<nPoints;j++) {
-			fvals[j] = Math.exp(logBinom + r*xvals[j] + (n-r)*(1.0-xvals[j]));
+			fvals[j] = Math.exp(logBinom + r*Math.log(xvals[j]) + (n-r)*Math.log(1.0-xvals[j]));
 		}
+		if (r!=0)
+			fvals[0]=0.0;  //Probability of observing > 0 is 0 when prob = 0
+		else
+			fvals[0]=1.0;  //Probability of observing  0 is 1 when prob = 0
+		if (r!=n)
+			fvals[nPoints-1]=0.0; //Probability of observing < n is 0 when prob = 1
+		else
+			fvals[nPoints-1]=1;   //Probability of observing  n is 1 when prob = 1
+
+
 		for (int s = 0;s<nPoints;s++) {
 			double coalRate=coalescenceRate.getValue(node.getNr());
 			double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
-			double alpha = xvals[s]*(1-delta)/delta;
-			double beta = (1-xvals[s])*(1-delta)/delta;
-			partialIntegral[node.getNr()][s] = betaDensityQuadrature(xvals,fvals,alpha,beta);
+			
+			if (delta<EPSILON) {
+				partialIntegral[node.getNr()][s] = fvals[s]; //Zero branch length - copy probability.
+			} else if (xvals[s]<EPSILON || xvals[s]>1.0-EPSILON || delta>1.0-EPSILON) {   //Saturation/Fixation with expected frequency xvals[s]. 
+				partialIntegral[node.getNr()][s] = xvals[s]*fvals[nPoints-1] + (1.0-xvals[s])*fvals[0]; 
+			} else {
+				double alpha = xvals[s]*(1-delta)/delta;
+				double beta = (1-xvals[s])*(1-delta)/delta;
+				partialIntegral[node.getNr()][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
+			}
+			
+			
 		}
 	}
 
