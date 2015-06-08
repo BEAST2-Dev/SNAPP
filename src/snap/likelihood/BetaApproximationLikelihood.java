@@ -72,7 +72,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		int nNodes = tree.getNodeCount();
 		partialIntegral = new double[nPoints][nNodes];
 
-		testSolve();
+		//testSolve();
 		
 		hasDirt = Tree.IS_FILTHY;
 	}
@@ -85,9 +85,9 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	 */
 	@Override
 	public double calculateLogP() {
-		rootTheta = coalescenceRate.getValue(tree.getRoot().getNr()); //We should get this from the PARAMETERS.
+		rootTheta = coalescenceRate.getValue(tree.getRoot().getNr()); 
 
-		System.err.println("Do we get here?");
+		//System.err.println("Do we get here?");
 		double logL=0.0;
 
 		for (int thisPattern = 0; thisPattern < data.getPatternCount(); thisPattern++) {
