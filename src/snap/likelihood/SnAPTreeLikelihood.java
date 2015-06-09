@@ -379,24 +379,23 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		return fSiteProbs[fSiteProbs.length + pattern];
 	}
 
-	public double getNewProbVariableSites() {
-		if (!m_bUsenNonPolymorphic) {
-			try {
+	public double[] calcNewConstProbs() {
+		try {
 			NodeData root = (NodeData) treeInput.get().getRoot();
-	    	Double [] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
-	    	Double [] scaledCoalescenceRates = new Double[coalescenceRate.length]; 
-	    	double u = m_substitutionmodel.m_pU.get().getValue();
-	    	double v  = m_substitutionmodel.m_pV.get().getValue();
+			Double[] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
+			Double[] scaledCoalescenceRates = new Double[coalescenceRate.length];
+			double u = m_substitutionmodel.m_pU.get().getValue();
+			double v = m_substitutionmodel.m_pV.get().getValue();
 			boolean useCache = true;
-			//boolean useCache = false;
+			// boolean useCache = false;
 			boolean dprint = showPatternLikelihoodsAndQuit.get();
 			if (dprint) {
 				System.out.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);
 			}
-			
-			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
-			double [] fCategoryProportions = m_siteModel.getCategoryProportions(null);
-			double [][] patternProbs = new double[m_siteModel.getCategoryCount()][];
+
+			double[] fCategoryRates = m_siteModel.getCategoryRates(null);
+			double[] fCategoryProportions = m_siteModel.getCategoryProportions(null);
+			double[][] patternProbs = new double[m_siteModel.getCategoryCount()][];
 			int nCategories = m_siteModel.getCategoryCount();
 
 			// calculate pattern probabilities for all categories
@@ -404,33 +403,35 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				for (int i = 0; i < scaledCoalescenceRates.length; i++) {
 					scaledCoalescenceRates[i] = coalescenceRate[i] / fCategoryRates[iCategory];
 				}
-				patternProbs[iCategory] = m_core.computeConstantSitesLogLikelihood(root, 
-						u, 
-						v,
-						fCategoryRates[iCategory], 
-		    			m_nSampleSizes, 
-		    			m_data2,
-		    			scaledCoalescenceRates,
-		    			m_bMutationOnlyAtRoot,
-						m_bHasDominantMarkers,											  
-		    			useCache,
-		    			dprint /*= false*/);
+				patternProbs[iCategory] = m_core.computeConstantSitesLogLikelihood(root, u, v, fCategoryRates[iCategory], m_nSampleSizes, m_data2,
+						scaledCoalescenceRates, m_bMutationOnlyAtRoot, m_bHasDominantMarkers, useCache, dprint /*
+																												 * =
+																												 * false
+																												 */);
 			}
-			
+
 			// amalgamate site probabilities over categories
 			int numPatterns = m_data2.getPatternCount();
-			double constSiteProbabiliy = 0;
+			double[] constProbs = new double[2];
 			for (int i = 0; i < nCategories; i++) {
-				double[] patternProb = patternProbs[i]; 
-				constSiteProbabiliy += patternProb[numPatterns - 2] * fCategoryProportions[i];
-				constSiteProbabiliy += patternProb[numPatterns - 1] * fCategoryProportions[i];
+				double[] patternProb = patternProbs[i];
+				constProbs[0] += patternProb[numPatterns - 2] * fCategoryProportions[i];
+				constProbs[1] += patternProb[numPatterns - 1] * fCategoryProportions[i];
 			}
-			
+			return constProbs;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new double[2];
+		}
+	}
+
+	public double getNewProbVariableSites() {
+		if (!m_bUsenNonPolymorphic) {
+			double[] constProbs = calcNewConstProbs();
+
+			double constSiteProbabiliy = constProbs[0] + constProbs[1];
+
 			return 1.0 - constSiteProbabiliy;
-			} catch (Exception e) {
-				e.printStackTrace();
-				return 1.0;
-			}
 		} else {
 			return 1.0;
 		}
