@@ -68,6 +68,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		patternLogLikelihoods = new double[data.getPatternCount()];
 		coalescenceRate = coalescenceRateInput.get();
 
+
 		nPoints = 50; //We need to add a new parameter here. Note that nPoints higher -> more accurate, so we could make
 		//approximations by keeping npoints small.
 		int nNodes = tree.getNodeCount();
@@ -86,7 +87,12 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	 */
 	@Override
 	public double calculateLogP() {
-		rootTheta = coalescenceRate.getValue(tree.getRoot().getNr()); 
+		rootTheta = 2.0/coalescenceRate.getValue(tree.getRoot().getNr()); 
+
+		//ToDO: the formula we really want is 
+		//rootTheta = 2.0*mutationRate / coalescenceRate.getValue(tree.getRoot().getNr()); 
+		//where
+		//mutationRate = 2.0*u*v/(u+v)
 
 		//System.err.println("Do we get here?");
 		double logL=0.0;
@@ -167,15 +173,6 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 	}
 
-
-	private void testSolve() {
-		double[][]A = {{3,17,10},{2,4,-2},{6,18,-12}};
-		double[] b = {1,3,4};
-		double[] x = solveMatrixEqn(A,b);
-		for (int i=0;i<3;i++)
-			System.out.println(x[i]);
-	}
-
 	/**
 	 * Evaluates \int x^(alpha-1) f(x)  dx from X[0] ... X[n] by interpolating
 	 * an nth degree polynomial.
@@ -251,10 +248,10 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	 * @return
 	 */
 	private double betaDensityQuadrature(double[] X, double[] F, double alpha, double beta) {
-		//X = [X0,X1,...,XN], X0 = 0, XN = 1
+		//X = [X0,X2,...,X{N-1}], X0 = 0, XN = 1
 
 
-		int N = F.length-1;
+		int N = F.length;
 		int[] Ns;
 		int K = 7;
 
@@ -262,56 +259,55 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		double Bab = Math.exp(GammaFunction.lnGamma(alpha) + GammaFunction.lnGamma(beta) - GammaFunction.lnGamma(alpha+beta));
 
 
-		//Divide points into blocks of size K=7.
+		//Divide points into blocks of size approx K=7 points.  
 		if (N<=K) {
 			Ns = new int[2];
-			Ns[0] = 0; Ns[1] = N;
+			Ns[0] = 0; Ns[1] = N-1;
 		} else {
-			int m = N/K;
-			int r = N%K;
-			if (r<=0) {
+			int m = (N-1)/(K-1);
+			int r = (N-1)%(K-1);
+			if (r<=1) {
 				Ns = new int[m+1];
 				for(int i=0;i<m;i++)
-					Ns[i]=K*i;
-				Ns[m] = N;
+					Ns[i] = i*(K-1);
+				Ns[m] = N-1;
 			} else {
-				Ns = new int[m+2];
-				for(int i=0;i<m/2;i++)
-					Ns[i]=K*i;
-				Ns[m/2]=K*(m/2)+r;
-				for(int i=m/2+1;i<=m;i++)
-					Ns[i]=K*i+r;
-			}
+				Ns = new int[m+1];
+				for(int i=0;i<=m/2;i++) 
+					Ns[i]=(K-1)*i;
+				Ns[m/2+1] = Ns[m/2]+r;
+				for(int i=m/2+2;i<=m;i++)
+					Ns[i]=Ns[i-1]+(K-1);					
+			} 
 		}
 
 		double total = 0.0;
-
 		int m = Ns.length-1;
 		if (m/2>0) {
 			for (int i=0;i<m/2;i++) {
-				double[] Xlocal = new double[Ns[i+1]-Ns[i]+2];
-				double[] Flocal = new double[Ns[i+1]-Ns[i]+2];
+				double[] Xlocal = new double[Ns[i+1]-Ns[i]+1];
+				double[] Flocal = new double[Ns[i+1]-Ns[i]+1];
 				for (int j=Ns[i];j<=Ns[i+1];j++) {
 					double x = X[j];
 					double f = F[j];
 					double newf = f*Math.pow(1-x, beta-1)/Bab;
 					Xlocal[j-Ns[i]] = x;
 					Flocal[j-Ns[i]] = newf;
-					total = total+alphaKernelQuadrature(Xlocal,Flocal,alpha);
 				}
+				total = total+alphaKernelQuadrature(Xlocal,Flocal,alpha);
 			}  		
 		}
 		for (int i=m/2;i<=m-1;i++) {
-			double[] Xlocal = new double[Ns[i+1]-Ns[i]+2];
-			double[] Flocal = new double[Ns[i+1]-Ns[i]+2];
+			double[] Xlocal = new double[Ns[i+1]-Ns[i]+1];
+			double[] Flocal = new double[Ns[i+1]-Ns[i]+1];
 			for (int j=Ns[i];j<=Ns[i+1];j++) {
 				double x = X[j];
 				double f = F[j];
 				double newf = f*Math.pow(x, alpha-1)/Bab;
 				Xlocal[j-Ns[i]] = x;
 				Flocal[j-Ns[i]] = newf;
-				total = total+betaKernelQuadrature(Xlocal,Flocal,beta);
 			}
+			total = total+betaKernelQuadrature(Xlocal,Flocal,beta);
 		}
 
 		return total;
@@ -346,13 +342,8 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 				calculatePartials(childNum1, childNum2, node);
 
-				if (node.isRoot()) {     
-					double l = 0.0;
-					for (int s=0;s<nPoints;s++)
-						l += partialIntegral[iNode][s];
-					patternLogLikelihoods[thisPattern] = Math.log(l);              	
-				}
-
+				if (node.isRoot())      
+					patternLogLikelihoods[thisPattern] = Math.log(partialIntegral[iNode][0]);              	
 			}
 		} else {
 			//Get the data for this node, and compute the partial likelihoods.
@@ -372,32 +363,21 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		int iNode = node.getNr();
 
 		for (int j=0;j<nPoints;j++)
-			xvals[j] = (1.0/(nPoints-1))*j; //TODO: Use GaussQ points
+			xvals[j] = (1.0/(nPoints-1))*j; 
 
-		for (int s=0;s<nPoints;s++) {
-			if (node.isRoot()) {
-				for (int j=0;j<nPoints;j++) {					
-					fvals[j] = partialIntegral[childNum1][j]*partialIntegral[childNum2][j];
-				}
-			} else {		
-				for (int j=0;j<nPoints;j++) {
-					fvals[j] = partialIntegral[childNum1][j]*partialIntegral[childNum2][j];
-				}
-			}
+		for (int j=0;j<nPoints;j++) 				
+			fvals[j] = partialIntegral[childNum1][j]*partialIntegral[childNum2][j];
 
-			/** 
-			 * Variance of Beta(alpha,alpha) = 1/(2*alpha+1)/4.
-			 * Variance of Bernoulli is 1/4, difference is 1/4[1 - 1/(2alpha+1)]  approx alpha/2.
-			 */
-			double alpha,beta;
-			if (node.isRoot()) {
-				alpha = rootTheta/(1-2.0*rootTheta);
-				beta = alpha;
-				if (alpha*alpha<2*EPSILON) 
-					partialIntegral[iNode][s] = 0.5*fvals[0]+0.5*fvals[nPoints-1];
-				else
-					partialIntegral[iNode][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
-			} else {
+		if (node.isRoot()) {
+			double alpha = rootTheta/(1-2.0*rootTheta);
+			double beta = alpha;
+			if (alpha*alpha<2*EPSILON) 
+				partialIntegral[iNode][0] = 0.5*fvals[0]+0.5*fvals[nPoints-1];
+			else
+				partialIntegral[iNode][0] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
+		}
+		else {
+			for (int s=0;s<nPoints;s++) {
 				double coalRate=coalescenceRate.getValue(node.getNr());
 				double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
 				if (delta<EPSILON) {
@@ -405,16 +385,15 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 				} else if (xvals[s]<EPSILON || xvals[s]>1.0-EPSILON || delta>1.0-EPSILON) {   //Saturation/Fixation with expected frequency xvals[s]. 
 					partialIntegral[iNode][s] = xvals[s]*fvals[nPoints-1] + (1.0-xvals[s])*fvals[0]; 
 				} else {
-					alpha = xvals[s]*(1-delta)/delta;
-					beta = (1-xvals[s])*(1-delta)/delta;
+					double alpha = xvals[s]*(1-delta)/delta;
+					double beta = (1-xvals[s])*(1-delta)/delta;
 					partialIntegral[iNode][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
 				}
-			}
-
-
-		}			
+			}			
+		}
 	}
-
+	
+	
 	private void calculateLeafPartials(Node node) {
 		double[] xvals = new double[nPoints];
 		double[] fvals = new double[nPoints];
@@ -423,7 +402,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		int r = redCounts[node.getNr()];
 
 		for (int j=0;j<nPoints;j++)
-			xvals[j] = (1.0/(nPoints-1))*j; //TODO: Use GaussQ points
+			xvals[j] = (1.0/(nPoints-1))*j; 
 
 		double logBinom = Binomial.logChoose(n, r);
 		for (int j=0;j<nPoints;j++) {
@@ -438,11 +417,9 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		else
 			fvals[nPoints-1]=1;   //Probability of observing  n is 1 when prob = 1
 
-
-		for (int s = 0;s<nPoints;s++) {
-			double coalRate=coalescenceRate.getValue(node.getNr());
-			double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
-			
+		double coalRate=coalescenceRate.getValue(node.getNr());
+		double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
+		for (int s = 0;s<nPoints;s++) {			
 			if (delta<EPSILON) {
 				partialIntegral[node.getNr()][s] = fvals[s]; //Zero branch length - copy probability.
 			} else if (xvals[s]<EPSILON || xvals[s]>1.0-EPSILON || delta>1.0-EPSILON) {   //Saturation/Fixation with expected frequency xvals[s]. 
@@ -452,8 +429,6 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 				double beta = (1-xvals[s])*(1-delta)/delta;
 				partialIntegral[node.getNr()][s] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
 			}
-			
-			
 		}
 	}
 
