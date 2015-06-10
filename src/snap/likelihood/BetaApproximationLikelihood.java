@@ -37,7 +37,9 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 	protected int[] redCounts; //Red allele counts for each leaf, for current pattern.
 	protected double[] patternLogLikelihoods;
 
+	//TODO: Do the analysis to bound the error introduced by these.
 	private static final double EPSILON = 1e-10;
+	private static final double M_CUTOFF = 100;
 	/**
 	 * flag to indicate the
 	 * // when CLEAN=0, nothing needs to be recalculated for the node
@@ -75,7 +77,10 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 		partialIntegral = new double[nNodes][nPoints];
 
 		//testSolve();
+		
+		double val = testBetaDensityQuadrature(nPoints,295, 203);
 
+		
 		hasDirt = Tree.IS_FILTHY;
 	}
 
@@ -96,14 +101,20 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 		//System.err.println("Do we get here?");
 		double logL=0.0;
-
-		for (int thisPattern = 0; thisPattern < data.getPatternCount(); thisPattern++) {
+		double sumL = 0.0;     //For debugging only. Sum of probabilities
+		
+		double[] patternLikelihoods = new double[data.getPatternCount()];
+		
+		for (thisPattern = 0; thisPattern < data.getPatternCount(); thisPattern++) {
 			redCounts = data.getPattern(thisPattern);
 			lineageCounts = data.getPatternLineagCounts(thisPattern);
 			traverse(tree.getRoot());    //Compute likelihood and puts value in patternLogLikelihood[thisPattern]
 
 			logL += patternLogLikelihoods[thisPattern] * data.getPatternWeight(thisPattern);   
+			sumL += Math.exp(patternLogLikelihoods[thisPattern] * data.getPatternWeight(thisPattern));
+			patternLikelihoods[thisPattern] = Math.exp(patternLogLikelihoods[thisPattern]);
 		}
+		System.err.println("Sum of probabilities = "+sumL);
 		return logL;
 	}
 
@@ -294,7 +305,8 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 					Xlocal[j-Ns[i]] = x;
 					Flocal[j-Ns[i]] = newf;
 				}
-				total = total+alphaKernelQuadrature(Xlocal,Flocal,alpha);
+				double tot = alphaKernelQuadrature(Xlocal,Flocal,alpha);
+				total = total+tot;
 			}  		
 		}
 		for (int i=m/2;i<=m-1;i++) {
@@ -307,13 +319,99 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 				Xlocal[j-Ns[i]] = x;
 				Flocal[j-Ns[i]] = newf;
 			}
-			total = total+betaKernelQuadrature(Xlocal,Flocal,beta);
+			double tot = betaKernelQuadrature(Xlocal,Flocal,beta);
+			total = total+tot;
 		}
 
 		return total;
 	}
 
+	private static double erf(double z) {  //TODO get a more accurate erf
+		double t = 1.0 / (1.0 + 0.5 * Math.abs(z));
 
+		// use Horner's method
+		double ans = 1 - t * Math.exp( -z*z   -   1.26551223 +
+				t * ( 1.00002368 +
+						t * ( 0.37409196 + 
+								t * ( 0.09678418 + 
+										t * (-0.18628806 + 
+												t * ( 0.27886807 + 
+														t * (-1.13520398 + 
+																t * ( 1.48851587 + 
+																		t * (-0.82215223 + 
+																				t * ( 0.17087277))))))))));
+		if (z >= 0) return  ans;
+		else        return -ans;
+    }
+	
+
+	/**
+	 * Given points X = [X0,...,XN], where X0=0, XN=1, and function evaluations F[i] = f(X[i])
+	 * estimates integral
+	 *     \int K(x;mu,v) f(x) dx
+	 *     where K(x;mu,v) is a (peaked) Gaussian Kernel
+	 *
+	 * Uses interpolatory quadrature.
+	 * @param X
+	 * @param F
+	 * @param alpha
+	 * @param beta
+	 * @return
+	 */
+	private double gaussianDensityQuadrature(double[] X, double[] F, double mu, double v) {
+	
+		/**
+		 * Solves:
+		 * 
+		 * 
+		 */
+	
+		int N = F.length;
+		double total = 0.0;
+		double root2 = Math.sqrt(2);
+		double rootv = Math.sqrt(v);
+		for (int i=0;i<N-1;i++) {
+			double z1 = 0.5*erf(0.5*root2*(X[i+1]-mu)/rootv) - 0.5*erf(0.5*root2*(X[i]-mu)/rootv);
+			double z2 = 0.5*Math.exp(0.5*v-mu)*(erf(0.5*root2*(X[i+1]-mu+v)/rootv) - erf(0.5*root2*(X[i]-mu+v)/rootv) );
+			double diff = Math.exp(-X[i+1])-Math.exp(-X[i]);
+			double w1 = (Math.exp(-X[i+1])*z1 - z2)/diff;
+			double w2 = (-Math.exp(-X[i])*z1 + z2)/diff;
+			total = total + w1*F[i] + w2*F[i+1];
+		}
+		return total;	
+	}
+		
+		/**
+		 * Implementation of Simpsons rules on [0,1].
+		 * @param F
+		 * @return
+		 */
+	private double simpsons(double[] F) {
+		int N = F.length;
+		double total = 0.0;
+		double h = 1.0/(N-1.0);
+		for (int i=1;i<N-1;i+=2) {
+			total = total + h/3*F[i-1] + 4*h/3*F[i] + h/3*F[i+1];
+		}
+		if (N%2==0) {
+			//Odd number of intervals. Interpolate through F[N-3]...F{N-1] and 
+			//integrate last interval.
+			total = total - h/12 * F[N-3] + 2.0*h/3 * F[N-2] + 5.0/12 * F[N-1];
+		}
+		return total;
+	}
+	
+	private double testBetaDensityQuadrature(int N,double alpha, double beta) {
+		double[] F = new double[N];
+		double[] x = new double[N];
+		
+		for(int i=0;i<N;i++) {
+			F[i] = 1.0;
+			x[i] = 1.0/(N-1.0) * i;
+		}
+		return betaDensityQuadrature(x,F,alpha,beta);
+		
+	}
 
 
 	int traverse(final Node node) {
@@ -377,13 +475,18 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 				partialIntegral[iNode][0] = betaDensityQuadrature(xvals,fvals,alpha,beta); 
 		}
 		else {
+			double coalRate=coalescenceRate.getValue(node.getNr());
+			double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
+			double m = (1.0 - delta)/delta;
 			for (int s=0;s<nPoints;s++) {
-				double coalRate=coalescenceRate.getValue(node.getNr());
-				double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
 				if (delta<EPSILON) {
 					partialIntegral[iNode][s] = fvals[s]; //Zero branch length - copy probability.
 				} else if (xvals[s]<EPSILON || xvals[s]>1.0-EPSILON || delta>1.0-EPSILON) {   //Saturation/Fixation with expected frequency xvals[s]. 
 					partialIntegral[iNode][s] = xvals[s]*fvals[nPoints-1] + (1.0-xvals[s])*fvals[0]; 
+				} else if (m>M_CUTOFF) {
+					double mu = xvals[s];
+					double v = xvals[s]*(1-xvals[s])/(m+1);
+					partialIntegral[iNode][s] = gaussianDensityQuadrature(xvals,fvals,mu,v);					
 				} else {
 					double alpha = xvals[s]*(1-delta)/delta;
 					double beta = (1-xvals[s])*(1-delta)/delta;
@@ -419,11 +522,17 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 		double coalRate=coalescenceRate.getValue(node.getNr());
 		double delta = 1.0 - Math.exp(-2.0*coalRate * node.getLength());
+		double m = (1.0 - delta)/delta;
+		
 		for (int s = 0;s<nPoints;s++) {			
 			if (delta<EPSILON) {
 				partialIntegral[node.getNr()][s] = fvals[s]; //Zero branch length - copy probability.
 			} else if (xvals[s]<EPSILON || xvals[s]>1.0-EPSILON || delta>1.0-EPSILON) {   //Saturation/Fixation with expected frequency xvals[s]. 
 				partialIntegral[node.getNr()][s] = xvals[s]*fvals[nPoints-1] + (1.0-xvals[s])*fvals[0]; 
+			} else if (m>M_CUTOFF) {
+				double mu = xvals[s];
+				double v = xvals[s]*(1-xvals[s])/(m+1);
+				partialIntegral[node.getNr()][s] = gaussianDensityQuadrature(xvals,fvals,mu,v);					
 			} else {
 				double alpha = xvals[s]*(1-delta)/delta;
 				double beta = (1-xvals[s])*(1-delta)/delta;
