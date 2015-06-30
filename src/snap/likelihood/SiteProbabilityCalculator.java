@@ -350,7 +350,7 @@ public class SiteProbabilityCalculator {
          **/
 
         //int N = u1.m_n;
-        parent.assignFt(u1.getFb());
+        parent.assignFb(u1.getFt());
         /*
           parent.resizeF(N);
           for(int n=1;n<=N;n++) {

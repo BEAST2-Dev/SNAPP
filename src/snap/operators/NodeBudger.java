@@ -38,6 +38,8 @@ import beast.util.Randomizer;
 		"of the highest child.")
 public class NodeBudger extends NodeSwapper {
 	public Input<Double> m_pWindowSize = new Input<Double>("size", "Relative size of the window in which to move the root node");
+	public Input<Boolean> fixRootInput = new Input<>("fixRoot", "Flag to indicate root cannot be moved", false);
+	
 	double m_fWindowSize;
 	int m_nInternalNodeCount = -1;
 	int m_nLeafNodeCount = -1;
@@ -70,6 +72,10 @@ public class NodeBudger extends NodeSwapper {
 			
 			//DJB Given the problems with mixing heights, and the bugs fixed since RRB's comments, have decided
 			// to implement a root move, using the description in Drummond et al, 2002.
+			if (fixRootInput.get()) {
+				return Double.NEGATIVE_INFINITY;
+			}
+			
 			double beta = 1.0/m_fWindowSize;
 			
 			beta = 2.0; //TEMPORARY FIX!!!!

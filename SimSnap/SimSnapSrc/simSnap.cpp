@@ -29,6 +29,7 @@ void printUsage(ostream& os) {
 	os<<"\t-i \tStart chain at the values used for simulation\n";
 	os<<"\t-s \tUse the following strings instead of values (for simulations) \n";
 	os<<"\t-d \tSimulate dominant markers \n";
+	os<<"\t-b \tUse BEAST MCMC instead of SNAPP MCMC\n";
 	os<<"\t\tLENGTH\tChain length\n";
 	os<<"\t\tPRIORBURN\tNumber of iterations with prior only\n";
 	os<<"\t\tALPHA BETA\tParameters of gamma prior\n";
@@ -65,6 +66,7 @@ public:
 	bool initialiseAtTrue;
 	bool snappDominant;
 	bool snappNoMutation;
+    bool useSNAPPMCMC;
 	
 	string inputfile;
 	int nsites;
@@ -79,6 +81,7 @@ public:
 		hasDominantMarkers = false;
 		snappDominant = false;
 		snappNoMutation = false;
+		useSNAPPMCMC = true;
 		
 		nsites = 0;
 		inputfile = "";
@@ -91,7 +94,7 @@ public:
 		//First read in the flags.
 		string flags = string(argv[arg]);
 		if (flags[0]=='-') {
-			if (flags.find_first_not_of("-nirdcstMD")!=string::npos)
+			if (flags.find_first_not_of("-nirdcstMDb")!=string::npos)
 				printUsage(cerr);
 			
 			if (flags.find_first_of('n')!=string::npos)
@@ -112,6 +115,8 @@ public:
 				snappDominant = true;
 			if (flags.find_first_of('M')!=string::npos)
 				snappNoMutation = true;
+			if (flags.find_first_of('b')!=string::npos)
+				useSNAPPMCMC = false;
 
 			
 			arg++;
@@ -129,7 +134,7 @@ public:
 
 
 //TODO: Pass the ArgumentParser instead of all these parameters
-void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, bool initialiseFromTruth, bool snappDominant, bool snappNoMutation, const string fileroot="test") {
+void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tree, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts, bool simulationOutput, bool polymorphicOnly, bool initialiseFromTruth, bool snappDominant, bool snappNoMutation, bool useSNAPPMCMC, const string fileroot="test") {
 	
 	os<<"<!-- Generated with SimSnap -->\n";
 	os<<"<!-- -->\n";
@@ -159,7 +164,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	
 	
-	os<<"<snap version='2.0' namespace='snap:snap.likelihood:beast.util:beast.evolution'>\n";
+	os<<"<beast version='2.0' namespace='snap:snap.likelihood:beast.util:beast.evolution'>\n";
 	os<<"\n";
 	os<<"<map name='snapprior'>snap.likelihood.SnAPPrior</map>\n";
 	os<<"<map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>\n";
@@ -169,7 +174,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	int statecount = *max_element(sampleSizes.begin(),sampleSizes.end()); //if k is the largest sample size, states are 0...k, so k+1 states
 	os<<"\t<data spec='snap.Data' id='snapalignment' dataType='integerdata' statecount='"<<statecount + 1<<"'>\n";
 	for(uint i=0;i<taxa.size();i++) {
-		os<<"\t\t<sequence taxon='"<<taxa[i]<<"' totalcount='"<<sampleSizes[i]<<"'>\n";
+		os<<"\t\t<sequence taxon='"<<taxa[i]<<"' totalcount='"<<sampleSizes[i] + 1<<"'>\n";
 		for(uint j=0;j<alleleCounts.size();j++)
 			os<<alleleCounts[j][i]<<",";
 		os<<"\n\t\t</sequence>\n";
@@ -179,7 +184,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	double alpha=2;
 	double beta=20;
     //lambda = 1/(n t) \sum_{k=1}^{n-1} k/(n-k) 
-    double t = 0.005; // t = height(tree);
+    double t = 0.02; // t = height(tree);
     int n = taxa.size();
     double fSum = 0;
     for (int k = 1; k < n; k++) {
@@ -193,11 +198,20 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	
 	os <<"\n";
 	os <<"<!-- If starting from true tree, set stateBurnin='0' -->\n";
-	if (simulationOutput) {
-		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='LENGTH' preBurnin='0' stateBurnin='PRIORBURN'>\n";
-	}
-	else { 
-		os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='0'>\n";
+    if (useSNAPPMCMC) {
+		if (simulationOutput) {
+			os <<"<run id='mcmc' spec='snap.MCMC' chainLength='LENGTH' preBurnin='0' stateBurnin='PRIORBURN'>\n";
+		}
+		else { 
+			os <<"<run id='mcmc' spec='snap.MCMC' chainLength='200000' preBurnin='0' stateBurnin='0'>\n";
+		}
+	} else {
+		if (simulationOutput) {
+			os <<"<run id='mcmc' spec='beast.core..MCMC' chainLength='LENGTH' preBurnin='0'>\n";
+		}
+		else { 
+			os <<"<run id='mcmc' spec='beast.core.MCMC' chainLength='200000' preBurnin='0'>\n";
+		}
 	}
 	
 	os <<"        <state>\n";
@@ -276,8 +290,11 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 
 	
 
-	if (!polymorphicOnly)
+	if (!polymorphicOnly) {
 		os<<" non-polymorphic='true'";
+	} else {
+		os<<" non-polymorphic='false'";
+	}
 	if (snappDominant)
 		os<<" dominant = 'true'";
 	if (snappNoMutation)
@@ -290,8 +307,10 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os<<"				  </siteModel>\n";
 	os <<"            </snaptreelikelihood>\n";
 	os <<"        </distribution>\n";
-	os <<"\n";
-	os <<"        <stateDistribution idref='prior'/>\n";
+	if (useSNAPPMCMC) {
+		os <<"\n";
+		os <<"        <stateDistribution idref='prior'/>\n";
+	}
 	os <<"\n";
 	
 	os <<"        <!--uncomment following line to estimate lambda-->\n";
@@ -375,7 +394,7 @@ void output_xml(ostream& os, const vector<string>& taxa, phylo<basic_newick>& tr
 	os <<"</run>\n";
 	os <<"\n";
 	os <<"\n";
-	os <<"</snap>\n";
+	os <<"</beast>\n";
 }
 
 void output_nexus(ostream& os, const vector<string>& species, const vector<uint>& sampleSizes, double u, double v, const vector<vector<uint> >&alleleCounts) {
@@ -603,7 +622,7 @@ int main(int argc, char* argv[]) {
 		
 		if (ap.outputXML) {
         	
-			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,ap.snappDominant,ap.snappNoMutation,shortFileName);
+			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,ap.snappDominant,ap.snappNoMutation,ap.useSNAPPMCMC,shortFileName);
 		} else {
 			output_nexus(*os,species,sampleSizes,u,v,alleleCounts);
         }  
