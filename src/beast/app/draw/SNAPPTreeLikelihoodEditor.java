@@ -64,8 +64,8 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
 
     private Object setUpMutationRates() {
     	double proportionZeros = data.getProportionZeros();
-    	double muU = 1 / (2.0 * proportionZeros);
-    	double muV = 1 / (2.0 * (1.0- proportionZeros));
+    	double muU = 1 / (2.0 * (1.0 - proportionZeros));
+    	double muV = 1 / (2.0 * proportionZeros);
     	RealParameter pU = substModel.m_pU.get();
     	pU.valuesInput.setValue(muU + "", pU);
     	RealParameter pV = substModel.m_pV.get();
