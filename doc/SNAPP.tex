@@ -110,6 +110,8 @@ v & = & \frac{1}{2\pi_1} \\
 & = & \frac{1}{2(1-\pi_0)}.
 \end{eqnarray*}
 
+Note, a fairly good estimate $\pi_0$ and $\pi_1$ from the data is to use the proportion of zeros and ones. Let $p0$ be the number of zeros, and $p1$ the number of ones (just counting the number of zeros and ones respectively in the alignment), then setting $\pi_0=\frac{p1]{p0+p1}$ and $\pi_1=\frac{p0}{p0+p1}$. Yes, we know, it is confusing that $p1$ is in the numerator for $\pi_0$. This is what BEAUti calculates when pressing the "Calc mutation rates" button in the "Model parameters" panel.
+
 %
 
 %A justifiable estimate for $\lambda$ can be obtained as follows. First, estimate the
