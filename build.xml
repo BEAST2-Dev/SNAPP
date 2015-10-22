@@ -13,7 +13,7 @@
 	<property name="lib" location="../SNAPP/lib" />
 	<property name="dist" location="../SNAPP/dist" />
         <property name="beast2path" location="../beast2" />
-        <property name="beast2build" location="../beast2" />
+        <property name="beast2build" location="../beast2/build" />
         <property name="libBeast2" location="${beast2path}/lib" />
         <property name="srcBeast2" location="${beast2path}/src" />
         <property name="beast2classpath" location="${beast2path}/build" />
@@ -69,6 +69,8 @@
 			<!-- compile JUnit test classes -->
 			<include name="test/snap/**" />
 			<exclude name="snap/SNAPPHeatedMCMC.java"/>
+			<exclude name="snap/likelihood/SnAPForestLikelihood.java"/>
+			<exclude name="snap/app/analysis/SNAPPSkylineAnalyser.java"/>
 		</javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties"/>
@@ -91,7 +93,7 @@
 			<zipgroupfileset dir="${lib}" includes="mtj.jar" />
 			<!--zipgroupfileset dir="${lib}" includes="beast.jar" /-->
 			<fileset dir="${beast2build}">
-				<include name="/**/*"/>
+				<include name="**/*.class"/>
 			</fileset>
 			<zipgroupfileset dir="${libBeast2}" includes="jam.jar"/>
 			<fileset dir="${build}">
@@ -192,8 +194,8 @@
 	
 	
 	<!-- Release -->
-	<property name="version" value="1.2.3" />
-	<property name="version_number" value="1.2.3" />
+	<property name="version" value="1.2.4" />
+	<property name="version_number" value="1.2.4" />
 	<property name="release_dir" value="release" />
 	<property name="copyright" value="SNAPP development team 2011-2015" />
 
