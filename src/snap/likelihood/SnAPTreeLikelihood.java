@@ -40,6 +40,7 @@ import beast.core.State;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.TreeInterface;
@@ -192,6 +193,11 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	    	}
     	}
 		System.err.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);
+		
+		branchRateModel = branchRateModelInput.get();
+		if (branchRateModel != null && !(branchRateModel instanceof StrictClockModel)) {
+			throw new Exception("Only strict clock model allowed for branchRateModel, not " + branchRateModel.getClass().getName());
+		}
 
     }
 
@@ -231,6 +237,12 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			
 			
 			double [] fCategoryRates = m_siteModel.getCategoryRates(null);
+			if (branchRateModel != null) {
+				double branchRate = branchRateModel.getRateForBranch(null);
+				for (int i = 0; i < fCategoryRates.length; i++) {
+					fCategoryRates[i] *= branchRate;
+				}
+			}
 			double [] fCategoryProportions = m_siteModel.getCategoryProportions(null);
 			double [][] patternProbs = new double[m_siteModel.getCategoryCount()][];
 			int nCategories = m_siteModel.getCategoryCount();
