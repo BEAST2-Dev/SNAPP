@@ -150,6 +150,7 @@ public class TreeSetAnalyser {
                 new Arguments.Option[]{
                         new Arguments.Option("window", "Provide a console window"),
                         new Arguments.Option("options", "Display an options dialog"),
+                        new Arguments.Option("nooptions", "Suppress options dialog. Overrides options flag if both are specified."),
                         new Arguments.Option("working", "Change working directory to input file's directory"),
                         new Arguments.StringOption("tree", "newick tree", "check whether this tree is in the 95% credible set"),
                         new Arguments.IntegerOption("burnin", "Percentage of trees to be considered burn-in, default 10%"),
@@ -174,6 +175,7 @@ public class TreeSetAnalyser {
 
         final boolean window = arguments.hasOption("window");
         final boolean options = arguments.hasOption("options");
+        final boolean nooptions = arguments.hasOption("nooptions");
         final boolean working = arguments.hasOption("working");
         String fileNamePrefix = null;
 
@@ -212,7 +214,7 @@ public class TreeSetAnalyser {
 
         File inputFile = null;
 
-        if (options) {
+        if (options && !nooptions) {
             String titleString = "<html><center><p>SNAPP Tree Set Analyser<br>" +
                     "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
             javax.swing.Icon icon = IconUtils.getIcon(TreeSetAnalyser.class, "snapp.png");
