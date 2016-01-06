@@ -26,7 +26,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
 		m_bAddButtons = bAddButtons;
     	m_bExpandOption = bExpand;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = plugin;
 		this.itemNr = itemNr;
 
         m_listBox = Box.createVerticalBox();
