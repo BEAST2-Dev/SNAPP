@@ -386,7 +386,7 @@ void simulateMultipleSites(phylo<basic_newick>& tree, double u, double v, const 
 		proportionConstant = -1.0;
 	
 	
-	
+cerr << "Number of constant sites " <<  (numberAttemptsTotal - nSites) << endl;
 	
 }
 
