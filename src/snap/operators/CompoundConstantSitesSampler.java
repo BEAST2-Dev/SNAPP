@@ -44,20 +44,20 @@ public class CompoundConstantSitesSampler extends Operator {
 		
 		int n0 = ascSiteCount.getValue(0);
 		int n1 = ascSiteCount.getValue(1);
-		int n = n0 + n1;
+		//int n = n0 + n1;
 		double alpha = siteCount;
 		//double beta = 1.0/alpha;
-		int d = 6; // digits of precission
+		int d = 6; // digits of precision
 		double m = GammaDist.inverseF(alpha, 1.0, d, Randomizer.nextDouble());
 		
 
-		double lambda0 = q0new / (q0new + q1new);
-		double lambda1 = q1new / (q0new + q1new);
-		
+		double lambda0 = q0new / (1 - q0new - q1new);
+		double lambda1 = q1new / (1 - q0new - q1new);
 		
 		int n0new = (int) Randomizer.nextPoisson(lambda0 * m);
 		int n1new = (int) Randomizer.nextPoisson(lambda1 * m);
 		if (n0new <= ascSiteCount.getLower() || n1new <= ascSiteCount.getLower() || n0new > ascSiteCount.getUpper() || n1new > ascSiteCount.getUpper()) {
+			System.err.println("PROBLEM: Generated strange Ascertained site count");
 			return Double.NEGATIVE_INFINITY;
 		}
 		ascSiteCount.setValue(0, n0new);
@@ -65,6 +65,7 @@ public class CompoundConstantSitesSampler extends Operator {
 		//System.out.println("NEW: " + n0new + " " + n1new + " " + ascSiteCount);
 		logHR += siteCount * Math.log((1.0 - q0 - q1)/(1.0 - q0new - q1new));
 		logHR += n0 * Math.log(q0) + n1 * Math.log(q1) - n0new * Math.log(q0new) - n1new * Math.log(q1new);
+		
 		return logHR;
 	}
 
