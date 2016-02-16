@@ -184,6 +184,11 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		// calculate Likelihood Correction
 		m_fLogLikelihoodCorrection = 0;
 		if (useLogLikelihoodCorrection.get()) {
+			// RRB: note that increasing the number of constant sites
+			// does not change the m_fLogLikelihoodCorrection since the
+			// contribution of constant sites is zero. This means,
+			// m_fLogLikelihoodCorrection does not need to be recalculated
+			// when ascSiteCount changes.
 	    	for (int i = 0; i < numPatterns; i++) {
 	            int [] thisSite = m_data2.getPattern(i);
 	            int [] lineageCounts = m_data2.getPatternLineagCounts(i);
