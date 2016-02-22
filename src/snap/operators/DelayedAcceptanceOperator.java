@@ -234,7 +234,7 @@ public class DelayedAcceptanceOperator extends Operator {
 	}
 	
 	@Override
-	public List<StateNode> listStateNodes() throws Exception {
+	public List<StateNode> listStateNodes() {
 		return operator.listStateNodes();
 	}
 

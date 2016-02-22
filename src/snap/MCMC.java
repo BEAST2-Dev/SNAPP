@@ -36,11 +36,11 @@ public class MCMC extends beast.core.MCMC {
 	public Input<Integer> m_killAfterXSeconds = new Input<Integer>("killAfter", "Number of seconds after which the job is killed. When negative (default) this is ignored", -1);
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		super.initAndValidate();
 		if (m_oStateBurnIn.get() > 0) {
 			if (m_stateDistribution.get() == null) {
-				throw new Exception("stateBurnin is larger than zero, but stateUncertainty not specified");
+				throw new IllegalArgumentException("stateBurnin is larger than zero, but stateUncertainty not specified");
 			}
 		}
 	} // init

@@ -18,7 +18,7 @@ public class ApproximateSampledLikelihood extends BEASTObject implements Approxi
 	SnAPTreeLikelihood treelikelihood;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		treelikelihood = treeLikelihoodInput.get();
     	prior = priorInput.get();
 	}

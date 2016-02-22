@@ -66,7 +66,7 @@ public class SnAPPrior extends Distribution {
 	int PRIORCHOICE = 2;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	if (m_pKappa.get() == null) {
     		System.err.println("WARNING: kappa parameter not set for SnAPPrior. using default value of 1.0");
     		m_pKappa.setValue(new RealParameter(new Double[]{1.0}), this);
@@ -84,7 +84,7 @@ public class SnAPPrior extends Distribution {
 
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0.0;
 
         double alpha = m_pAlpha.get().getValue();
@@ -254,7 +254,7 @@ public class SnAPPrior extends Distribution {
         return logP;
     } // calculateLogLikelihood
 
-    double heightSum(Node node) throws Exception {
+    double heightSum(Node node) {
         if (node.isLeaf()) {
             return 0;
         } else {
@@ -269,7 +269,7 @@ public class SnAPPrior extends Distribution {
 
     //Returns a list of branching times in the tree, sorted in an decreasing sequence. First one is
     //the height of the mrca of the tree.
-    List<Double> getSortedHeights(Node node) throws Exception {
+    List<Double> getSortedHeights(Node node) {
         return null;
     }
 

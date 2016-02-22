@@ -112,15 +112,15 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	IntegerParameter ascSiteCount;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		ascSiteCount = ascSiteCountInput.get();
 
 		// check that alignment has same taxa as tree
     	if (!(dataInput.get() instanceof Data)) {
-    		throw new Exception("The data input should be a snap.Data object");
+    		throw new IllegalArgumentException("The data input should be a snap.Data object");
     	}
     	if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
-    		throw new Exception("The number of nodes in the tree does not match the number of sequences");
+    		throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
     	}
 
     	m_bUsenNonPolymorphic = m_usenNonPolymorphic.get();
@@ -171,7 +171,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     		m_nSampleSizes[i] = nSampleSizes[i];
     	}
     	if (!(treeInput.get().getRoot() instanceof NodeData)) {
-    		throw new Exception("Tree has no nodes of the wrong type. NodeData expected, but found " + 
+    		throw new IllegalArgumentException("Tree has no nodes of the wrong type. NodeData expected, but found " + 
     				treeInput.get().getRoot().getClass().getName());
     	}
 
@@ -201,7 +201,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		
 		branchRateModel = branchRateModelInput.get();
 		if (branchRateModel != null && !(branchRateModel instanceof StrictClockModel)) {
-			throw new Exception("Only strict clock model allowed for branchRateModel, not " + branchRateModel.getClass().getName());
+			throw new IllegalArgumentException("Only strict clock model allowed for branchRateModel, not " + branchRateModel.getClass().getName());
 		}
 
     }

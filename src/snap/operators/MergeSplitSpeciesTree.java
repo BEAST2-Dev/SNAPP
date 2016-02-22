@@ -24,7 +24,7 @@ public class MergeSplitSpeciesTree extends TreeOperator {
 	double epsilon;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		tree = treeInput.get();
 		coalescentRate = coalescentRateInput.get();
 		epsilon = scaleFactorInput.get();

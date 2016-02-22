@@ -18,7 +18,7 @@ public class AncestralTreeHeightLogger extends BEASTObject implements Loggable {
 	
 	Tree tree;
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		tree = treeInput.get();
 
 	}

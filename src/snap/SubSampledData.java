@@ -16,7 +16,7 @@ public class SubSampledData extends Data {
 	public Input<Double> proportionInput = new Input<Double>("proportion", "proportion of lineages to sample from each species, provided the minimum number is reached", 0.333);
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		Data data = dataInput.get();
 		m_dataType = data.getDataType();
 		List<TaxonSet> taxa = data.m_taxonsets.get();

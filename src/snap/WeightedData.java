@@ -18,14 +18,14 @@ public class WeightedData extends Data {
 			"Patterns and complementary patterns are found and weights swapped", false);
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		super.initAndValidate();
 		
 		String [] sStr = weightInput.get().split(",");
 		
 		int siteCount = getSiteCount() + patternWeight[patternWeight.length - 2] + patternWeight[patternWeight.length - 1];
 		if (sStr.length != siteCount) {
-			throw new Exception("Number of weights (" + sStr.length + ") does not match number of sites (" + siteCount + ") in alignment");
+			throw new IllegalArgumentException("Number of weights (" + sStr.length + ") does not match number of sites (" + siteCount + ") in alignment");
 		}
 		Arrays.fill(patternWeight, 0);
 		for (int i = 0; i < sStr.length; i++) {

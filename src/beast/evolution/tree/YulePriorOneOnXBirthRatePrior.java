@@ -9,7 +9,7 @@ import beast.evolution.speciation.SpeciesTreeDistribution;
 public class YulePriorOneOnXBirthRatePrior extends SpeciesTreeDistribution {
 
 	   @Override
-	    public void initAndValidate() throws Exception {
+	    public void initAndValidate() {
 	        super.initAndValidate();
 	        
 	        // make sure that all tips are at the same height,

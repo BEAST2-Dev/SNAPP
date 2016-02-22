@@ -64,7 +64,7 @@ public class BetaApproximationLikelihood extends GenericTreeLikelihood {
 
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		tree = (Tree) treeInput.get();
 		data = (Data) dataInput.get();
 		patternLogLikelihoods = new double[data.getPatternCount()];

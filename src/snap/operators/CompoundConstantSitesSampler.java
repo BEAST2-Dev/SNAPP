@@ -22,7 +22,7 @@ public class CompoundConstantSitesSampler extends Operator {
 	Operator operator;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		ascSiteCount = ascSiteCountInput.get();
 		if (ascSiteCount.getDimension() != 2) {
 			throw new RuntimeException("Expected ascSiteCount to have dimension 2, not " + ascSiteCount.getDimension());

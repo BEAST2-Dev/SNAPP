@@ -67,7 +67,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	}
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		// guess taxon set if no sequences and no taxonsets are known
 		if (/*m_pSequences.get().size() == 0 && */m_taxonsets.get().size() == 0 && m_rawData.get() != null) {
 			while (sequenceInput.get().size() > 0) {
@@ -114,7 +114,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 								sequence.totalCountInput.setValue(2, sequence);
 								SNPSequence.m_sequences.setValue(sequence, SNPSequence);
 							} else {
-								throw new Exception("Could not find taxon " + taxon.getID() + " in alignment");
+								throw new IllegalArgumentException("Could not find taxon " + taxon.getID() + " in alignment");
 							}
 						}
 					}
@@ -145,7 +145,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 								Sequence binarySequence = toBinarySequence(taxon.getID(), refferenceSeq, seq);
 								SNPSequence.m_sequences.setValue(binarySequence, SNPSequence);
 							} else {
-								throw new Exception("Could not find taxon " + taxon.getID() + " in alignment");
+								throw new IllegalArgumentException("Could not find taxon " + taxon.getID() + " in alignment");
 							}
 						}
 					}
@@ -173,7 +173,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	} // initAndValidate
 	
 	private Sequence toBinarySequence(String id, String refferenceSeq,
-			String seqStr) throws Exception {
+			String seqStr) {
 		Sequence binarySequence = new Sequence();
 		binarySequence.setID(id);
 		seqStr = seqStr.replaceAll("\\s", "");
@@ -194,7 +194,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	/** guesses taxon sets based on pattern in sRegExp based
 	 * on the taxa in m_rawData 
 	 */
-	public int guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
+	public int guessTaxonSets(String sRegexp, int nMinSize) {
 		m_taxonsets.get().clear();
 		List<Taxon> taxa = new ArrayList<Taxon>();
 		for (Sequence sequence : m_rawData.get().sequenceInput.get()) {

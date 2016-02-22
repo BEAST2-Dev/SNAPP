@@ -24,7 +24,7 @@ public class SkylineAnalyser extends Runnable {
 
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 
 	}
 

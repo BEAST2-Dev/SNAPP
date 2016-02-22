@@ -21,7 +21,7 @@ public class SNPSequence extends Sequence {
 	}
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		int nNrOfStates = 0;
 		
 		boolean warned = false;
@@ -45,7 +45,7 @@ public class SNPSequence extends Sequence {
 	}
 
 	@Override
-    public List<Integer> getSequence(DataType dataType) throws Exception {
+    public List<Integer> getSequence(DataType dataType) {
         Integer [] sequences = null;
         
         // grab info from sub sequences and add them up
@@ -60,7 +60,7 @@ public class SNPSequence extends Sequence {
                 List<Integer> sequence2 = sequence.getSequence(dataType);
                 // sanity check: make sure sequence2 is of same length as rest
                 if (sequence2.size() != sequences.length) {
-                	throw new Exception("sequence " + sequence.taxonInput.get() + " is of length " + sequence2.size() + 
+                	throw new IllegalArgumentException("sequence " + sequence.taxonInput.get() + " is of length " + sequence2.size() + 
                 			" but it was expected to be of length " + sequences.length);
                 }
                 // add instances from sequence2 to sequences

@@ -15,7 +15,7 @@ public class AncestralTree extends Tree {
 	
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
         // make a chain of single node child nodes
         final List<String> sTaxa = m_taxonset.get().asStringList();
         if (sTaxa.size() != 1) {

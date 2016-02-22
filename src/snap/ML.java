@@ -42,11 +42,11 @@ public class ML extends beast.core.MCMC {
 	List<Integer> m_gammas;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		super.initAndValidate();
 		if (m_oStateBurnIn.get() > 0) {
 			if (m_stateDistribution.get() == null) {
-				throw new Exception("stateBurnin is larger than zero, but stateUncertainty not specified");
+				throw new IllegalArgumentException("stateBurnin is larger than zero, but stateUncertainty not specified");
 			}
 		}
 		

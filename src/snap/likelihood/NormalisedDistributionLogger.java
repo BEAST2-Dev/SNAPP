@@ -18,7 +18,7 @@ public class NormalisedDistributionLogger extends BEASTObject implements Loggabl
     Distribution distribution;
     
     @Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
     	treeLikelihood = treeLikelihoodInput.get();
     	distribution = distributionInput.get();
 	}

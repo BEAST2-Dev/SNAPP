@@ -10,6 +10,7 @@ import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.IntegerParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.sitemodel.SiteModel;
@@ -40,9 +41,10 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 	Alignment data = null;
 	SnAPTreeLikelihood treelikelihood;
 	TreeInterface tree = null;
+	IntegerParameter ascSiteCount;
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		treelikelihood = treeLikelihoodInput.get();
 		SiteModel.Base siteModel = (SiteModel.Base) treelikelihood.siteModelInput.get();
 		SnapSubstitutionModel substitutionmodel = ((SnapSubstitutionModel)siteModel.substModelInput.get());
@@ -50,6 +52,8 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
     	prior = priorInput.get();
     	tree = treelikelihood.treeInput.get();
     	data = treelikelihood.dataInput.get();
+		ascSiteCount = treelikelihood.ascSiteCountInput.get();
+
 		
         if (prior == null) {
         	throw new RuntimeException("DelayedAcceptanceOperator: could not identify prior in posterior input");
@@ -63,7 +67,8 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 
 
     private void calcDistanceAndVariance() {
-    	// set up distance matrix
+    	// Compute and estimate of the genetic distances from the SNP data, together with an estimate of 
+    	//sampling variances.
     	
 		Distance d = new Distance.Base() {
 			@Override
@@ -87,6 +92,11 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 						}
 						Kxy += weight;
 					}
+				}
+				
+				//TODO NEED TO ADD ascertained site counts to Kxy.
+				if (ascSiteCount != null) {
+					Kxy += ascSiteCount.getValue(0) + ascSiteCount.getValue(1);
 				}
 				return d / Kxy;
 			}
@@ -116,6 +126,11 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 							v += weight * 2.0 * ((nkx - 1)/(nkx * nkx)) * ((3.0 - 2.0 * nkx) * v1 * v1 + 2.0 * (nkx - 2.0) * v2 + v1);
 						}
 						Kxy += weight;
+					}
+					
+					//TODO NEED TO ADD ascertained site counts to Kxy.	
+					if (ascSiteCount != null) {
+						Kxy += ascSiteCount.getValue(0) + ascSiteCount.getValue(1);
 					}
 				}
 				v = v / (Kxy * Kxy);

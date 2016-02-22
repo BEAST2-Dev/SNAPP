@@ -49,7 +49,7 @@ public class GammaParameter extends RealParameter {
 	static Tree m_tree;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
     	if (lowerValueInput.get() != null) {
     		m_fLower = lowerValueInput.get();
     	} else {

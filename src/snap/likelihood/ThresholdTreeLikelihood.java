@@ -47,7 +47,7 @@ public class ThresholdTreeLikelihood extends GenericTreeLikelihood {
 
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		tree = (Tree) treeInput.get();
 		data = dataInput.get();
 		siteModel = (SiteModel) siteModelInput.get();
