@@ -24,7 +24,7 @@ public class NormalisedDistributionLogger extends BEASTObject implements Loggabl
 	}
     
 	@Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
         out.print(getID() + "\t");
     }
 

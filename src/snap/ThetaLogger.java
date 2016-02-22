@@ -22,7 +22,7 @@ public class ThetaLogger extends BEASTObject implements Loggable {
 	
 
 	@Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
 		RealParameter param = (RealParameter) m_coalescenceRate.get();
         int nValues = param.getDimension();
         if (nValues == 1) {

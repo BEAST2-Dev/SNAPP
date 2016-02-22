@@ -364,7 +364,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	@Override public void sample(State state, Random random) {};
 	
 	@Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
 		super.init(out);
 		if (!m_bUsenNonPolymorphic) {
 			out.append("P0\t");

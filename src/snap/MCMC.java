@@ -26,6 +26,12 @@
 package snap;
 
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import beast.core.*;
 import beast.util.*;
 
@@ -47,7 +53,7 @@ public class MCMC extends beast.core.MCMC {
 
 
 	@Override
-	public void run() throws Exception {
+	public void run() throws SAXException, IOException, ParserConfigurationException {
         // initialises log so that log file headers are written, etc.
         for (Logger log : loggersInput.get()) {
             log.init();
@@ -220,7 +226,7 @@ public class MCMC extends beast.core.MCMC {
 				double fLogLikelihood = posterior.calculateLogP();
 				state.setEverythingDirty(false);
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-6) {
-					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
+					throw new RuntimeException("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}
 				if (iSample > NR_OF_DEBUG_SAMPLES) {
 					bDebug = false;

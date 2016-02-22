@@ -24,7 +24,7 @@ public class AncestralTreeHeightLogger extends BEASTObject implements Loggable {
 	}
 
 	@Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
 		for (int i = 0; i < tree.getNodeCount(); i++) {
 			out.append("node" + i + "\t");
 		}

@@ -26,6 +26,7 @@
 package snap;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class ML extends beast.core.MCMC {
 	} // init
 
 
-	public void run() throws Exception {
+	public void run() throws IOException {
 		long tStart = System.currentTimeMillis();
 		state.setEverythingDirty(true);
 		
@@ -183,7 +184,7 @@ public class ML extends beast.core.MCMC {
 				//System.err.println(m_state.toString());
 				double fLogLikelihood = calc();
 				if (Math.abs(fLogLikelihood - fOldLogLikelihood) > 1e-10) {
-					throw new Exception("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
+					throw new RuntimeException("Likelihood incorrectly calculated: " + fOldLogLikelihood + " != " + fLogLikelihood);
 				}
 				if (iSample > NR_OF_DEBUG_SAMPLES) {
 					bDebug = false;
@@ -201,7 +202,7 @@ public class ML extends beast.core.MCMC {
 	} // run;
 
 	/** calculate log likelihood for posterior **/
-	protected double calc() throws Exception {
+	protected double calc() {
 		prepare();
 		// recalculates all likelihoods from scratch
 		double fLogP = 0;

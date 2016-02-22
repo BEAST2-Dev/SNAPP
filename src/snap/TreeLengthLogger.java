@@ -23,7 +23,7 @@ public class TreeLengthLogger extends BEASTObject implements Loggable {
 	}
 
 	@Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
 		final Tree tree = m_tree.get();
 		out.print(tree.getID() + ".length\t");
 	}

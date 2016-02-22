@@ -24,7 +24,7 @@ public class TreeNodeLogger extends BEASTObject implements Loggable, Function {
 	}
 
 	@Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
 		final Tree tree = m_tree.get();
 		initLog(out, tree.getRoot());
 	}

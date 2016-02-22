@@ -14,7 +14,7 @@ public class SNAPPHeatedMCMC extends HeatedMCMC {
 	int chainNr = 0;
 	
 	@Override
-	public void setChainNr(int i, int resampleEvery) throws Exception {
+	public void setChainNr(int i, int resampleEvery) {
 		if (i > 0) {
 			posterior = posteriorInput.get();
 			List<Distribution> distrs = ((CompoundDistribution)posterior).pDistributions.get();
