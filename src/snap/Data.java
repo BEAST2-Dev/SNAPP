@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import beast.app.beauti.Beauti;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -68,6 +69,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	
 	@Override
 	public void initAndValidate() {
+		
 		// guess taxon set if no sequences and no taxonsets are known
 		if (/*m_pSequences.get().size() == 0 && */m_taxonsets.get().size() == 0 && m_rawData.get() != null) {
 			while (sequenceInput.get().size() > 0) {
@@ -197,13 +199,13 @@ public class Data extends beast.evolution.alignment.Alignment {
 	public int guessTaxonSets(String sRegexp, int nMinSize) {
 		m_taxonsets.get().clear();
 		List<Taxon> taxa = new ArrayList<Taxon>();
-		for (Sequence sequence : m_rawData.get().sequenceInput.get()) {
+		for (String name : m_rawData.get().getTaxaNames()) { //Sequence sequence : m_rawData.get().sequenceInput.get()) {
 			Taxon taxon = new Taxon();
 			// ensure sequence and taxon do not get same ID
-			if (sequence.getID() == null || sequence.getID().equals(sequence.taxonInput.get())) {
-				sequence.setID("_"+sequence.getID());
-			}
-			taxon.setID(sequence.taxonInput.get());
+			//if (sequence.getID() == null || sequence.getID().equals(sequence.taxonInput.get())) {
+			//	sequence.setID("_"+sequence.getID());
+			//}
+			taxon.setID(name); //sequence.taxonInput.get());
 			taxa.add(taxon);
 		}
 		HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
