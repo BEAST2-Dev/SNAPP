@@ -42,7 +42,8 @@ public class SNAPPSkylineAnalyser {
 					// create a console to show standard error and standard output
 					//analyser.consoleApp = 
 					new ConsoleApp("SkylineAnalyser", // name 
-							"Skyline Analyser" // console title
+							"Skyline Analyser", // console title
+							null
 							);
 
 					analyser.run();
