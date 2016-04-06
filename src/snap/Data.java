@@ -370,7 +370,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 			}
 		}
 		if (removed > 0) {
-			System.out.println("WARNING: removed " + removed + " patterns (" + weightRemoved + " sites) becaues they have one or more branches without data.");
+			System.out.println("WARNING: removed " + removed + " patterns (" + weightRemoved + " sites) because they have one or more branches without data.");
 		}
 		
 		// find unique patterns
