@@ -28,8 +28,8 @@ import beast.util.Randomizer;
 
 
 
-@Description("An operator that uses an approximate likelihood and filters out proposales with low acceptance " +
-		"based on the approximate likleihood")
+@Description("An operator that uses an approximate likelihood and filters out proposals with low acceptance " +
+		"based on the approximate likelihood")
 public class DelayedAcceptanceOperator extends Operator {
 	public Input<Operator> operatorInput = new Input<Operator>("operator", "Operator for proposing moves", Validate.REQUIRED);
 
