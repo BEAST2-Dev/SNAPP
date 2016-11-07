@@ -50,7 +50,7 @@ import snap.likelihood.SnAPLikelihoodCore;
 
 
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
-//@Citation("David Bryant, Remco Bouckaert, Noah Rosenberg. Inferring species trees directly from SNP and AFLP data: full coalescent analysis without those pesky gene trees. arXiv:0910.4193v1. http://arxiv.org/abs/0910.4193")
+
 @Citation(value="David Bryant, Remco Bouckaert, Joseph Felsenstein, Noah Rosenberg, Arindam RoyChoudhury. Inferring Species Trees Directly from Biallelic Genetic Markers: Bypassing Gene Trees in a Full Coalescent Analysis. Mol. Biol. Evol. 29(8):1917-1932, 2012", 
 	DOI="10.1016/j.ympev.2011.10.01")
 public class SnAPTreeLikelihood extends TreeLikelihood {
@@ -108,7 +108,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	// of a sufficient statistic for the likelihood
 	double m_fLogLikelihoodCorrection = 0;
 	
-	// represents number of constant sites
+	// Sampled parameter equal to the number of sites which have been removed from the data during ascertainment
 	IntegerParameter ascSiteCount;
 	
 	@Override
@@ -120,7 +120,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     		throw new IllegalArgumentException("The data input should be a snap.Data object");
     	}
     	if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
-    		throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
+    		throw new IllegalArgumentException("The number of leaves in the tree does not match the number of sequences");
     	}
 
     	m_bUsenNonPolymorphic = m_usenNonPolymorphic.get();
@@ -171,7 +171,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     		m_nSampleSizes[i] = nSampleSizes[i];
     	}
     	if (!(treeInput.get().getRoot() instanceof NodeData)) {
-    		throw new IllegalArgumentException("Tree has no nodes of the wrong type. NodeData expected, but found " + 
+    		throw new IllegalArgumentException("Tree has nodes of the wrong type. NodeData expected, but found " + 
     				treeInput.get().getRoot().getClass().getName());
     	}
 
@@ -181,7 +181,11 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		
 		
 		
-		// calculate Likelihood Correction
+		// calculate Likelihood Correction. 
+		// When the assignment of individuals to populations/species is fixed, the allele counts in each population are sufficient 
+		// statistics for the species tree parameters. However when testing species assignments this is no longer the case.
+		// To address this we multiply the likelihood computed from allele counts by the probability of observing
+		// the given sequences given those allele counts (and the species assignments).
 		m_fLogLikelihoodCorrection = 0;
 		if (useLogLikelihoodCorrection.get()) {
 			// RRB: note that increasing the number of constant sites
@@ -189,9 +193,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			// contribution of constant sites is zero. This means,
 			// m_fLogLikelihoodCorrection does not need to be recalculated
 			// when ascSiteCount changes.
+			// DJB: This is true, but only until we start looking at non-constant sites being ascertained.
 	    	for (int i = 0; i < numPatterns; i++) {
-	            int [] thisSite = m_data2.getPattern(i);
-	            int [] lineageCounts = m_data2.getPatternLineagCounts(i);
+	            int [] thisSite = m_data2.getPattern(i);  //count of red alleles for this site
+	            int [] lineageCounts = m_data2.getPatternLineagCounts(i); //count of total lineages for this site
 	            for (int j = 0; j < thisSite.length; j++) {
 	            	m_fLogLikelihoodCorrection -= logBinom(thisSite[j], lineageCounts[j]) * m_data2.getPatternWeight(i);
 	            }
@@ -201,6 +206,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		
 		branchRateModel = branchRateModelInput.get();
 		if (branchRateModel != null && !(branchRateModel instanceof StrictClockModel)) {
+			//We assume that the mutation rate (but not theta) is constant for the species tree.
 			throw new IllegalArgumentException("Only strict clock model allowed for branchRateModel, not " + branchRateModel.getClass().getName());
 		}
 
@@ -287,7 +293,11 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 				}
 				logP += (double)freq * Math.log(siteL);
 			}
-			// correction for constant sites
+			// correction for constant sites. If we are sampling the numbers of constant sites 
+			// (stored in ascSiteCount) then we include these probabilities. Otherwise we 
+			// assume that we want conditional likelihood, in which case we divide 
+			// by the probability that a site is not ascertained (or more correctly,
+			// subtract the log probability.
 			if (!m_bUsenNonPolymorphic) {
 				m_fP0 =  fSiteProbs[numPatterns - 2];
 				m_fP1 =  fSiteProbs[numPatterns - 1];
