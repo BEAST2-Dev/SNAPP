@@ -55,13 +55,22 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 		ascSiteCount = treelikelihood.ascSiteCountInput.get();
 
 		
+		
+		
+		
         if (prior == null) {
         	throw new RuntimeException("DelayedAcceptanceOperator: could not identify prior in posterior input");
         }
         if (data == null || tree == null) {
         	throw new RuntimeException("DelayedAcceptanceOperator: could not identify data or tree in treelikelihood in posterior input");
         }
-
+        if (!treelikelihood.m_usenNonPolymorphic.get() && ascSiteCount==null) {
+        	throw new RuntimeException("DelayedAcceptanceOperator: distance based approximation not available unless nonPolymorphic sites included or estimated");
+        }
+        if (treelikelihood.hasDominantMarkers.get()) {
+        	throw new RuntimeException("DelayedAcceptanceOperator: distance-based delayed acceptance not available for dominant markers (if you want it, contact David Bryant)");
+        }
+        
         calcDistanceAndVariance();
 	}
 
@@ -94,10 +103,11 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 					}
 				}
 				
-				//TODO NEED TO ADD ascertained site counts to Kxy.
-				if (ascSiteCount != null) {
-					Kxy += ascSiteCount.getValue(0) + ascSiteCount.getValue(1);
-				}
+//              Here we assume that the sampled ascertained sites are *not* taken into account.
+//				These come into play when we compute the likelihood.
+//				if (ascSiteCount != null) {
+//					Kxy += ascSiteCount.getValue(0) + ascSiteCount.getValue(1);
+//				}
 				return d / Kxy;
 			}
 		};
@@ -128,10 +138,10 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 						Kxy += weight;
 					}
 					
-					//TODO NEED TO ADD ascertained site counts to Kxy.	
-					if (ascSiteCount != null) {
-						Kxy += ascSiteCount.getValue(0) + ascSiteCount.getValue(1);
-					}
+//					Here we assume that the sampled ascertained sites are *not* taken into account. 
+//					if (ascSiteCount != null) {
+//						Kxy += ascSiteCount.getValue(0) + ascSiteCount.getValue(1);
+//					}
 				}
 				v = v / (Kxy * Kxy);
 				//if (true) return 0.00005;
@@ -142,7 +152,7 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 		((Distance.Base)d).setPatterns(data);
 		((Distance.Base)v).setPatterns(data);
 		
-		int nrOfTaxa = data.getNrTaxa();
+		int nrOfTaxa = data.getTaxonCount();
 		distance = new double[nrOfTaxa][nrOfTaxa];
 		var = new double[nrOfTaxa][nrOfTaxa];
 		
@@ -176,6 +186,7 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 	public double approxPosterior(Node root, Double [] coalescenceRate, double u, double v) throws Exception {
 		priorValue = prior.calculateLogP();
 		double logP = priorValue;
+		
 		logP  += approxLikelihood(root, coalescenceRate, u, v);
 		return logP;
 	}
@@ -189,11 +200,15 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 	public double approxLikelihood(Node root, Double [] coalescenceRate, double u, double v) {
     	// do the real work here
     	double mu[][] = calcMu(root, u, v, coalescenceRate);
-    	    	
+    	
+    	 
+    	
+    	
     	double approxL = 0;
     	int nrOfTaxa = distance.length;
 		for (int i = 0; i < nrOfTaxa; i++) {
 			for (int j = i+ 1; j < nrOfTaxa; j++) {
+				//TODO: Account for ascertained sites here.
 				approxL += -0.5 * (distance[i][j] - mu[i][j]) * (distance[i][j] - mu[i][j]) / var[i][j];   
 			}
 		}
@@ -201,24 +216,26 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 		return K  + approxL;
 	}
 	
-	/** calc approximate distances between taxa **/
+	/** 
+	 * calc expected genetic distances between species, given population tree and parameters 
+	 * **/
     public double[][] calcMu(Node root, double u, double v, Double[] coalescenceRate) {
 		// calculate estimates of distance between taxa based on the 
 		// tree and other parameters
 		
-		// 1. calc moment generating function
+		// 1. eval moment generating functions
 		double [] M = new double[tree.getNodeCount()];
-		calcMomentGeneratingFunction(M, root, u, v, coalescenceRate);
+		calcMomentGeneratingFunction(M, root, -2*(u+v), coalescenceRate);
 		
 		// 2. calc approx distances, store result in u
 		double [][] mu = new double[var.length][var.length];
-		double probVariableSites = treelikelihood.getProbVariableSites();
-		calcApproxDistance(mu, M, root, u, v, probVariableSites);		
+		//double probVariableSites = treelikelihood.getProbVariableSites();
+		calcApproxDistance(mu, M, root, u, v);	
 		return mu;
 	}
 
 	List<Node> calcApproxDistance(double[][] mu, double[] M, final Node node,
-			final double u, final double v, final double probVariableSites) {
+			final double u, final double v) {
 		int x = node.getNr();
 		double t = node.getHeight();
 		double pi0 = v/(u+v);
@@ -231,20 +248,22 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 //			if (useMatLabFormulae) {
 //				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) / probVariableSites;
 //			} else {
-				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (1.0 - 1.0/nx)  / probVariableSites;
+				mu[x][x] = 2.0 * pi0 * pi1 * (1.0 - M[x]) * (1.0 - 1.0/nx);  //Multiplier is prob of not getting same individual.
 //			}
 			List<Node> list = new ArrayList<Node>();
 			list.add(node);
 			return list;
 		} else {
-			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1, probVariableSites);
-			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1, probVariableSites);
+			List<Node> left = calcApproxDistance(mu, M, node.getLeft(), pi0, pi1);
+			List<Node> right = calcApproxDistance(mu, M, node.getRight(), pi0, pi1);
+			//Note: implicit assumption that the population tree is ultrametric.
+			double mu_ij = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * t) * M[x]);			
 			for (Node lNode : left) {
 				for (Node rNode : right) {
 					int i = lNode.getNr();
 					int j = rNode.getNr();
-					mu[i][j] = 2.0 * pi0 * pi1 * (1.0 - Math.exp(-2.0 * (u+v) * t) * M[x]) / probVariableSites;
-					mu[j][i] = mu[i][j];
+					mu[i][j] = mu_ij;
+					mu[j][i] = mu_ij;
 				}
 			}
 			left.addAll(right);
@@ -254,42 +273,22 @@ public class ApproximateDistanceBasedLikelihood extends BEASTObject implements A
 
 	/**
 	 * calculate moment generating function for each node in the tree based on SNAPP parameters, 
-	 * and store results in M
+	 * evaluate the mgf at x and store the result in M.
 	 */
-	public void calcMomentGeneratingFunction(double[] M, Node node, double u, double v, Double [] coalescenceRate) {
+	public void calcMomentGeneratingFunction(double[] M, Node node, double x, Double [] coalescenceRate) {
 		if (node.isRoot()) {
-			// x = -2(u+v)
-			// Mroot = -1/(.5*theta(3)*x - 1); %MGF at root
-			// Mroot = -1/(theta(3)*x/2 - 1); %MGF at root
-			// Mroot = -1/(x/lambda - 1); %MGF at root
-			// Mroot = 1/(1 - x/lambda); %MGF at root
-			// Mroot = 1/(1 + 2(u+v)/lambda); %MGF at root
-			M[node.getNr()] = 1.0 / (1.0 + 2.0 * (u + v)/coalescenceRate[node.getNr()]);
-		} else {
-			// M=(exp(T*(x-(2/theta(1))))-1)/(.5*theta(1)*x-1) + M[parent]*exp(T*(x-(2/theta(1))));
-			// M=(exp(T*(x-lambda(1)))-1)/(x/lambda(1)-1) + M[parent]*exp(T*(x-lambda(1)));
-			// M=(exp(T*(x-lambda))-1)/(x/lambda-1) + exp((x-lambda)* T) * M[parent]
-			// M=(exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + exp((-pi-lambda)* tx) * M[parent]
-
 			double lambda = coalescenceRate[node.getNr()];
-			int x = node.getNr();
-			double tx = node.getLength();
-			double pi = 2.0 * (u + v);
-			int parent = node.getParent().getNr();
-			if (useMatLabFormulae) {
-				M[x]= (Math.exp(tx*(-pi-lambda))-1)/(-pi/lambda-1) + Math.exp((-pi-lambda)* tx) * M[parent];
-			} else {		
-				//M[x] = (1.0 - Math.exp(-lambda * tx)) * lambda * 
-				//		(Math.exp(lambda*tx) -Math.exp(-pi*tx)) / ((lambda + pi) * (Math.exp(lambda * tx) - 1.0));
-
-				M[x] = lambda * (1.0 - Math.exp(-(lambda + pi) * tx)) / (lambda + pi);
-
-				M[x] += Math.exp(-(lambda + pi) * tx) * M[node.getParent().getNr()];
-			}	
+			M[node.getNr()] = lambda / (lambda - x);
+		} else {
+			double lambda_i = coalescenceRate[node.getNr()];
+			int i = node.getNr();
+			double ti = node.getLength();
+			int parent = node.getParent().getNr();			
+			M[i] = lambda_i/(lambda_i-x) * (1 - Math.exp((x - lambda_i)*ti)) + Math.exp((x - lambda_i)*ti)*M[parent];			
 		}
 		if (!node.isLeaf()) {
-			calcMomentGeneratingFunction(M, node.getLeft(), u, v, coalescenceRate);
-			calcMomentGeneratingFunction(M, node.getRight(), u, v, coalescenceRate);
+			calcMomentGeneratingFunction(M, node.getLeft(), x, coalescenceRate);
+			calcMomentGeneratingFunction(M, node.getRight(), x, coalescenceRate);
 		}
 	}
 
