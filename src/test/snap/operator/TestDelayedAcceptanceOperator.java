@@ -52,7 +52,7 @@ public class TestDelayedAcceptanceOperator extends TestCase {
 
 		double [] M = new double[3];
 		// u = v = 0
-		operator.calcMomentGeneratingFunction(M, tree.getRoot(), 0.0, 0.0, coalescenceRate);
+		operator.calcMomentGeneratingFunction(M, tree.getRoot(), 0.0, coalescenceRate);
 		assertEquals(1.0, M[0]);
 		assertEquals(1.0, M[1]);
 		assertEquals(1.0, M[2]);
