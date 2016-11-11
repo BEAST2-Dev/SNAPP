@@ -241,7 +241,7 @@ public class SnAPPrior extends Distribution {
 			//Assume that rate has uniform distribution on [[0,1000]
 			for (int iNode = 0; iNode < coalescenceRate.getDimension(); iNode++) {
 				double r = coalescenceRate.getValue(iNode);
-				if (r>10000.0 || r<0.0)
+				if (r>1000000000.0 || r<0.0)
 					return Double.NEGATIVE_INFINITY;
 			}
 		}
