@@ -70,7 +70,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			//"calculated for the likelihood.", 
 			true);
 	public Input<IntegerParameter> ascSiteCountInput = new Input<IntegerParameter>("ascSiteCount", "Counts for number of ascertained sites");
-
+	public Input<IntegerParameter> totalSiteCountInput = new Input<IntegerParameter>("totalSiteCount","Number of sites including those removed by ascertainment");
 	
 	public Input<Boolean> mutationOnlyAtRoot = new Input<Boolean>("mutationOnlyAtRoot", "Emulate the likelihood calculation of RoyChoudhury et al (2008) which assumes that mutations occur only in the ancestral (root) population", false);
 	public Input<Boolean> hasDominantMarkers = new Input<Boolean>("dominant", "indicate that alleles are dominant (default false)", false);
@@ -110,11 +110,12 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	// Sampled parameter equal to the number of sites which have been removed from the data during ascertainment
 	IntegerParameter ascSiteCount;
+	int totalSiteCount;
 	
 	@Override
 	public void initAndValidate() {
 		ascSiteCount = ascSiteCountInput.get();
-
+		totalSiteCount = totalSiteCountInput.get().getValue();
 		// check that alignment has same taxa as tree
     	if (!(dataInput.get() instanceof Data)) {
     		throw new IllegalArgumentException("The data input should be a snap.Data object");
@@ -301,11 +302,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			if (!m_bUsenNonPolymorphic) {
 				m_fP0 =  fSiteProbs[numPatterns - 2];
 				m_fP1 =  fSiteProbs[numPatterns - 1];
-				if (ascSiteCount != null) {
+				if (ascSiteCount != null) {   
 					ascLogP = (double)ascSiteCount.getValue(0) * Math.log(m_fP0) +
 							  (double)ascSiteCount.getValue(1) * Math.log(m_fP1);
 					logP += ascLogP;
-					
 				} else {
 					logP -= (double) m_data2.getSiteCount() * Math.log(1.0 - m_fP0 - m_fP1);
 				}
