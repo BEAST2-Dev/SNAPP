@@ -2,6 +2,7 @@ package snap.operators;
 
 
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,24 @@ import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.core.Operator;
 import beast.core.StateNode;
+import beast.core.Loggable;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeInterface;
 import beast.util.Randomizer;
+
+//import java.util.Arrays;
+//
+//import beast.core.Citation;
+//import beast.core.Description;
+//import beast.core.Input;
+//import beast.core.Input.Validate;
+//import beast.core.parameter.RealParameter;
+//import beast.evolution.tree.TreeInterface;
+import static org.apache.commons.math.special.Gamma.logGamma;
+
 
 //Things to measure:
 //	time of full calculation over all samples
@@ -33,12 +46,13 @@ import beast.util.Randomizer;
 
 
 @Description("An operator that uses an approximate likelihood based on genetic distances together with sampling of constant sites ")
-public class DistDAOperator extends Operator {
+public class DistDAOperator extends Operator implements Loggable{
 	public Input<Operator> operatorInput = new Input<Operator>("operator", "Operator for proposing moves", Validate.REQUIRED);
 	public Input<Distribution> priorInput = new Input<Distribution>("prior", "prior used when likelihood is approximated", Validate.REQUIRED);	
 	public Input<State> stateInput = new Input<State>("state", "state object for which we do proposals", Validate.REQUIRED);
     public Input<SnAPTreeLikelihood> treeLikelihoodInput = new Input<SnAPTreeLikelihood>("treelikelihood", "SNAPP tree likelihood for the tree", Validate.REQUIRED);
-	
+	public Input<IntegerParameter> totalCountInput = new Input<IntegerParameter>("totalSiteCount", "Sampled count of the total number of sites", Validate.REQUIRED);
+
 	Operator operator; //Operator for proposing trees + parameters.
 	
 	// TODO: take site model in account in approximation?
@@ -53,11 +67,13 @@ public class DistDAOperator extends Operator {
 	ApproximateLikelihood approxLiklihood;
 	
 	Alignment data = null;
-    double[][] dThetaOld = null;
+    
 
-	IntegerParameter ascSiteCount;
-	int numSampledSites;
+	//IntegerParameter ascSiteCount;
+	int totalSiteCount;
 	
+	int numSampledSites;
+	boolean resampleConstant = true; //First time through, X needs to be resampled from P(X|theta)
 	
 	double [][] baseDist; //Distances computed from sampled sites only.
 	double [][] baseVar; //Variances computed from sampled sites only.
@@ -65,6 +81,8 @@ public class DistDAOperator extends Operator {
 	
     State state;   
 	TreeInterface tree = null;
+	int numProposals = 0;
+	int numInitialPass = 0;
 	
 	public void initAndValidate() {
 		operator = operatorInput.get();
@@ -77,17 +95,38 @@ public class DistDAOperator extends Operator {
     	state = stateInput.get();
     	data = (Data)treelikelihood.dataInput.get();
     	numSampledSites = data.getSiteCount();
-   		ascSiteCount = treelikelihood.ascSiteCountInput.get();
-
+   		//ascSiteCount = treelikelihood.ascSiteCountInput.get();
+        totalSiteCount = treelikelihood.totalSiteCountInput.get().getValue();
+        
    		//Compute empirical distances from the data, using only those sites in the original data (not sampled)
 		calcBaseDistAndCovariance();		
+		
+		
+		System.err.println("DistDAOperator is in development and should not be used!");
+
+		
     }
+
+	public void init(PrintStream out) { 
+		out.print("acceptance rates: "+operator.getID()+"\t");
+	}
+
+    public void log(int sample, PrintStream out) {
+    	out.print(""+((double)numInitialPass/numProposals) + "\t");
+	}
+    
+    public void close(PrintStream out) {
+	// nothing to do
+	}
 
 
 	@Override
     public double proposal()  {
 		
     	try {
+    		int z = numSampledSites;
+    				
+    		numProposals++;
     		
     		//Save old state
     		Node oldRoot = tree.getRoot().copy();
@@ -95,13 +134,25 @@ public class DistDAOperator extends Operator {
         	double oldU = substitutionmodel.m_pU.get().getValue();
         	double oldV  = substitutionmodel.m_pV.get().getValue();        	 	
         	double oldPrior = prior.getCurrentLogP();
-	    	Integer[]  oldAscSiteCounts = ascSiteCount.getValues();	    	
-	    	double[] oldConstSiteProbs = new double[2];
-	    	oldConstSiteProbs[0]  = treelikelihood.getSitesProbs(-2);
-	    	oldConstSiteProbs[1] = treelikelihood.getSitesProbs(-1);
+	    	//Integer[]  oldAscSiteCounts = ascSiteCount.getValues();	  
+	    	int oldTotalSiteCount = totalSiteCount;
+	    	double oldConstSiteProb = 1.0 - treelikelihood.getNewProbVariableSites();	   
+	    	double[][] dThetaOld = computeExpectedDist(oldRoot, oldCoalescenceRate, oldU, oldV);
+
+	    	if (resampleConstant) {
+	    		//First time through the algorithm we need to sample the initial number of constant sites.
+	            oldTotalSiteCount = sampleNegBinomial(numSampledSites,oldConstSiteProb); 
+	            resampleConstant = false;
+	       	}
+	    	
+//	    	
+//	    	double[] oldConstSiteProbs = new double[2];
+//	    	oldConstSiteProbs[0]  = treelikelihood.getSitesProbs(-2);
+//	    	oldConstSiteProbs[1] = treelikelihood.getSitesProbs(-1);
 	    		    	
 	    	//Propose new state
 	    	double logHastingsRatio = operator.proposal();
+	    	
 	    	
 	    	//Extract parameters from the new state
   			Node newRoot = tree.getRoot();
@@ -110,7 +161,7 @@ public class DistDAOperator extends Operator {
 	    	double newV = substitutionmodel.m_pV.get().getValue();
 	    	state.storeCalculationNodes();
             state.checkCalculationNodesDirtiness();
-
+         
             if (logHastingsRatio == Double.NEGATIVE_INFINITY) {
 	    		// instant reject
 	    		// need to store state, so it is restored properly
@@ -118,43 +169,36 @@ public class DistDAOperator extends Operator {
 	    	}
 
             
-            // Propose ascertained site counts, conditional on current state
-            double[] newConstProbs = treelikelihood.calcNewConstProbs();
-            int[] newAscSiteCounts = sampleNegMultinomial(numSampledSites,newConstProbs);
-            ascSiteCount.setValue(0,newAscSiteCounts[0]);
-            ascSiteCount.setValue(1,newAscSiteCounts[1]);
+            // Propose a new count of constant sites.
+	    	double newConstSiteProb = 1.0 - treelikelihood.getNewProbVariableSites();	    			
+	    	int newTotalSiteCount = sampleNegBinomial(numSampledSites,newConstSiteProb); 
+	    	
 
-            //Now compute the acceptance probability for the approximate likelihood.
-            //In Gordon's thesis  newX = X', and oldX = X
-            double newX0 = (double) (ascSiteCount.getValue(0));           
-            double newX1 = (double) (ascSiteCount.getValue(1));           
-            double newX = newX0 + newX1; 
-            double[][] dThetaNew = computeExpectedDist(newRoot,newCoalescenceRate,newU,newV); //d(\theta')
-            double newP0  = newConstProbs[0];
-    		double newP1  = newConstProbs[1];  		
-    		double newPrior = prior.getCurrentLogP();
-            double oldX0 = oldAscSiteCounts[0];
-            double oldX1 = oldAscSiteCounts[1];
-            double oldX = oldX0 + oldX1;
-            dThetaOld = computeExpectedDist(oldRoot,oldCoalescenceRate,oldU,oldV); //Recompute, just in case theta changed since last call to operator.
-            double oldP0 = oldConstSiteProbs[0];
-            double oldP1 = oldConstSiteProbs[1];
-            double z = numSampledSites;
-            
-            double PI1 = computePi(newX,dThetaNew,oldX) - newX0*Math.log(newP0) - newX1*Math.log(newP1) - z*Math.log(1.0-newP0-newP1);
-            double PI2 = computePi(oldX,dThetaOld,oldX) - oldX0*Math.log(oldP0) - oldX1*Math.log(oldP1) - z*Math.log(1.0-oldP0-oldP1);
-            
-            double logAlpha = Math.min(PI1 - PI2 + newPrior - oldPrior + logHastingsRatio,0.0);
+	    	//private double calculateLogPhi(int z, int N, int Nstar, double[][] mu) {	
+		
+	    	double oldPhi = calculateLogPhi(z,oldTotalSiteCount,oldTotalSiteCount,dThetaOld);
+	    	double[][] dThetaNew = computeExpectedDist(newRoot, newCoalescenceRate, newU, newV);
+	    	double newPhi = calculateLogPhi(z,newTotalSiteCount,oldTotalSiteCount,dThetaNew);
+	    	
+	    	double newPrior = prior.getCurrentLogP();
+	    	double oldLogNegBin = logNegBinomialDensity(oldTotalSiteCount,numSampledSites,1.0-oldConstSiteProb);
+	    	double newLogNegBin = logNegBinomialDensity(newTotalSiteCount,numSampledSites,1.0-newConstSiteProb);
+	    	
+	    	double logAlpha = logHastingsRatio -Math.log(newTotalSiteCount) + Math.log(oldTotalSiteCount);
+	    	logAlpha += newPhi - oldPhi + newPrior - oldPrior + oldLogNegBin - newLogNegBin;	    	
+	    	logAlpha = Math.min(logAlpha,0.0);
+	    		    	
             
             if (Randomizer.nextDouble() < Math.exp(logAlpha)) {
 	        	// accept. Now compute the appropriate Hasting's ratio.
+            	numInitialPass++;
+            	double oldPhiBack = calculateLogPhi(z,oldTotalSiteCount,newTotalSiteCount,dThetaOld);
+            	double newPhiBack = calculateLogPhi(z,newTotalSiteCount,newTotalSiteCount,dThetaNew);
+            	double logAlphaBack = -logHastingsRatio +Math.log(newTotalSiteCount) - Math.log(oldTotalSiteCount);
+            	logAlphaBack += oldPhiBack - newPhiBack + oldPrior - newPrior + newLogNegBin - oldLogNegBin;
+            	logAlphaBack = Math.min(logAlphaBack,0.0);
             	
-	        	double PI3 = computePi(oldX,dThetaOld,newX) - oldX0*Math.log(oldP0) - oldX1*Math.log(oldP1) - z*Math.log(1.0-oldP0-oldP1);
-	        	double PI4 = computePi(newX,dThetaNew,newX) - newX0*Math.log(newP0) - newX1*Math.log(newP1) - z*Math.log(1.0-newP0-newP1);
-	        	
-                double logAlpha2 = Math.min(PI3 - PI4 + newPrior - oldPrior + logHastingsRatio,0.0);
-                
-                logHastingsRatio += logAlpha2 - logAlpha;
+            	logHastingsRatio += logAlphaBack - logAlpha;
             } else {
             	//Reject
             	return Double.NEGATIVE_INFINITY;
@@ -228,9 +272,9 @@ public class DistDAOperator extends Operator {
 					double weight = _data.getPatternWeight(k);
 					if (weight > 0 && nki > 0 && nkj > 0) {
 						
-						double gk0i = sitePattern[taxon1]/nki;
+						double gk0i = (double)sitePattern[taxon1]/nki;
 						double gk1i = 1.0 - gk0i;
-						double gk0j = sitePattern[taxon2]/nkj;
+						double gk0j = (double)sitePattern[taxon2]/nkj;
 						double gk1j = 1.0 - gk0j;
 						double vk;
 						
@@ -296,45 +340,20 @@ public class DistDAOperator extends Operator {
 		}	
 	}
 	
-	/**
-	 * Sample a vector from a negative multinomial, with parameters n and
-	 * [p_1,...,p_k]
-	 * 
-	 * Assumes p_1,...,p_k are non-negative. Will normalize if need be. Any negative p_is
-	 * will be treated as 0
-	 * 
-	 * Uses the formulation of a negative multinomial as compounding of indep. Poisson variates
-	 * by a gamma distribution, see Sibuya et al. "Negative Multinomial Distribution" (1964) Annals 
-	 * of the Institute of Statistical Mathematics.
-	 *
-	 * @return
-	 */
-	//TODO: Move this into a Distribution class.
-	private int[] sampleNegMultinomial(int n,double[] p) {
-		/*Samples from a negative multinomial using formulation b, pg 412, in
-		 * Sibuya et al. "Negative Multinomial Distribution"
-		*/
-		int k = p.length;
-		double psum = 0.0;
-		for (int i=0;i<k;i++)
-			if (p[i]>0.0)
-				psum += p[i];
-		int[] x = new int[k];
-		
-		//Sample m
-		double m = GammaDist.inverseF(n, 1.0, 6, Randomizer.nextDouble());
-		//Sample x		
-		for (int i=0;i<k;i++) {
-			if (p[i] > 0) {
-				double lambda = p[i]/psum;
-				x[i] = (int) Randomizer.nextPoisson(lambda * m);
-			}
-			else
-				x[i] = 0;
-		}	
-		return x;
-	}
 
+	private int sampleNegBinomial(int n,double p) {
+		/* Samples from a negative binomial 
+		 * P[X = N|n,p] = \binom{N-1}{z-1} p^z (1-p)^(N-z)
+		 * 
+		 * Use the fact that X ~ Poisson(lambda) where lambda is Gamma with 
+		 * shape = n and rate \theta = (1-p)/p. 
+		 * TODO Check these formulas.
+		 */
+		double m = GammaDist.inverseF(n, (1.0-p)/p, 6, Randomizer.nextDouble());
+		int x =  (int) Randomizer.nextPoisson(m); 
+		return x+n;
+	}
+	
 	//TODO: Move these into a 'DistanceBasedUtilities' class.
 	private double[][] computeExpectedDist(Node root, Double [] coalescenceRate, double u, double v) {
 		// calculate expected differences between individuals based on the 
@@ -406,24 +425,34 @@ public class DistDAOperator extends Operator {
 			return left;
 		}
 	}
-		
 	
-	private double computePi(double distX, double[][] mu, double covX) {	
+	private double calculateLogPhi(int z, int N, int Nstar, double[][] mu) {	
 		double logL = 0.0;
+		
+		//TODO: Need to deal with weighting better in the case of missing sites.
+		
 		int ntax = baseDist.length;
 		for (int i=0;i<ntax;i++) {
 			for (int j=i;j<ntax;j++) {
 				double mu_ij = mu[i][j];
-				double w_ij = baseW[i][j];
-				double d_ij = w_ij/(w_ij+distX) * baseDist[i][j];
-				double v_ij = w_ij*w_ij/(w_ij+covX)/(w_ij+covX) * baseVar[i][j];
+				double d_ij = ((double)z/N)*baseDist[i][j];
+				double v_ij = ((double)z/Nstar)*((double)z/Nstar) * baseVar[i][j];
 				logL += -0.5 * (mu_ij - d_ij) * (mu_ij - d_ij) /v_ij;
 			}
 		}
 		return logL;		
 	}
 
+	private double logNegBinomialDensity(int N,int z,double p) {
+		/* Computes log( \binom{N-1}{z-1} p^z (1-p)^(N-z) )
+		 *
+		 */
+		double logp = logGamma(N) - logGamma(z) - logGamma(N-z+1);
+		logp += z*Math.log(p) + (N-z)*Math.log(1.0-p);				
+		return logp;
+	}
 
+	
 	// BEAST infrastructure stuff
 	@Override
     public void setOperatorSchedule(final OperatorSchedule operatorSchedule) {
