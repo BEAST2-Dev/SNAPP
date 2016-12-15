@@ -24,6 +24,7 @@
 
 	<path id="classpath">
 		<fileset dir="${lib}" includes="**/*.jar"/>
+		<fileset dir="${libBeast2}" includes="antlr-runtime-4.5.jar"/>
 		<fileset dir="${libBeast2}" includes="jam.jar"/>
 		<pathelement path="${beast2classpath}"/>
 	</path>
