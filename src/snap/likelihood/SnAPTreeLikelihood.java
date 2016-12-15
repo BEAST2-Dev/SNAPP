@@ -110,12 +110,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	// Sampled parameter equal to the number of sites which have been removed from the data during ascertainment
 	IntegerParameter ascSiteCount;
-	int totalSiteCount;
 	
 	@Override
 	public void initAndValidate() {
 		ascSiteCount = ascSiteCountInput.get();
-		totalSiteCount = totalSiteCountInput.get().getValue();
 		// check that alignment has same taxa as tree
     	if (!(dataInput.get() instanceof Data)) {
     		throw new IllegalArgumentException("The data input should be a snap.Data object");
