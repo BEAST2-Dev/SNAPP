@@ -97,6 +97,7 @@
 				<include name="**/*.class"/>
 			</fileset>
 			<zipgroupfileset dir="${libBeast2}" includes="jam.jar"/>
+			<zipgroupfileset dir="${libBeast2}" includes="antlr-runtime-4.5.jar"/>
 			<fileset dir="${build}">
 				<include name="snap/**/*.class" />
 				<include name="snap/**/*.png" />
