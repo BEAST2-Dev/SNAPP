@@ -28,12 +28,12 @@ package snap.likelihood;
 
 
 
+
 import snap.Data;
 import snap.NodeData;
 
 import java.util.Arrays;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Future; 
 
 import beast.app.BeastMCMC;
 import beast.evolution.alignment.Alignment;
@@ -50,7 +50,7 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	}
 	
 	static boolean stopRequested = false;
-	Lock [] m_lock;
+	Future<?> [] m_future;
 	private class SSSRunnable implements Runnable {
 		int m_iStart;
 		int m_iStep;
@@ -81,7 +81,6 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 	  }
 	  public void run() {
 		  int iThread = m_iStart;
-		  m_lock[iThread].lock();
 	    for (int id = m_iStart; id < m_iMax; id+= m_iStep) {
 			//if (id>0 && id%100 == 0)
 			//	System.err.print(id + " ");
@@ -103,7 +102,6 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 //			}
 			patternProb[id] = siteL;
 	    }
-	    m_lock[iThread].unlock();
 	  }
 	}
 	
@@ -145,10 +143,9 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			int nThreads = BeastMCMC.m_nThreads;
 			m_siteProbabilityCalculatorT.clearCache(root.getNodeCount(), data.getMaxStateCount(), nThreads);
 
-			m_lock = new ReentrantLock[nThreads];
+			m_future = new Future<?>[nThreads];
 			for (int i = 0; i < nThreads; i++) {
-				m_lock[i] = new ReentrantLock();
-				BeastMCMC.g_exec.execute(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, rate, bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache));
+				m_future[i] = BeastMCMC.g_exec.submit(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, rate, bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache));
 			}
 
 			// correction for constant sites
@@ -161,11 +158,9 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 //			forwardLogL-=(double) data.getSiteCount() * Math.log(1.0 - P0 - P1);
 //			System.err.println(numPatterns + " " + forwardLogL);
 			
-			// wait for the threads to lock
-			Thread.sleep(50);
 			// wait for the other thread to finish
 			for (int i = 0; i < nThreads; i++) {
-				m_lock[i].lock();
+				m_future[i].get();
 			}
 
 			return patternProb;
