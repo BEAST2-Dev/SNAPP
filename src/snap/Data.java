@@ -32,18 +32,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import beast.app.beauti.Beauti;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.util.Log;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.Binary;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.IntegerData;
-import beast.evolution.datatype.IntegerData2;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.datatype.StandardData;
 

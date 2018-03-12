@@ -32,7 +32,7 @@ public class AncestralTreeHeightLogger extends BEASTObject implements Loggable {
 	}
 
 	@Override
-	public void log(int nSample, PrintStream out) {
+	public void log(long nSample, PrintStream out) {
 		for (Node node : tree.getNodesAsArray()) {
 			out.append(node.getHeight() + "\t");
 		}

@@ -66,7 +66,7 @@ public class ML extends beast.core.MCMC {
 		state.setEverythingDirty(true);
 		
 		int nBurnIn = burnInInput.get();
-		int nChainLength = chainLengthInput.get();
+		long nChainLength = chainLengthInput.get();
 		//int nStateBurnin = m_oStateBurnIn.get();
 
 		System.err.println("Start state:");
@@ -121,7 +121,7 @@ public class ML extends beast.core.MCMC {
 		state.setEverythingDirty(true);
 		double fOldLogLikelihood = calc();
 		System.err.println("Start likelihood: = " + fOldLogLikelihood);
-		for (int iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
+		for (long iSample = -nBurnIn; iSample <= nChainLength; iSample++) {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);

@@ -38,7 +38,7 @@ public class TreeNodeLogger extends BEASTObject implements Loggable, Function {
 	}
 
 	@Override
-	public void log(int nSample, PrintStream out) {
+	public void log(long nSample, PrintStream out) {
 		final Tree tree = m_tree.get();
 		logTree(out, tree.getRoot());
 	}

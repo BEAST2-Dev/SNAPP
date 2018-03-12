@@ -29,7 +29,7 @@ public class NormalisedDistributionLogger extends BEASTObject implements Loggabl
     }
 
     @Override
-    public void log(final int nSample, final PrintStream out) {
+    public void log(final long nSample, final PrintStream out) {
         out.print(distribution.getCurrentLogP() - treeLikelihood.getAscSitesLogP() + "\t");
     }
 

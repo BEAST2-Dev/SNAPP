@@ -66,7 +66,7 @@ public class MCMC extends beast.core.MCMC {
         operatorSchedule.setStateFileName(stateFileName);
 
         int nBurnIn = burnInInput.get();
-		int nChainLength = chainLengthInput.get();
+		long nChainLength = chainLengthInput.get();
 		int nStateBurnin = m_oStateBurnIn.get();
         if (restoreFromFile) {
         	state.restoreFromFile();
@@ -161,7 +161,7 @@ public class MCMC extends beast.core.MCMC {
 		
 		
 		boolean bStayAlive = true;
-		for (int iSample = -nBurnIn; iSample <= nChainLength && bStayAlive; iSample++) {
+		for (long iSample = -nBurnIn; iSample <= nChainLength && bStayAlive; iSample++) {
 			
 			//State proposedState = state.copy();
         	state.store(iSample);

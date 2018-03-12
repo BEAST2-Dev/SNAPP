@@ -381,7 +381,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	}
 	
 	@Override
-	public void log(int nSample, PrintStream out) {
+	public void log(long nSample, PrintStream out) {
 		super.log(nSample, out);
 		if (!m_bUsenNonPolymorphic) {
 			out.append(m_fP0 + "\t");

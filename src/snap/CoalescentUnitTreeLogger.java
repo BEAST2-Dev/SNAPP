@@ -34,7 +34,7 @@ public class CoalescentUnitTreeLogger extends BEASTObject implements Loggable {
 	}
 
 	@Override
-	public void log(int nSample, PrintStream out) {
+	public void log(long nSample, PrintStream out) {
 		// make sure we get the current version of the inputs
        	coalescenceRate = (RealParameter) ((StateNode) coalescenceRate).getCurrent();
         // write out the log tree with meta data

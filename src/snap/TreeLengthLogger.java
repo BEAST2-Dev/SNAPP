@@ -29,7 +29,7 @@ public class TreeLengthLogger extends BEASTObject implements Loggable {
 	}
 
 	@Override
-	public void log(int nSample, PrintStream out) {
+	public void log(long nSample, PrintStream out) {
         Tree tree = (Tree) m_tree.get();
         double heightsum = tree.getRoot().getHeight();
         heightsum += heightSum(tree.getRoot());
