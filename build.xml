@@ -471,9 +471,9 @@
 	
 
 <!--
-	        depends="build_jar_all_SnAP_NoJUnitTest"
 -->
-	<target name="addon"
+	<target name="addon" 
+	        depends="build_jar_all_SnAP_NoJUnitTest"
 	        description="release BEAST 2 add-on version of SNAPP">
 
 		<delete dir="${Add_on_dir}" />
