@@ -1,6 +1,6 @@
 A package for BEAST2 implementing SNAPP
 
-Documentation: http://beast2.org/snapp/
+Documentation: http://www.beast2.org/snapp/
 
 To compile from source, 
 1. check out BEAST from https://github.com/CompEvol/beast2
