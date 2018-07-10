@@ -50,7 +50,12 @@ public class GammaMover extends Operator {
 		int whichNode = Randomizer.nextInt(coalescenceRate.getDimension());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
-		coalescenceRate.setValue(whichNode, coalescenceRate.getValue(whichNode)*scale);
+		double newValue = coalescenceRate.getValue(whichNode)*scale;
+		if (newValue < coalescenceRate.getLower() || newValue > coalescenceRate.getUpper()) {
+			return Double.NEGATIVE_INFINITY;
+		}
+
+		coalescenceRate.setValue(whichNode, newValue);
 		return Math.log(scale);
 	}
 

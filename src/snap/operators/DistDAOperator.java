@@ -119,7 +119,7 @@ public class DistDAOperator extends Operator implements Loggable{
 		out.print("approxLogPost\t");
 	}
 
-	public void log(int sample, PrintStream out) {
+	public void log(long sample, PrintStream out) {
 		out.print(""+ oldPstar  + "\t");
 		oldPstar = 0.0;
 	}

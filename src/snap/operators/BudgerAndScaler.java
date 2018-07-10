@@ -30,6 +30,7 @@ package snap.operators;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -113,7 +114,13 @@ public class BudgerAndScaler extends NodeSwapper {
 		double h3 = p.getParent().getHeight();
 
 		double u = Randomizer.nextDouble()*range;
-				
+		
+		if (outsideBounds(((h3-h)/(h3-h-u) * g3), gamma) ||
+			outsideBounds(((h-h1)/(h+u-h1) * g1), gamma) ||
+			outsideBounds(((h-h2)/(h+u-h2) * g2), gamma)) {
+			return Double.NEGATIVE_INFINITY;
+		}
+		
 		gamma.setValue(iNode, ((h3-h)/(h3-h-u) * g3));
 		gamma.setValue(iLeft, ((h-h1)/(h+u-h1) * g1));
 		gamma.setValue(iRight, ((h-h2)/(h+u-h2) * g2));
@@ -124,5 +131,13 @@ public class BudgerAndScaler extends NodeSwapper {
 		
 		return Math.log(hastingsRatio);
 	}
+
+	private boolean outsideBounds(double d, RealParameter realParameter) {
+		if (d < realParameter.getLower() || d > realParameter.getUpper()) {
+			return true;
+		}
+		return false;
+	}
+
 	
 } // class BudgerAndScaler

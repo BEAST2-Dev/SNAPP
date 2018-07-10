@@ -104,7 +104,6 @@
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="none" icon='7.png' forceExpansion='TRUE'
-            buttonStatus='NONE' 
         />
 <!--type='snap.likelihood.SnAPPrior'-->
 		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"

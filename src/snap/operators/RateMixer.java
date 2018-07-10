@@ -53,7 +53,12 @@ public class RateMixer extends Operator {
 
 		double scale = (m_fMixScale + (Randomizer.nextDouble() * ((1.0 / m_fMixScale) - m_fMixScale)));
 
-		
+		for (int i = 0; i < coalescenceRate.getDimension(); i++) {
+			double newValue = coalescenceRate.getValue(i) * scale;
+			if (newValue < coalescenceRate.getLower() || newValue > coalescenceRate.getUpper()) {
+				return Double.NEGATIVE_INFINITY;
+			}			
+		}		
 		for (int i = 0; i < coalescenceRate.getDimension(); i++) {
 			coalescenceRate.setValue(i, coalescenceRate.getValue(i) * scale);
 		}

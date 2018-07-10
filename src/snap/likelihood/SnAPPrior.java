@@ -91,6 +91,11 @@ public class SnAPPrior extends Distribution {
         double beta = m_pBeta.get().getValue();
         double kappa = m_pKappa.get().getValue();
         
+        if (outsideBounds(m_pAlpha.get()) || outsideBounds(m_pBeta.get()) || outsideBounds(m_pKappa.get()) || outsideBounds(m_pCoalescenceRate.get())) {
+        	logP = Double.NEGATIVE_INFINITY;
+        	return logP;
+        }
+        
         Tree tree = m_pTree.get();
         double heightsum = tree.getRoot().getHeight();
         heightsum += heightSum(tree.getRoot());
@@ -254,7 +259,20 @@ public class SnAPPrior extends Distribution {
         return logP;
     } // calculateLogLikelihood
 
-    double heightSum(Node node) {
+    static public boolean outsideBounds(RealParameter realParameter) {
+    	if (realParameter == null) {
+    		return false;
+    	}
+    	for (int i = 0; i < realParameter.getDimension(); i++) {
+    		double d = realParameter.getArrayValue(i);
+    		if (d < realParameter.getLower() || d > realParameter.getUpper()) {
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	double heightSum(Node node) {
         if (node.isLeaf()) {
             return 0;
         } else {

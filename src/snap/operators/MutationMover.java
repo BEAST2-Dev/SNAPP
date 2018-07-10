@@ -1,5 +1,6 @@
 package snap.operators;
 
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
@@ -51,6 +52,9 @@ public class MutationMover extends Operator {
 
             if ((pi_0+x >= 0.0) && (pi_0 + x <= 1.0)) {
                     pi_0 += x;
+                    if (outsideBounds(1.0/(2*pi_0), u) || outsideBounds(1.0/(2*(1-pi_0)), v)) {
+                    	return Double.NEGATIVE_INFINITY;
+                    }
                     u.setValue(1.0/(2*pi_0));
                     v.setValue(1.0/(2*(1-pi_0)));
                     //cout<<"new u,v = "<<toState.u<<"\t"<<toState.v<<endl;
@@ -59,4 +63,10 @@ public class MutationMover extends Operator {
             return Double.NEGATIVE_INFINITY;
 	}
 
+    private boolean outsideBounds(double d, RealParameter realParameter) {
+		if (d < realParameter.getLower() || d > realParameter.getUpper()) {
+			return true;
+		}
+		return false;
+	}
 }
