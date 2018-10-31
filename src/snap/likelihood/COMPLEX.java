@@ -37,6 +37,11 @@ public class COMPLEX {
 		m_fIm = fIm;
 	}
 	
+	public COMPLEX(COMPLEX other) {
+		m_fRe = other.m_fRe;
+		m_fIm = other.m_fIm;
+	}
+
 	public void divide(COMPLEX cNumerator, double fDivisor) {
 		m_fRe = cNumerator.m_fRe / fDivisor;
 		m_fIm = cNumerator.m_fIm / fDivisor;
@@ -61,18 +66,32 @@ public class COMPLEX {
 		m_fRe = f1 * x1.m_fRe + f2 * x2.m_fRe;
 		m_fIm = f1 * x1.m_fIm + f2 * x2.m_fIm;
 	}
+	
+	public void mulsub(COMPLEX cMul1, COMPLEX cMul2) {
+		m_fRe -= cMul2.m_fRe * cMul1.m_fRe - cMul2.m_fIm * cMul1.m_fIm;
+		m_fIm -= cMul2.m_fRe * cMul1.m_fIm + cMul2.m_fIm * cMul1.m_fRe;
+	}
+	
 	// calc
 	public void divide(COMPLEX cNumerator, COMPLEX cDivisor) {
 		double f = cDivisor.m_fRe * cDivisor.m_fRe + cDivisor.m_fIm * cDivisor.m_fIm; 
 		m_fRe = (cNumerator.m_fRe * cDivisor.m_fRe + cNumerator.m_fIm * cDivisor.m_fIm) / f;
 		m_fIm = (cNumerator.m_fIm * cDivisor.m_fRe - cNumerator.m_fRe * cDivisor.m_fIm) / f;
 	}
+	
 	public void mul(COMPLEX cMul1, COMPLEX cMul2) {
 		m_fRe = cMul2.m_fRe * cMul1.m_fRe - cMul2.m_fIm * cMul1.m_fIm;
 		m_fIm = cMul2.m_fRe * cMul1.m_fIm + cMul2.m_fIm * cMul1.m_fRe;
 	}
+	
+	public void mul(COMPLEX cMul1, double m_fRe, double m_fIm) {
+		m_fRe = m_fRe * cMul1.m_fRe - m_fIm * cMul1.m_fIm;
+		m_fIm = m_fRe * cMul1.m_fIm + m_fIm * cMul1.m_fRe;		
+	}
+
 	public String toString() {
 		return "(" +m_fRe + "," + m_fIm + ")";
 	}
+	
 	
 }
