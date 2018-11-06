@@ -84,9 +84,9 @@ public class COMPLEX {
 		m_fIm = cMul2.m_fRe * cMul1.m_fIm + cMul2.m_fIm * cMul1.m_fRe;
 	}
 	
-	public void mul(COMPLEX cMul1, double m_fRe, double m_fIm) {
-		m_fRe = m_fRe * cMul1.m_fRe - m_fIm * cMul1.m_fIm;
-		m_fIm = m_fRe * cMul1.m_fIm + m_fIm * cMul1.m_fRe;		
+	public void mul(COMPLEX cMul1, double fRe, double fIm) {
+		m_fRe = fRe * cMul1.m_fRe - fIm * cMul1.m_fIm;
+		m_fIm = fRe * cMul1.m_fIm + fIm * cMul1.m_fRe;		
 	}
 
 	public String toString() {
