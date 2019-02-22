@@ -259,7 +259,7 @@ public class SnAPPrior extends Distribution {
         return logP;
     } // calculateLogLikelihood
 
-    static public boolean outsideBounds(RealParameter realParameter) {
+    private boolean outsideBounds(RealParameter realParameter) {
     	if (realParameter == null) {
     		return false;
     	}

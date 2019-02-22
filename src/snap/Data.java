@@ -255,7 +255,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 	// TODO: needs to return whether patterns are all red or all green
 	// to deal with zero nrOfLineages when all sites are missing for a 
 	// species 
-	private boolean isConstant(int iSite) {
+	boolean isConstant(int iSite) {
 		int nTaxa = counts.size();
 		boolean bAllZero = true;
 		boolean bAllMax = true;

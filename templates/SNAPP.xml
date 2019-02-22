@@ -65,6 +65,9 @@
             snap.likelihood.SnAPTreeLikelihood.tree,
             snap.likelihood.SnAPTreeLikelihood.dominant,
             snap.likelihood.SnAPTreeLikelihood.ascSiteCount,
+            snap.likelihood.SnAPTreeLikelihood.totalSiteCount,
+            snap.likelihood.SnAPTreeLikelihood.useTipLikelihoods,
+            snap.likelihood.SnAPTreeLikelihood.implementation,
             snap.likelihood.SnAPPrior.coalescenceRate
 '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
