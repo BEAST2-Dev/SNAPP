@@ -61,9 +61,9 @@ public class SnAPPrior extends Distribution {
     }
 
    public Input<Priors> m_priors = new Input<Priors>("rateprior", "prior on rates. " +
-           "This can be " + Arrays.toString(Priors.values()) + " (default 'CIR')", Priors.CIR, Priors.values());
+           "This can be " + Arrays.toString(Priors.values()) + " (default 'gamma')", Priors.gamma, Priors.values());
 
-	int PRIORCHOICE = 2;
+	int PRIORCHOICE = 0;
 
     @Override
     public void initAndValidate() {

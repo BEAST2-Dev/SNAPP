@@ -9,11 +9,11 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
 
 	<!-- n = 1000 -->
 	<data spec='snap.WeightedData' id='alignment' dataType='integerdata' statecount='3'>
- 		             <input name='weights'>1,1,1,1,1,1,1,1,1,1,1,1,1</input>
-		<sequence taxon='A' totalcount='2'>2,1,2,2,2,1,0,0,1,2,2,2,0</sequence>
-		<sequence taxon='B' totalcount='2'>2,2,1,2,2,0,1,0,2,1,2,0,1</sequence>
-		<sequence taxon='C' totalcount='2'>1,2,2,2,0,0,0,1,2,2,1,2,1</sequence>
-		<sequence taxon='D' totalcount='2'>2,2,2,1,0,0,0,0,2,2,2,2,1</sequence>
+ 		             <input name='weights'>1,1,1,1,1,1,1,1,1,1,1,1</input>
+		<sequence taxon='A' totalcount='3'>2,1,2,2,2,1,0,0,2,2,2,0</sequence>
+		<sequence taxon='B' totalcount='3'>2,2,1,2,2,0,1,0,1,2,0,1</sequence>
+		<sequence taxon='C' totalcount='3'>1,2,2,2,0,0,0,1,2,1,2,1</sequence>
+		<sequence taxon='D' totalcount='3'>2,2,2,1,0,0,0,0,0,0,0,1</sequence>
 	</data>
 
 <run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0">
