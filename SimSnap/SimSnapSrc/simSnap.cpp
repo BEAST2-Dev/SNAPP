@@ -20,10 +20,11 @@
 
 void printUsage(ostream& os) {
 	os<<"SimSnap\n\nSimulates SNPs on a species tree.\n";
-	os<<"Usage:\n\n\tSimSnap [-ncrtis]  [nsites] filename\n\n";
+	os<<"Usage:\n\n\tSimSnap [-ncrmtis]  [nsites] filename\n\n";
 	os<<"\tFlags are:\n";
 	os<<"\t-n \tOutput nexus file (default is to output snap .xml format)\n";
 	os<<"\t-c \tInclude constant sites (default is to simulate only polymorphic sites)\n";
+    os<<"\t-m \tPrint out a matrix containing the proportion of differences between and within species for the simulated data.\n";
 	os<<"\t-r \tCondition on all mutation occurring at the root\n";
 	os<<"\t-t \tOutput the gene trees used to generate each site\n";
 	os<<"\t-i \tStart chain at the values used for simulation\n";
@@ -63,6 +64,7 @@ public:
 	bool onlyRootMutation; 
 	bool hasDominantMarkers;
 	bool simulationOutput;
+    bool printMatrix;
 	bool initialiseAtTrue;
 	bool snappDominant;
 	bool snappNoMutation;
@@ -76,6 +78,7 @@ public:
 		excludeConst = true;
 		outputTrees = false;
 		simulationOutput = false;
+        printMatrix = false;
 		initialiseAtTrue = false;
 		onlyRootMutation = false;
 		hasDominantMarkers = false;
@@ -94,8 +97,10 @@ public:
 		//First read in the flags.
 		string flags = string(argv[arg]);
 		if (flags[0]=='-') {
-			if (flags.find_first_not_of("-nirdcstMDb")!=string::npos)
+            if (flags.find_first_not_of("-nirdmcstMDb")!=string::npos) {
+                cerr<<"Unknown option\n";
 				printUsage(cerr);
+            }
 			
 			if (flags.find_first_of('n')!=string::npos)
 				outputXML = false;
@@ -105,6 +110,8 @@ public:
 				excludeConst = false;
 			if (flags.find_first_of('t')!=string::npos)
 				outputTrees = true;
+            if (flags.find_first_of('m')!=string::npos)
+                printMatrix = true;
 			if (flags.find_first_of('s')!=string::npos)
 				simulationOutput = true;
 			if (flags.find_first_of('i')!=string::npos)
@@ -479,6 +486,51 @@ void output_nexus(ostream& os, const vector<string>& species, const vector<uint>
 }
 
 
+/**
+ Prints out the proportion of differences between species and the pi value for each species.
+ This is output as a nspecies x nspecies matrix to the given output stream
+ **/
+void printMatrix(ostream& os, const vector<uint>& sampleSizes, const vector<vector<uint> >&alleleCounts ) {
+    int n = sampleSizes.size();  //Number of species
+    int m = alleleCounts.size(); //Number of sites
+    
+    //Compute the matrix
+    vector<vector<double> > D;
+    D.resize(n);
+    for(int i=0;i<n;i++)
+        D[i].resize(n);
+    for(int i=0;i<n;i++) {
+        double n_i = (double) sampleSizes[i];
+        double d_ii = 0;
+        for (int k=0;k<m;k++) {
+            int x_ik = alleleCounts[k][i];
+            d_ii += x_ik*(n_i - x_ik) / ( n_i*(n_i-1.0)/2.0);
+        }
+        D[i][i] = d_ii /m;
+        
+        for(int j=(i+1);j<n;j++) {
+            double n_j = (double) sampleSizes[j];
+            double d_ij = 0;
+            for (int k=0;k<m;k++) {
+                int x_ik = alleleCounts[k][i];
+                int x_jk = alleleCounts[k][j];
+                d_ij += (x_ik*(n_j - x_jk)  + x_jk * (n_i - x_ik) )/(n_i * n_j);
+            }
+            D[i][j] = D[j][i] = d_ij / m;
+        }
+    }
+    //Print it out.
+    for(int i=0;i<n;i++) {
+        for(int j=0;j<n;j++) {
+            os<<D[i][j]<<"\t";
+        }
+        os<<endl;
+    }
+
+}
+
+
+
 int main(int argc, char* argv[]) {
 	
 	seed_random();
@@ -619,7 +671,13 @@ int main(int argc, char* argv[]) {
 		if (ap.outputTrees)
 			cout<<"END;"<<endl;
 		
-		
+       
+        
+        if (ap.printMatrix) {
+            cout<<"Printing Matrix of genetic distances"<<endl;
+            printMatrix(cout,sampleSizes,alleleCounts);
+        }
+        
 		if (ap.outputXML) {
         	
 			output_xml(*os,species,tree,sampleSizes,u,v,alleleCounts,ap.simulationOutput,ap.excludeConst,ap.initialiseAtTrue,ap.snappDominant,ap.snappNoMutation,ap.useSNAPPMCMC,shortFileName);
