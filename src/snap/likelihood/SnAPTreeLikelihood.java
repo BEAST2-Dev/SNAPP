@@ -130,30 +130,55 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	
     	TreeInterface tree = treeInput.get();
     	m_substitutionmodel = ((SnapSubstitutionModel)m_siteModel.substModelInput.get());
-    	Input<RealParameter> coalescenceRatenput = m_substitutionmodel.m_pCoalescenceRate;
-		
-		Double [] values = new Double[tree.getNodeCount()];
-		String sCoalescenceRateValues = "";
-		if (m_bInitFromTree.get() == true) {
-			tree.getMetaData(tree.getRoot(), values, m_pPattern.get());
-			for (Double d : values) {
-				sCoalescenceRateValues += d + " ";
+    	if (m_substitutionmodel.thetaInput.get() != null) {
+    		// parameterised as thetas
+	    	Input<RealParameter> thetaInput = m_substitutionmodel.thetaInput;
+			
+			Double [] values = new Double[tree.getNodeCount()];
+			String sTheta = "";
+			if (m_bInitFromTree.get() == true) {
+				tree.getMetaData(tree.getRoot(), values, m_pPattern.get());
+				for (Double d : values) {
+					sTheta += d + " ";
+				}
+			} else {
+		    	List<Double> sValues = thetaInput.get().valuesInput.get();
+		        for (int i = 0; i < values.length; i++) {
+		            values[i] = new Double(sValues.get(i % sValues.size()));
+		            sTheta += values[i] + " ";
+		        }
+				tree.setMetaData(tree.getRoot(), values, m_pPattern.get());
 			}
-		} else {
-	    	List<Double> sValues = coalescenceRatenput.get().valuesInput.get();
-	        for (int i = 0; i < values.length; i++) {
-	            values[i] = new Double(sValues.get(i % sValues.size()));
-				sCoalescenceRateValues += values[i] + " ";
-	        }
-			tree.setMetaData(tree.getRoot(), values, m_pPattern.get());
-		}
-		RealParameter pCoalescenceRate = coalescenceRatenput.get();
-		RealParameter coalescenceRate = new RealParameter();
-		coalescenceRate.initByName("value", sCoalescenceRateValues, "upper", pCoalescenceRate.getUpper(), "lower", pCoalescenceRate.getLower(), "dimension", values.length);
-		coalescenceRate.setID(pCoalescenceRate.getID());
-		coalescenceRatenput.get().assignFrom(coalescenceRate);
-	
-    	
+			RealParameter pTheta = thetaInput.get();
+			RealParameter theta = new RealParameter();
+			theta.initByName("value", sTheta, "upper", pTheta.getUpper(), "lower", pTheta.getLower(), "dimension", values.length);
+			theta.setID(pTheta.getID());
+			thetaInput.get().assignFrom(theta);
+    	} else {
+    		// parameterised as coalescentRates
+        	Input<RealParameter> coalescenceRatenput = m_substitutionmodel.m_pCoalescenceRate;
+    		
+    		Double [] values = new Double[tree.getNodeCount()];
+    		String sCoalescenceRateValues = "";
+    		if (m_bInitFromTree.get() == true) {
+    			tree.getMetaData(tree.getRoot(), values, m_pPattern.get());
+    			for (Double d : values) {
+    				sCoalescenceRateValues += d + " ";
+    			}
+    		} else {
+    	    	List<Double> sValues = coalescenceRatenput.get().valuesInput.get();
+    	        for (int i = 0; i < values.length; i++) {
+    	            values[i] = new Double(sValues.get(i % sValues.size()));
+    				sCoalescenceRateValues += values[i] + " ";
+    	        }
+    			tree.setMetaData(tree.getRoot(), values, m_pPattern.get());
+    		}
+    		RealParameter pCoalescenceRate = coalescenceRatenput.get();
+    		RealParameter coalescenceRate = new RealParameter();
+    		coalescenceRate.initByName("value", sCoalescenceRateValues, "upper", pCoalescenceRate.getUpper(), "lower", pCoalescenceRate.getLower(), "dimension", values.length);
+    		coalescenceRate.setID(pCoalescenceRate.getID());
+    		coalescenceRatenput.get().assignFrom(coalescenceRate);
+    	}
     	
     	
     	m_data2 = (Data) dataInput.get();
@@ -229,7 +254,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	try {
     		// get current tree
 	    	NodeData root = (NodeData) treeInput.get().getRoot();
-	    	Double [] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
+	    	Double [] coalescenceRate = getCoalescentRates();
 	    	// assing gamma values to tree
 //	    	if (m_pGamma.get().somethingIsDirty()) {
 //	    		// sync gammas in parameter with gammas in tree, if necessary
@@ -407,7 +432,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	public double[] calcNewConstProbs() {
 		try {
 			NodeData root = (NodeData) treeInput.get().getRoot();
-			Double[] coalescenceRate = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
+			Double[] coalescenceRate = getCoalescentRates();
 			Double[] scaledCoalescenceRates = new Double[coalescenceRate.length];
 			double u = m_substitutionmodel.m_pU.get().getValue();
 			double v = m_substitutionmodel.m_pV.get().getValue();
@@ -450,6 +475,20 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 		}
 	}
 
+    private Double[] getCoalescentRates() {
+		Double [] getCoalescentRates;
+		if (m_substitutionmodel.m_pCoalescenceRate.get() != null) {
+			getCoalescentRates = m_substitutionmodel.m_pCoalescenceRate.get().getValues();
+		} else {
+			getCoalescentRates = m_substitutionmodel.thetaInput.get().getValues();
+			for (int i = 0; i < getCoalescentRates.length; i++) {
+				getCoalescentRates[i] = 2.0/getCoalescentRates[i];
+			}
+		}
+		return getCoalescentRates;
+	}
+
+	
 	public double getNewProbVariableSites() {
 		if (!m_bUsenNonPolymorphic) {
 			double[] constProbs = calcNewConstProbs();
