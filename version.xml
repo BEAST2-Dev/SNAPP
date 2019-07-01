@@ -1,5 +1,5 @@
-<package name='SNAPP' version='1.4.2'>
-	<depends on='beast2' atleast='2.5.0'/>
+<package name='SNAPP' version='1.5.0'>
+	<depends on='beast2' atleast='2.6.0'/>
 	<packageapp description="SNAPP tree set analyser"
 		class="snap.app.analysis.TreeSetAnalyser"
 		args="-window -working -options"
