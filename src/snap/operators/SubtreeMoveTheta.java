@@ -59,16 +59,16 @@ public class SubtreeMoveTheta extends Operator {
 		RealParameter coalescenceRates = m_coalescenceRate.get(this);
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
 		
-		int numNodes = scaleSubtreeRates(subtreeRoot);
+		int numNodes = scaleSubtreeRates(subtreeRoot, coalescenceRates,scale);
 		
 		return numNodes * Math.log(scale); //Hastings ratio
 	}
  
- 	private int scaleSubtreeRates(Node v) {
+ 	private int scaleSubtreeRates(Node v, RealParameter coalescenceRates, double scale) {
  		int nNodes = 1;
  		if (!v.isLeaf()) {
- 			nNodes+=scaleSubtreeRates(v.getLeft());
- 			nNodes+=scaleSubtreeRates(v.getRight());
+ 			nNodes+=scaleSubtreeRates(v.getLeft(),coalescenceRates,scale);
+ 			nNodes+=scaleSubtreeRates(v.getRight(),coalescenceRates,scale);
  		}
  		coalescenceRates.setValue(v.getNr(), coalescenceRates.getValue(v.getNr())*scale);
  		return nNodes;

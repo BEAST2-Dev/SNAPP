@@ -1,6 +1,6 @@
 
 /*
- * File GammaMover.java
+ * File GammaMoveAll.java
  *
  * Copyright (C) 2010 Remco Bouckaert, David Bryant remco@cs.auckland.ac.nz
  *
@@ -32,7 +32,7 @@ import beast.core.Operator;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
 
-@Description("Scales single value in gamma parameter.")
+@Description("Scales value in gamma (theta) parameter for all populations in the tree.")
 public class GammaMoveAll extends Operator {
 	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate", "population sizes");
 	public Input<Double> m_pScale = new Input<Double>("scale", "scale of move");
