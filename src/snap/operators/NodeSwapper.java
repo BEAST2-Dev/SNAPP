@@ -46,11 +46,11 @@ public class NodeSwapper extends Operator {
 	
 	@Override
 	public void initAndValidate() {
-		m_nNodeCount = m_pTree.get().getNodeCount();
 	}
 
 	@Override
 	public double proposal() { // throws Exception {
+		m_nNodeCount = m_pTree.get().getNodeCount();
 		double hastingsRatio = 1.0;
 		Tree tree = m_pTree.get(this);
 		Node [] nodes = tree.getNodesAsArray();

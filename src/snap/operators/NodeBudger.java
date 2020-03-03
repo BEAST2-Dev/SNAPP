@@ -46,13 +46,13 @@ public class NodeBudger extends NodeSwapper {
 
 	@Override
 	public void initAndValidate() {
-		m_nInternalNodeCount = m_pTree.get().getInternalNodeCount();
-		m_nLeafNodeCount = m_pTree.get().getLeafNodeCount();
 		m_fWindowSize = m_pWindowSize.get();
 	}
 	
 	@Override
 	public double proposal() {
+		m_nInternalNodeCount = m_pTree.get().getInternalNodeCount();
+		m_nLeafNodeCount = m_pTree.get().getLeafNodeCount();
 		double hastingsRatio = 1.0;
 		Tree tree = m_pTree.get(this);
 		Node [] nodes = tree.getNodesAsArray();

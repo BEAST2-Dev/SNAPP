@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Random;
 
 import beast.app.BeastMCMC;
+import beast.app.beauti.Beauti;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -113,6 +114,9 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	@Override
 	public void initAndValidate() {
+    	if (Beauti.isInBeauti()) {
+    		return;
+    	}
 		ascSiteCount = ascSiteCountInput.get();
 		// check that alignment has same taxa as tree
     	if (!(dataInput.get() instanceof Data)) {
