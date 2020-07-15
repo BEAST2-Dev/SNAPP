@@ -1,8 +1,8 @@
 <!-- Build SnAP. It is also used by Hudson SnAP project. JUnit test is available for this build. -->
 <project basedir="." default="build_all_SnAP" name="BUILD_SnAP">
 	<description>
-	    Build SnAP. 
-            Also used by Hudson SnAP project. 
+	    Build SnAP.
+            Also used by Hudson SnAP project.
 	    JUnit test is available for this build.
 	    $Id: build_SNAPP.xml $
 	</description>
@@ -17,7 +17,7 @@
         <property name="libBeast2" location="${beast2path}/lib" />
         <property name="srcBeast2" location="${beast2path}/src" />
         <property name="beast2classpath" location="${beast2path}/build" />
-        
+
 	<property name="main_class_SnAP" value="snap.app.mcmc.SNAPPMCMC" />
 	<property name="main_class_TSA" value="snap.app.analysis.TreeSetAnalyser" />
 	<property name="report"  value="${build}/junitreport"/>
@@ -59,10 +59,10 @@
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} /bin -->
-		<javac srcdir="${src}" destdir="${build}" classpathref="classpath" 
+		<javac srcdir="${src}" destdir="${build}" classpathref="classpath"
 		       fork="true" includeantruntime='false'
 			   source="1.8"
-		       target="1.8"			
+		       target="1.8"
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m">
 			<include name="snap/**/**" />
@@ -153,7 +153,7 @@
 		<java jar="${dist}/snap.jar" fork="true" />
 	</target>
 
-	
+
 	<!-- JUnit test -->
 	<target name="junit">
 		<mkdir dir="${report}" />
@@ -167,13 +167,13 @@
 
 			<batchtest fork="yes" todir="${report}">
 				<fileset dir="${src}">
-                    <include name="test/**/*Test.java"/>                                         
+                    <include name="test/**/*Test.java"/>
 				</fileset>
 			</batchtest>
 		</junit>
 		<echo message="JUnit test finished." />
 	</target>
-    
+
     <target name="junitreport">
 		<junitreport todir="${report}">
 			<fileset dir="${report}" includes="*.xml"/>
@@ -181,8 +181,8 @@
 		</junitreport>
 		<echo message="JUnit test report finished." />
 	</target>
-	
-	
+
+
     <target name="doc">
         <exec executable="pdflatex" dir="${basedir}/doc">
                 <arg value="SNAPP.tex" />
@@ -193,13 +193,13 @@
         <copy file="doc/SNAPP.pdf" tofile="release/common/doc/SNAPP.pdf" />
     </target>
 
-	
-	
+
+
 	<!-- Release -->
-	<property name="version" value="1.5.0" />
-	<property name="version_number" value="1.5.0" />
+	<property name="version" value="1.5.1" />
+	<property name="version_number" value="1.5.1" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="SNAPP development team 2011-2019" />
+	<property name="copyright" value="SNAPP development team 2011-2020" />
 
 	<property name="SNAPP_name" value="SNAPP" />
 	<property name="BEAUti_name" value="BEAUti" />
@@ -468,11 +468,11 @@
 
 		<echo message="Mac version release is finished." />
 	</target>
-	
+
 
 <!--
 -->
-	<target name="addon" 
+	<target name="addon"
 	        depends="build_jar_all_SnAP_NoJUnitTest"
 	        description="release BEAST 2 add-on version of SNAPP">
 
