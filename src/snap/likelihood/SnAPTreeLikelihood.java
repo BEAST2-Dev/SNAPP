@@ -53,7 +53,7 @@ import snap.likelihood.SnAPLikelihoodCore;
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
 
 @Citation(value="David Bryant, Remco Bouckaert, Joseph Felsenstein, Noah Rosenberg, Arindam RoyChoudhury. Inferring Species Trees Directly from Biallelic Genetic Markers: Bypassing Gene Trees in a Full Coalescent Analysis. Mol. Biol. Evol. 29(8):1917-1932, 2012", 
-	DOI="10.1016/j.ympev.2011.10.01")
+	DOI="10.1093/molbev/mss086")
 public class SnAPTreeLikelihood extends TreeLikelihood {
 //	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
 //	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");

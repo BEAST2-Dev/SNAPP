@@ -3,6 +3,7 @@ package snap;
 import java.io.PrintStream;
 
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.BEASTObject;
@@ -12,7 +13,7 @@ import beast.core.parameter.RealParameter;
 
 
 @Description("Logger that reports coalescent rates as theta (using theta=2/rate)")
-public class ThetaLogger extends BEASTObject implements Loggable {
+public class ThetaLogger extends BEASTObject implements Loggable , Function {
 	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate","reports 2 over the value of the parameter.", Validate.REQUIRED);
 
 	
@@ -47,5 +48,19 @@ public class ThetaLogger extends BEASTObject implements Loggable {
 	@Override
 	public void close(PrintStream out) {
 		// nothing to do
+	}
+
+
+	@Override
+	public int getDimension() {
+		return m_coalescenceRate.get().getDimension();
+	}
+
+
+	@Override
+	public double getArrayValue(int dim) {
+        RealParameter var = (RealParameter) m_coalescenceRate.get();
+        //WARNING: this will be a bug when we allow u and v to change. Value should be 2uv/((u+v)*rate) 
+        return (2.0/var.getValue(dim));
 	}
 }
