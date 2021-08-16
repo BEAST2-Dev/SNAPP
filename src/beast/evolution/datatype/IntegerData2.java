@@ -1,10 +1,9 @@
 package beast.evolution.datatype;
 
 import beast.core.Description;
-import beast.evolution.datatype.DataType.Base;
 
 @Description("Datatype for integer sequences")
-public class IntegerData2 extends Base {
+public class IntegerData2 extends IntegerData {
 	
 	public IntegerData2() {
 		stateCount = -1;

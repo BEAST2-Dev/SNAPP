@@ -196,10 +196,10 @@
 
 
 	<!-- Release -->
-	<property name="version" value="1.5.1" />
-	<property name="version_number" value="1.5.1" />
+	<property name="version" value="1.5.2" />
+	<property name="version_number" value="1.5.2" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="SNAPP development team 2011-2020" />
+	<property name="copyright" value="SNAPP development team 2011-2021" />
 
 	<property name="SNAPP_name" value="SNAPP" />
 	<property name="BEAUti_name" value="BEAUti" />

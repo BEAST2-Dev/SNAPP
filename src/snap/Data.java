@@ -102,6 +102,7 @@ public class Data extends beast.evolution.alignment.Alignment {
 						boolean bFound = false;
 						for (int i = 0; i < sequences.size() && !bFound; i++) {
 							if (sequences.get(i).taxonInput.get().equals(taxon.getID())) {
+								determineTotalCount(sequences.get(i), rawDataType);
 								SNPSequence.m_sequences.setValue(sequences.get(i), SNPSequence);
 								bFound = true;
 							}
@@ -171,6 +172,17 @@ public class Data extends beast.evolution.alignment.Alignment {
 		}
 	} // initAndValidate
 	
+	private void determineTotalCount(Sequence sequence, DataType dataType) {
+		if (sequence.totalCountInput.get() > 0) {
+			return;
+		}
+		int totalCount = 0;
+		for (int i : sequence.getSequence(dataType)) {
+			totalCount = Math.max(totalCount, i);
+		}
+		sequence.totalCountInput.setValue(totalCount+1, sequence);
+	}
+
 	private Sequence toBinarySequence(String id, String refferenceSeq,
 			String seqStr) {
 		Sequence binarySequence = new Sequence();
