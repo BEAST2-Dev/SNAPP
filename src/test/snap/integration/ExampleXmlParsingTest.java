@@ -84,7 +84,7 @@ public class ExampleXmlParsingTest extends TestCase {
 					if (runable instanceof MCMC) {
 						MCMC mcmc = (MCMC) runable;
 						mcmc.setInputValue("preBurnin", 0);
-						mcmc.setInputValue("chainLength", 2);
+						mcmc.setInputValue("chainLength", 2l);
 						mcmc.run();
 					}
 				} catch (Exception e) {
