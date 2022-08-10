@@ -1,59 +1,59 @@
 <beast version='2.0' 
-	namespace='snap:beast.util:beast.core.util:beast.evolution:beast.evolution.alignment:snap.likelihood:beast.core.util:beast.evolution:beast.math.distributions:beast.app.beauti'
+	namespace='snap:beast.base.util:beast.base.math:beast.base.util:beast.base.math:beast.evolution:beast.base.evolution.alignment:snap.likelihood:beast.base.util:beast.base.math:beast.evolution:beast.base.math.distributions:beast.app.beauti'
     templateinfo='template for SNP and AFLP data which automatically integrates out all lineage trees'>
 
-<map name='connect'>beast.app.beauti.BeautiConnector</map>
-<map name='subtemplate'>beast.app.beauti.BeautiSubTemplate</map>
+<map name='connect'>beastfx.app.inputeditor.BeautiConnector</map>
+<map name='subtemplate'>beastfx.app.inputeditor.BeautiSubTemplate</map>
 
 
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='snap.MCMC.operator=Operators,
 	        snap.MCMC.logger=Loggers,
-            beast.evolution.sitemodel.SiteModel.substModel=,
-            beast.core.parameter.RealParameter.estimate=Sample,
-            beast.core.parameter.IntegerParameter.estimate=Sample,
-            beast.core.parameter.BooleanParameter.estimate=Sample,
+            beast.base.evolution.sitemodel.SiteModel.substModel=,
+            beast.base.inference.parameter.RealParameter.estimate=Sample,
+            beast.base.inference.parameter.IntegerParameter.estimate=Sample,
+            beast.base.inference.parameter.BooleanParameter.estimate=Sample,
 	        snap.MCMC.preBurnin=Burn in,
 			snap.likelihood.SnAPTreeLikelihood.non-polymorphic=Include non-polymorphic sites'
-        inlinePlugins ='beast.core.MCMC.distribution,
-	        beast.core.MCMC.logger,
-	        beast.evolution.sitemodel.SiteModel.substModel,
-	        beast.evolution.tree.coalescent.ExponentialGrowth,
-	        beast.evolution.tree.coalescent.ConstantPopulation,
-	        beast.evolution.tree.coalescent.Coalescent'
-        collapsedPlugins ='beast.core.MCMC.logger'
-        suppressPlugins = 'beast.core.MCMC.operator,
-	        beast.core.MCMC.state,
-	        beast.core.MCMC.distribution,
-	        beast.core.MCMC.stateDistribution,
-	        beast.core.MCMC.init,
-	        beast.core.MCMC.sampleFromPrior,
-	        beast.core.MCMC.operatorschedule,
+        inlinePlugins ='beast.base.inference.MCMC.distribution,
+	        beast.base.inference.MCMC.logger,
+	        beast.base.evolution.sitemodel.SiteModel.substModel,
+	        beast.base.evolution.tree.coalescent.ExponentialGrowth,
+	        beast.base.evolution.tree.coalescent.ConstantPopulation,
+	        beast.base.evolution.tree.coalescent.Coalescent'
+        collapsedPlugins ='beast.base.inference.MCMC.logger'
+        suppressPlugins = 'beast.base.inference.MCMC.operator,
+	        beast.base.inference.MCMC.state,
+	        beast.base.inference.MCMC.distribution,
+	        beast.base.inference.MCMC.stateDistribution,
+	        beast.base.inference.MCMC.init,
+	        beast.base.inference.MCMC.sampleFromPrior,
+	        beast.base.inference.MCMC.operatorschedule,
 	        snap.likelihood.SnAPPrior.tree,
 	        snap.likelihood.SnapSubstitutionModel.frequencies,
-			beast.core.Logger.sanitiseHeaders,
-			beast.core.Logger.sort,
-            beast.evolution.sitemodel.SiteModel.mutationRate,
-            beast.evolution.sitemodel.SiteModel.gammaCategoryCount,
-            beast.evolution.sitemodel.SiteModel.proportionInvariant,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.type,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
-	        beast.evolution.speciation.BirthDeathGernhard08Model.tree,
-	        beast.evolution.tree.Tree.trait,
-	        beast.evolution.tree.Tree.nodetype,
-	        beast.util.TreeParser.initial,
-	        beast.util.TreeParser.taxa,
-	        beast.util.TreeParser.trait,
-	        beast.util.TreeParser.estimate,
-	        beast.util.ClusterTree.initial,
-	        beast.util.ClusterTree.taxa,
-	        beast.util.ClusterTree.trait,
-	        beast.util.ClusterTree.estimate,
-            beast.math.distributions.Prior.x,
-            beast.core.Logger.model,
-            beast.core.Logger.mode,
+			beast.base.inference.Logger.sanitiseHeaders,
+			beast.base.inference.Logger.sort,
+            beast.base.evolution.sitemodel.SiteModel.mutationRate,
+            beast.base.evolution.sitemodel.SiteModel.gammaCategoryCount,
+            beast.base.evolution.sitemodel.SiteModel.proportionInvariant,
+	        beast.base.evolution.speciation.BirthDeathGernhard08Model.relativeDeathRate,
+	        beast.base.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
+	        beast.base.evolution.speciation.BirthDeathGernhard08Model.type,
+	        beast.base.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
+	        beast.base.evolution.speciation.BirthDeathGernhard08Model.tree,
+	        beast.base.evolution.tree.Tree.trait,
+	        beast.base.evolution.tree.Tree.nodetype,
+	        beast.base.evolution.tree.TreeParser.initial,
+	        beast.base.evolution.tree.TreeParser.taxa,
+	        beast.base.evolution.tree.TreeParser.trait,
+	        beast.base.evolution.tree.TreeParser.estimate,
+	        beast.base.evolution.tree.ClusterTree.initial,
+	        beast.base.evolution.tree.ClusterTree.taxa,
+	        beast.base.evolution.tree.ClusterTree.trait,
+	        beast.base.evolution.tree.ClusterTree.estimate,
+            beast.base.inference.distribution.Prior.x,
+            beast.base.inference.Logger.model,
+            beast.base.inference.Logger.mode,
             snap.likelihood.SnAPTreeLikelihood.data,
             snap.likelihood.SnAPTreeLikelihood.scaling,
             snap.likelihood.SnAPTreeLikelihood.siteModel,
@@ -81,41 +81,41 @@
         disableMenus='View.Show Data panel,View.Show Tip Dates panel,View.Show Clock Model panel,View.Show Tree prior panel,Mode'
     >
 
-    	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
+    	<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Taxon sets" tiptext="Taxon sets" 
             path='distribution/distribution[id="likelihood"]/distribution/data'
             hasPartitions="none" icon='2.png' forceExpansion='FALSE'
 			type='snap.Data'
         />
 <!--
-    	<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Taxon sets2" tiptext="Taxon sets2" 
+    	<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Taxon sets2" tiptext="Taxon sets2" 
             path='distribution/distribution[id="likelihood"]/distribution/data/taxonset'
             hasPartitions="none" icon='1.png' forceExpansion='FALSE'
             isVisible='false'
         />
 -->
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Model Parameters" tiptext="Specification of model parameters"
+		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Model Parameters" tiptext="Specification of model parameters"
             path='distribution/distribution[id="likelihood"]/distribution'
             hasPartitions="none" icon='4.png' forceExpansion='TRUE'
             buttonStatus='NONE' type='snap.likelihood.SnAPTreeLikelihood'
         />
 <!--
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
+		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
             path='distribution/distribution[id="likelihood"]/distribution/siteModel/substModel'
             hasPartitions="none" icon='3.png' forceExpansion='TRUE'
         />
 -->
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
+		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Prior" tiptext="Tree and parameter priors"
             path='distribution/distribution[id="prior"]/distribution'
             hasPartitions="none" icon='7.png' forceExpansion='TRUE'
         />
 <!--type='snap.likelihood.SnAPPrior'-->
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
+		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Operators" tiptext="MCMC Operator details"
             path='operator'
             hasPartitions="none" icon='8.png' forceExpansion='FALSE'
             isVisible='false'
             buttonStatus='NONE'
         />
-		<panel spec='beast.app.beauti.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
+		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="MCMC" tiptext="MCMC parameters"
             path=''
             hasPartitions="none" icon='9.png' forceExpansion='TRUE'
         />
@@ -124,7 +124,7 @@
 		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@SNAPPPartitionTemplate'/>
 
 
-        <partitiontemplate id='SNAPPPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+        <partitiontemplate id='SNAPPPartitionTemplate' spec='BeautiSubTemplate' class='beast.base.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
         <data spec='snap.Data' id='snap.$(n)' dataType='integerdata'>
@@ -136,17 +136,17 @@
 			  <parameter name='beta' id='beta'   value='109.73' lower='0.0' estimate='false'/>
 			  <parameter name='lambda' id='lambda' value='0.01' lower='0.0' estimate='true'/>
 	          <parameter name='kappa' id='kappa' value='1.0' lower='0.0' estimate='false'/>
-		      <tree spec='beast.util.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma' clock.rate="1.0">
+		      <tree spec='beast.base.evolution.tree.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma' clock.rate="1.0">
 		            <input name='taxa' idref='snap.$(n)'/>
 		      </tree>
 		      <parameter name='coalescenceRate' id='coalescenceRate' value='10'/>
         </distribution>
-        <distribution id='alphaPrior.$(n)' spec='beast.math.distributions.Prior' x='@alpha'><distr spec='OneOnX'/></distribution>
-        <distribution id='betaPrior.$(n)' spec='beast.math.distributions.Prior' x='@beta'><distr spec='OneOnX'/></distribution>
-        <distribution id='lambdaPrior.$(n)' spec='beast.math.distributions.Prior' x='@lambda'><distr spec='OneOnX'/></distribution>
-        <distribution id='kappaPrior.$(n)' spec='beast.math.distributions.Prior' x='@kappa'><distr spec='OneOnX'/></distribution>
-        <distribution id='uPrior.$(n)' spec='beast.math.distributions.Prior' x='@u'><distr spec='OneOnX'/></distribution>
-        <distribution id='vPrior.$(n)' spec='beast.math.distributions.Prior' x='@v'><distr spec='OneOnX'/></distribution>
+        <distribution id='alphaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@alpha'><distr spec='OneOnX'/></distribution>
+        <distribution id='betaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@beta'><distr spec='OneOnX'/></distribution>
+        <distribution id='lambdaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@lambda'><distr spec='OneOnX'/></distribution>
+        <distribution id='kappaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@kappa'><distr spec='OneOnX'/></distribution>
+        <distribution id='uPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@u'><distr spec='OneOnX'/></distribution>
+        <distribution id='vPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@v'><distr spec='OneOnX'/></distribution>
 
 
          <snaptreelikelihood spec='snap.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate' non-polymorphic='true'>
@@ -190,10 +190,10 @@
 
 
         <log id='ThetaLogger' spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
-        <log id='TreeHeightLogger' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
+        <log id='TreeHeightLogger' spec='beast.base.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
         <logger spec='Logger' logEvery='1000' fileName='snap.trees' mode='tree'  id='treelog'>  
-	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
+	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.base.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
 	            <metadata spec='snap.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
 	        </log>
 		</logger>
@@ -263,9 +263,9 @@
 <!-- Tree initialisation -->
 <!-- Random tree -->
 
-        <subtemplate id='RandomTree' spec='BeautiSubTemplate' class='beast.evolution.tree.RandomTree' mainid='RandomTree.$(n)'>
+        <subtemplate id='RandomTree' spec='BeautiSubTemplate' class='beast.base.evolution.tree.coalescent.RandomTree' mainid='RandomTree.$(n)'>
 <![CDATA[
-            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
+            <tree spec='beast.base.evolution.tree.coalescent.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
                 <populationModel id='ConstantPopulation.$(n)' spec='ConstantPopulation'>
             		<popSize id='popSize.$(n)' spec='parameter.RealParameter' value='1'/>
@@ -276,30 +276,30 @@
 
 <!-- Cluster tree (for UPGMA) -->
 
-        <subtemplate id='UPGMATree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='UPGMATree.$(n)'>
+        <subtemplate id='UPGMATree' spec='BeautiSubTemplate' class='beast.base.evolution.tree.ClusterTree' mainid='UPGMATree.$(n)'>
 <![CDATA[
-        <tree spec='beast.util.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
+        <tree spec='beast.base.evolution.tree.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
 ]]>
         </subtemplate>
 
 <!-- Newick tree -->
-        <subtemplate id='NewickTree' spec='BeautiSubTemplate' class='beast.util.ClusterTree' mainid='NewickTree.$(n)'>
+        <subtemplate id='NewickTree' spec='BeautiSubTemplate' class='beast.base.evolution.tree.ClusterTree' mainid='NewickTree.$(n)'>
 <![CDATA[
-        <tree spec='beast.util.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
+        <tree spec='beast.base.evolution.tree.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
 ]]>
         </subtemplate>
 
 <!-- Uniform -->
-        <subtemplate id='Uniform' class='beast.math.distributions.Uniform' mainid='[top]'>
+        <subtemplate id='Uniform' class='beast.base.inference.distribution.Uniform' mainid='[top]'>
 <![CDATA[
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper='Infinity'/>
 ]]>
         </subtemplate>
 
 <!-- Normal -->
-        <subtemplate id='Normal' class='beast.math.distributions.Normal' mainid='[top]'>
+        <subtemplate id='Normal' class='beast.base.inference.distribution.Normal' mainid='[top]'>
 <![CDATA[
-    <distr offset="0.0" spec="beast.math.distributions.Normal">
+    <distr offset="0.0" spec="beast.base.inference.distribution.Normal">
         <parameter name='mean' value='0' estimate='false'/>
         <parameter name='sigma' value='1' estimate='false'/>
     </distr>
@@ -307,16 +307,16 @@
         </subtemplate>
 
 <!-- OneOnX -->
-        <subtemplate id='1/X' class='beast.math.distributions.OneOnX' mainid='[top]'>
+        <subtemplate id='1/X' class='beast.base.inference.distribution.OneOnX' mainid='[top]'>
 <![CDATA[
-        <distr spec="beast.math.distributions.OneOnX"/>
+        <distr spec="beast.base.inference.distribution.OneOnX"/>
 ]]>
         </subtemplate>
 
 <!-- lognormal -->
-        <subtemplate id='LogNormal' class='beast.math.distributions.LogNormalDistributionModel' mainid='[top]'>
+        <subtemplate id='LogNormal' class='beast.base.inference.distribution.LogNormalDistributionModel' mainid='[top]'>
 <![CDATA[
-        <distr name='distr' spec="beast.math.distributions.LogNormalDistributionModel">
+        <distr name='distr' spec="beast.base.inference.distribution.LogNormalDistributionModel">
             <parameter name='M' value="1" estimate='false'/>
             <parameter name='S' value="1.25" lower="0" upper="5" estimate='false'/>
         </distr>
@@ -324,18 +324,18 @@
         </subtemplate>
 
 <!-- Exponential -->
-        <subtemplate id='Exponential' class='beast.math.distributions.Exponential' mainid='[top]'>
+        <subtemplate id='Exponential' class='beast.base.inference.distribution.Exponential' mainid='[top]'>
 <![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.Exponential">
+        <distr offset="0.0" spec="beast.base.inference.distribution.Exponential">
             <parameter name='mean' value="1" estimate='false'/>
         </distr>
 ]]>
         </subtemplate>
 
 <!-- Gamma -->
-        <subtemplate id='Gamma' class='beast.math.distributions.Gamma' mainid='[top]'>
+        <subtemplate id='Gamma' class='beast.base.inference.distribution.Gamma' mainid='[top]'>
 <![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.Gamma">
+        <distr offset="0.0" spec="beast.base.inference.distribution.Gamma">
             <parameter name='alpha' value="2" estimate='false'/>
             <parameter name='beta' value="2" estimate='false'/>
         </distr>
@@ -343,9 +343,9 @@
         </subtemplate>
 
 <!-- Beta -->
-        <subtemplate id='Beta' class='beast.math.distributions.Beta' mainid='[top]'>
+        <subtemplate id='Beta' class='beast.base.inference.distribution.Beta' mainid='[top]'>
 <![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.Beta">
+        <distr offset="0.0" spec="beast.base.inference.distribution.Beta">
             <parameter name='alpha' value="2" estimate='false'/>
             <parameter name='beta' value="2" estimate='false'/>
         </distr>
@@ -353,9 +353,9 @@
         </subtemplate>
 
 <!-- Laplace -->
-        <subtemplate id='LaplaceDistribution' class='beast.math.distributions.LaplaceDistribution' mainid='[top]'>
+        <subtemplate id='LaplaceDistribution' class='beast.base.inference.distribution.LaplaceDistribution' mainid='[top]'>
 <![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.LaplaceDistribution">
+        <distr offset="0.0" spec="beast.base.inference.distribution.LaplaceDistribution">
             <parameter name='mu' value="0" estimate='false'/>
             <parameter name='scale' value="1" estimate='false'/>
         </distr>
@@ -363,9 +363,9 @@
         </subtemplate>
 
 <!-- InverseGamma -->
-        <subtemplate id='InverseGamma' class='beast.math.distributions.InverseGamma' mainid='[top]'>
+        <subtemplate id='InverseGamma' class='beast.base.inference.distribution.InverseGamma' mainid='[top]'>
 <![CDATA[
-        <distr offset="0.0" spec="beast.math.distributions.InverseGamma">
+        <distr offset="0.0" spec="beast.base.inference.distribution.InverseGamma">
             <parameter name='alpha' value="2" estimate='false'/>
             <parameter name='beta' value="2" estimate='false'/>
         </distr>
@@ -373,9 +373,9 @@
         </subtemplate>
 
 <!-- Poisson -->
-        <subtemplate id='Poisson' class='beast.math.distributions.Poisson' mainid='[top]'>
+        <subtemplate id='Poisson' class='beast.base.inference.distribution.Poisson' mainid='[top]'>
 <![CDATA[
-		<distr spec='beast.math.distributions.Poisson' offset="0.0">
+		<distr spec='beast.base.inference.distribution.Poisson' offset="0.0">
 			<parameter name="lambda" value="0.693"/>
 		</distr>
 ]]>
@@ -391,7 +391,7 @@
 
 <!-- framework for main model -->
 
-    <run spec="beast.core.MCMC" id="mcmc" chainLength="10000000" storeEvery='1000'>
+    <run spec="beast.base.inference.MCMC" id="mcmc" chainLength="10000000" storeEvery='1000'>
 
         <state id='state'>
         </state>

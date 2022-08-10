@@ -6,6 +6,7 @@ package snap.util;
 import java.util.Arrays;
 import java.util.List;
 
+import beastfx.app.tools.Application;
 import snap.util.TreeFileParser;
 
 public class TreeSetAnalyser3 extends TreeSetAnalyser {
@@ -144,7 +145,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 		return true;
 	} // parseArgs
 	
-	String getShortTopology(Node node, List<String> sLabels) {
+	protected String getShortTopology(Node node, List<String> sLabels) {
 		if (node.isLeaf()) {
 			return sLabels.get(node.getNr()); 
 		} else {
@@ -252,7 +253,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				Double mean = sum/n;
 				Double var = sumSquared/(n - 1.0)  - sum*sum/(n*(n-1.0));
 				
-				double fESS = beast.core.util.ESS.calcESS(heights);
+				double fESS = beast.base.inference.util.ESS.calcESS(heights);
 				
 				//System.err.print("\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
 				System.out.println("\tNode"+node+"\t"+heights.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));
@@ -279,7 +280,7 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 				Double mean = sum/n;
 				Double var = sumSquared/(n - 1.0)  - sum*sum/(n*(n-1.0));
 				
-				double fESS = beast.core.util.ESS.calcESS(thetas);
+				double fESS = beast.base.inference.util.ESS.calcESS(thetas);
 				
 				//System.err.print("\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var));
 				System.out.println("\ttheta"+node+"\t"+thetas.get(0)+"\t"+mean+"\t"+Math.sqrt(var/fESS));// + "\t" + var);
@@ -294,11 +295,8 @@ public class TreeSetAnalyser3 extends TreeSetAnalyser {
 		
 	}
 	
-	public static void main(String [] args) {
-		TreeSetAnalyser3 analyser = new TreeSetAnalyser3();
-		if (analyser.parseArgs(args)) {
-			analyser.run();
-		}
+	public static void main(String [] args) throws Exception {
+		new Application(new TreeSetAnalyser3(), "SNAPP tree set analyser", args);
 	} // main
 }
 

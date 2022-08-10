@@ -1,6 +1,7 @@
-package beast.evolution.datatype;
+package snap.datatype;
 
-import beast.core.Description;
+import beast.base.core.Description;
+import beast.base.evolution.datatype.IntegerData;
 
 @Description("Datatype for integer sequences")
 public class IntegerData2 extends IntegerData {

@@ -5,7 +5,7 @@ import java.util.Vector;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
-import beast.util.Randomizer;
+import beast.base.util.Randomizer;
 
 
 

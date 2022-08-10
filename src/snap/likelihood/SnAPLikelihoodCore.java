@@ -34,9 +34,9 @@ package snap.likelihood;
  */
 
 
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
 import snap.Data;
 import snap.NodeData;
 

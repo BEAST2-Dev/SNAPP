@@ -4,13 +4,13 @@ import java.io.File;
 
 import org.junit.Test;
 
-import snap.app.analysis.TreeSetAnalyser;
+import snap.util.TreeSetAnalyser;
 import snap.util.TreeSetAnalyser3;
 
-import beast.core.Logger;
-import beast.core.MCMC;
-import beast.util.Randomizer;
-import beast.util.XMLParser;
+import beast.base.inference.Logger;
+import beast.base.inference.MCMC;
+import beast.base.util.Randomizer;
+import beast.base.parser.XMLParser;
 
 import junit.framework.TestCase;
 
@@ -30,7 +30,7 @@ public class TreeSetAnalyserTest  extends TestCase {
 			System.out.println("Processing " + sFileName);
 			XMLParser parser = new XMLParser();
 			try {
-				beast.core.Runnable runable = parser.parseFile(new File(sFileName));
+				beast.base.inference.Runnable runable = parser.parseFile(new File(sFileName));
 				if (runable instanceof MCMC) {
 					MCMC mcmc = (MCMC) runable;
 					mcmc.setInputValue("preBurnin", 0);
@@ -52,7 +52,8 @@ public class TreeSetAnalyserTest  extends TestCase {
 			String [] args = new String[]{"-tree", "((A,B),(C,D))", System.getProperty("user.dir") +"/test.127.trees"};
 			TreeSetAnalyser3 analyser = new TreeSetAnalyser3();
         	if (analyser.parseArgs(args)) {
-        		new TreeSetAnalyser(analyser, null, 1);
+        		analyser.run();
+        		// new TreeSetAnalyser(analyser, null, 1);
         	}
 		} catch (Exception e) {
 			e.printStackTrace();

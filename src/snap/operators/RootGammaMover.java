@@ -26,13 +26,13 @@
 package snap.operators;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.Tree;
+import beast.base.util.Randomizer;
 
 @Description("Scales value in gamma parameter associated with root node.")
 public class RootGammaMover extends Operator {
@@ -52,7 +52,7 @@ public class RootGammaMover extends Operator {
 	@Override
 	public double proposal() {
 		
-		RealParameter coalescenceRate = m_coalescenceRate.get(this);
+		RealParameter coalescenceRate = m_coalescenceRate.get();
 
 		// We want whichNode to be equal to the root node.	
 		int whichNode = tree.getRoot().getNr(); 

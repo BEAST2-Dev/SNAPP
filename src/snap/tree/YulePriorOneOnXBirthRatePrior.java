@@ -1,9 +1,11 @@
-package beast.evolution.tree;
+package snap.tree;
 
 import java.util.List;
 
-import beast.core.Description;
-import beast.evolution.speciation.SpeciesTreeDistribution;
+import beast.base.core.Description;
+import beast.base.evolution.speciation.SpeciesTreeDistribution;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.TreeInterface;
 
 @Description("Yule prior that has a 1/X prior on the birth rate, which is analytically integrated out")
 public class YulePriorOneOnXBirthRatePrior extends SpeciesTreeDistribution {

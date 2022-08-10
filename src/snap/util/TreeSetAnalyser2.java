@@ -4,6 +4,7 @@ package snap.util;
 import java.util.Arrays;
 import java.util.List;
 
+import beastfx.app.tools.Application;
 import snap.util.TreeFileParser;
 
 public class TreeSetAnalyser2 extends TreeSetAnalyser {
@@ -191,11 +192,8 @@ public class TreeSetAnalyser2 extends TreeSetAnalyser {
 			
 	}
 	
-	public static void main(String [] args) {
-		TreeSetAnalyser2 analyser = new TreeSetAnalyser2();
-		if (analyser.parseArgs(args)) {
-			analyser.run();
-		}
+	public static void main(String [] args) throws Exception {
+		new Application(new TreeSetAnalyser2(), "SNAPP tree set analyser", args);
 	} // main
 }
 

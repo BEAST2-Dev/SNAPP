@@ -3,11 +3,11 @@ package snap;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.TaxonSet;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.alignment.TaxonSet;
 
 @Description("Alignment where within species lineages are sampled in order to reduce the dataset")
 public class SubSampledData extends Data {

@@ -2,10 +2,10 @@ package snap;
 
 import java.util.Arrays;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.util.Randomizer;
 
 
 

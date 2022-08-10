@@ -1,12 +1,12 @@
 package snap.operators;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
 
 /*
  Change the base frequencies without changing the average rate.
@@ -44,8 +44,8 @@ public class MutationMover extends Operator {
 
 	@Override
 	public double proposal() {
-		RealParameter u = m_u.get(this);
-		RealParameter v = m_v.get(this);
+		RealParameter u = m_u.get();
+		RealParameter v = m_v.get();
             double pi_0 = v.getValue()/(u.getValue()+v.getValue());
             double x = pi_window*(2.0*Randomizer.nextDouble()-1.0);
             //cout<<"old pi_0 = "<<pi_0<<" new pi_0 = "<<pi_0 + x<<endl;

@@ -5,11 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Arrays;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Runnable;
-import beast.core.util.Log;
-import beast.util.LogAnalyser;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Runnable;
+import beast.base.core.Log;
+import beastfx.app.tools.LogAnalyser;
 
 @Description("Creates skyline plot from trace log")
 public class SkylineAnalyser extends Runnable {

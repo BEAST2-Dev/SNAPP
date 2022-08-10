@@ -26,11 +26,11 @@
 package snap.operators;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.parameter.RealParameter;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
 
 @Description("Scales value in gamma (theta) parameter for all populations in the tree.")
 public class GammaMoveAll extends Operator {
@@ -46,7 +46,7 @@ public class GammaMoveAll extends Operator {
 	
 	@Override
 	public double proposal() {
-		RealParameter coalescenceRate = m_coalescenceRate.get(this);
+		RealParameter coalescenceRate = m_coalescenceRate.get();
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
 		int numNodes = coalescenceRate.getDimension();
 		

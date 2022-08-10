@@ -1,13 +1,14 @@
-package beast.app.draw;
+package snap.app.inputeditor;
 
 import java.util.List;
 
 import javax.swing.Box;
 
-import beast.app.beauti.BeautiDoc;
-import beast.app.draw.ListInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
+import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.ListInputEditor;
+import beastfx.app.util.FXUtils;
+import beast.base.core.BEASTInterface;
+import beast.base.core.Input;
 import snap.likelihood.SnAPPrior;
 
 public class SNAPPPriorListEditor extends ListInputEditor {
@@ -29,7 +30,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
         m_beastObject = plugin;
 		this.itemNr = itemNr;
 
-        m_listBox = Box.createVerticalBox();
+        m_listBox = FXUtils.newVBox();
         // list of inputs 
         for (Object o : (List<?>) input.get()) {
             if (o instanceof SnAPPrior) {
@@ -37,7 +38,7 @@ public class SNAPPPriorListEditor extends ListInputEditor {
             	doc.getInputEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
             }
         }
-		add(m_listBox);
+		getChildren().add(m_listBox);
         updateState();
     }
 

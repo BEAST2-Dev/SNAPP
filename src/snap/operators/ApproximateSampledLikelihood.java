@@ -2,12 +2,12 @@ package snap.operators;
 
 
 import snap.likelihood.SnAPTreeLikelihood;
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.evolution.tree.Node;
+import beast.base.core.BEASTObject;
+import beast.base.core.Description;
+import beast.base.inference.Distribution;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.evolution.tree.Node;
 
 @Description("Approximate Likelihood based on subsample of lineages")
 public class ApproximateSampledLikelihood extends BEASTObject implements ApproximateLikelihood {

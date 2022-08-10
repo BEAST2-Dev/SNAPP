@@ -1,18 +1,20 @@
-package beast.app.draw;
+package snap.app.inputeditor;
 
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-
-import beast.app.beauti.BeautiDoc;
-import beast.app.draw.InputEditor;
-import beast.app.draw.ParameterInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
-import beast.evolution.sitemodel.SiteModel;
+import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.BooleanInputEditor;
+import beastfx.app.inputeditor.InputEditor;
+import beastfx.app.inputeditor.ParameterInputEditor;
+import beastfx.app.util.FXUtils;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.VBox;
+import beast.base.core.BEASTInterface;
+import beast.base.core.Input;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.sitemodel.SiteModel;
 import snap.Data;
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
@@ -23,8 +25,6 @@ public class SNAPPSubstitutionModelInputEditor extends InputEditor.Base {
 		super(doc);
 	}
 
-	private static final long serialVersionUID = 1L;
-
     public Class<?> type() {
         return SnapSubstitutionModel.class;
     }
@@ -32,7 +32,7 @@ public class SNAPPSubstitutionModelInputEditor extends InputEditor.Base {
     SnAPTreeLikelihood treeLikelihood;
     SnapSubstitutionModel substModel;
     Data data;
-    JButton muButton;
+    Button muButton;
     
     @Override
     public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
@@ -43,7 +43,7 @@ public class SNAPPSubstitutionModelInputEditor extends InputEditor.Base {
         
 		this.itemNr = itemNr;
 
-		Box m_listBox = Box.createVerticalBox();
+		VBox m_listBox = FXUtils.newVBox();
         // list of inputs
 		for (Object o : m_beastObject.getOutputs()) {
 			if (o instanceof SnAPTreeLikelihood) {
@@ -57,18 +57,18 @@ public class SNAPPSubstitutionModelInputEditor extends InputEditor.Base {
     		data = (Data) treeLikelihood.dataInput.get();
     	}
 
-    	muButton = new JButton("Calc mutation rates");
-    	muButton.setToolTipText("Calcaulate mutation rates based on data in the alignment");
-    	muButton.addActionListener(e -> setUpMutationRates());
-    	m_listBox.add(muButton);
+    	muButton = new Button("Calc mutation rates");
+    	muButton.setTooltip(new Tooltip("Calcaulate mutation rates based on data in the alignment"));
+    	muButton.setOnAction(e -> setUpMutationRates());
+    	m_listBox.getChildren().add(muButton);
     	
 		try {
 	    	ParameterInputEditor editor;
 			editor = (ParameterInputEditor) doc.getInputEditorFactory().createInputEditor(substModel.m_pU, substModel, doc);
-			m_listBox.add(editor);
+			m_listBox.getChildren().add(editor);
 			editor = (ParameterInputEditor) doc.getInputEditorFactory().createInputEditor(substModel.m_pV, substModel, doc);
 	    	editor.m_isEstimatedBox.setVisible(false);
-	    	m_listBox.add(editor);
+	    	m_listBox.getChildren().add(editor);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
 			e1.printStackTrace();
@@ -79,21 +79,21 @@ public class SNAPPSubstitutionModelInputEditor extends InputEditor.Base {
 
     	BooleanInputEditor polyEditor = new BooleanInputEditor(doc);
     	polyEditor.init(treeLikelihood.m_usenNonPolymorphic, treeLikelihood, -1, ExpandOption.FALSE, false);
-    	m_listBox.add(polyEditor);
+    	m_listBox.getChildren().add(polyEditor);
 
     	BooleanInputEditor muAtRootEditor = new BooleanInputEditor(doc);
     	muAtRootEditor.init(treeLikelihood.mutationOnlyAtRoot, treeLikelihood, -1, ExpandOption.FALSE, false);
-    	m_listBox.add(muAtRootEditor);
+    	m_listBox.getChildren().add(muAtRootEditor);
 
     	BooleanInputEditor showPatterLikelihoodEditor = new BooleanInputEditor(doc);
     	showPatterLikelihoodEditor.init(treeLikelihood.showPatternLikelihoodsAndQuit, treeLikelihood, -1, ExpandOption.FALSE, false);
-    	m_listBox.add(showPatterLikelihoodEditor);
+    	m_listBox.getChildren().add(showPatterLikelihoodEditor);
 
     	BooleanInputEditor useLikelihoodCorrectionEditor = new BooleanInputEditor(doc);
     	useLikelihoodCorrectionEditor.init(treeLikelihood.useLogLikelihoodCorrection, treeLikelihood, -1, ExpandOption.FALSE, false);
-    	m_listBox.add(useLikelihoodCorrectionEditor);
+    	m_listBox.getChildren().add(useLikelihoodCorrectionEditor);
 
-		add(m_listBox);
+    	getChildren().add(m_listBox);
         //updateState();
     }
     

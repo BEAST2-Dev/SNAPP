@@ -1,16 +1,23 @@
 package snap.util;
 
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import snap.util.TreeFileParser;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beastfx.app.tools.Application;
+import beastfx.app.util.TreeFile;
 
-public class TreeSetAnalyser {
-
+public class TreeSetAnalyser extends beast.base.inference.Runnable {
+	public Input<TreeFile> treesInput = new Input<>("trees","NEXUS file containing a tree set", Validate.REQUIRED);
+	final public Input<Integer> burnInPercentageInput = new Input<>("burnin", "percentage of trees to used as burn-in (and will be ignored)", 10);
+	
+	
 	String m_sFileName;
 	boolean m_bFirstTopologyOnly = false;
 	Vector<String> m_sLabels = new Vector<String>();
@@ -224,6 +231,10 @@ public class TreeSetAnalyser {
 //	public void analyse(String [] args) {
 //		parseArgs(args);
 	public void run() {
+		m_sFileName = treesInput.get().getAbsolutePath();
+		m_fBurnIn = burnInPercentageInput.get();
+		
+		
 		try {
 			TreeFileParser parser = new TreeFileParser(m_sLabels, null, null, 0);
 			Node [] trees = parser.parseFile(m_sFileName);
@@ -336,12 +347,15 @@ public class TreeSetAnalyser {
 		}
 	}
 	
-	public static void main(String [] args) {
-		TreeSetAnalyser analyser = new TreeSetAnalyser();
-		if (analyser.parseArgs(args)) {
-			analyser.run();
-		}
+	public static void main(String [] args) throws Exception {
+		new Application(new TreeSetAnalyser(), "SNAPP tree set analyser", args);
 	} // main
+
+	@Override
+	public void initAndValidate() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 /**

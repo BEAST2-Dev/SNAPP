@@ -2,7 +2,7 @@
 u=v=1.0 alpha=2, beta=0.2 lambda=10
 --> 
 
-<beast version='2.0' namespace='snap:beast.util:beast.core.util:beast.evolution'>
+<beast version='2.0' namespace='snap:beast.base.util:beast.base.evolution.tree:beast.base.inference:beast.base.evolution:beast.base.math:beast.base.util:beast.base.math:beast.evolution'>
 
 <map name='snapprior'>snap.likelihood.SnAPPrior</map>
 <map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
@@ -140,7 +140,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    <log spec='snap.ThetaLogger'>
 	        	<coalescenceRate idref='coalescenceRate'/>
     	    </log>
-	        <log spec='beast.evolution.tree.TreeHeightLogger'>
+	        <log spec='beast.base.evolution.tree.TreeHeightLogger'>
 	        	<tree idref='tree'/>
     	    </log>
         </logger>
@@ -155,7 +155,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    <log spec='snap.ThetaLogger'>
         		<coalescenceRate idref='coalescenceRate'/>
     	    </log>
-    	    <log spec='beast.evolution.tree.TreeHeightLogger'>
+    	    <log spec='beast.base.evolution.tree.TreeHeightLogger'>
         		<tree idref='tree'/>
     	    </log>
     	    <log spec='TreeLengthLogger'>
@@ -163,7 +163,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    </log>
         </logger>
         <logger logEvery="1000" fileName="test.$(seed).trees" mode='tree'>
-            <log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
+            <log spec='beast.base.evolution.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
         </logger>
         
 </run>

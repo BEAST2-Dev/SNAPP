@@ -1,8 +1,74 @@
-<package name='SNAPP' version='1.5.1'>
-	<depends on='beast2' atleast='2.6.0'/>
+<package name='SNAPP' version='1.6.0'>
+    <depends on='BEAST.base' atleast='2.7.0'/>
+    <depends on='BEAST.app' atleast='2.7.0'/>
+    <depends on='BEASTLabs' atleast='2.0.0'/>
+	
 	<packageapp description="SNAPP tree set analyser"
-		class="snap.app.analysis.TreeSetAnalyser"
-		args="-window -working -options"
+		class="snap.util.TreeSetAnalyser3"
+		args=""
 		icon="snap/app/analysis/tsa.png"
 	/>
+
+    <service type="beast.base.core.BEASTInterface">
+        <provider classname="snap.AncestralTreeHeightLogger"/>
+        <provider classname="snap.CoalescentUnitTreeLogger"/>
+        <provider classname="snap.Data"/>
+        <provider classname="snap.datatype.IntegerData2"/>
+        <provider classname="snap.GammaParameter"/>
+        <provider classname="snap.likelihood.BetaApproximationLikelihood"/>
+        <provider classname="snap.likelihood.NormalisedDistributionLogger"/>
+        <provider classname="snap.likelihood.RatePrior"/>
+        <provider classname="snap.likelihood.SnAPPrior"/>
+        <provider classname="snap.likelihood.SnAPPriorAdelaide"/>
+        <provider classname="snap.likelihood.SNAPSiteModel"/>
+        <provider classname="snap.likelihood.SnapSubstitutionModel"/>
+        <provider classname="snap.likelihood.SnAPTreeLikelihood"/>
+        <provider classname="snap.likelihood.ThresholdTreeLikelihood"/>
+        <provider classname="snap.MCMC"/>
+        <provider classname="snap.ML"/>
+        <provider classname="snap.NodeData"/>
+        <provider classname="snap.operators.ApproximateDistanceBasedLikelihood"/>
+        <provider classname="snap.operators.ApproximateSampledLikelihood"/>
+        <provider classname="snap.operators.BudgerAndScaler"/>
+        <provider classname="snap.operators.CompoundConstantSitesSampler"/>
+        <provider classname="snap.operators.ConstantSitesSampler"/>
+        <provider classname="snap.operators.DelayedAcceptanceOperator"/>
+        <provider classname="snap.operators.DistDAOperator"/>
+        <provider classname="snap.operators.GammaMoveAll"/>
+        <provider classname="snap.operators.GammaMover"/>
+        <provider classname="snap.operators.MergeSplitSpeciesTree"/>
+        <provider classname="snap.operators.MutationMover"/>
+        <provider classname="snap.operators.NodeBudger"/>
+        <provider classname="snap.operators.NodeSwapper"/>
+        <provider classname="snap.operators.RateMixer"/>
+        <provider classname="snap.operators.RootGammaMover"/>
+        <provider classname="snap.operators.ScaleOperator"/>
+        <provider classname="snap.operators.SubtreeMoveTheta"/>
+        <provider classname="snap.RateToTheta"/>
+        <provider classname="snap.SNPSequence"/>
+        <provider classname="snap.SubSampledData"/>
+        <provider classname="snap.ThetaLogger"/>
+        <provider classname="snap.tree.YulePriorOneOnXBirthRatePrior"/>
+        <provider classname="snap.TreeLengthLogger"/>
+        <provider classname="snap.TreeNodeLogger"/>
+        <provider classname="snap.util.AncestralTree"/>
+        <provider classname="snap.util.SkylineAnalyser"/>
+        <provider classname="snap.util.TreeSetAnalyser"/>
+        <provider classname="snap.util.TreeSetAnalyser2"/>
+        <provider classname="snap.util.TreeSetAnalyser3"/>
+        <provider classname="snap.WeightedData"/>
+    </service>
+
+    <service type="beast.base.evolution.datatype.DataType">
+        <provider classname="snap.datatype.IntegerData2"/>
+    </service>
+
+    <service type="beastfx.app.inputeditor.InputEditor">
+        <provider classname="snap.app.inputeditor.DataInputEditor"/>
+        <provider classname="snap.app.inputeditor.SNAPPPriorListEditor"/>
+        <provider classname="snap.app.inputeditor.SNAPPSubstitutionModelInputEditor"/>
+        <provider classname="snap.app.inputeditor.SNAPPTreeLikelihoodEditor"/>
+        <provider classname="snap.app.inputeditor.SNAPSiteModelInputEditor"/>
+    </service>
+
 </package>

@@ -8,15 +8,18 @@
 	</description>
 
 	<!-- set global properties for this build -->
-	<property name="src" location="../SNAPP/src" />
-	<property name="build" location="../SNAPP/build" />
-	<property name="lib" location="../SNAPP/lib" />
-	<property name="dist" location="../SNAPP/dist" />
-        <property name="beast2path" location="../beast2" />
-        <property name="beast2build" location="../beast2/build" />
-        <property name="libBeast2" location="${beast2path}/lib" />
-        <property name="srcBeast2" location="${beast2path}/src" />
-        <property name="beast2classpath" location="${beast2path}/build" />
+	<property name="SNAPPdir" location="../SNAPP/" />
+	<property name="src" location="${SNAPPdir}/src" />
+	<property name="build" location="${SNAPPdir}/build" />
+	<property name="lib" location="${SNAPPdir}/lib" />
+	<property name="dist" location="${SNAPPdir}/dist" />
+    <property name="beast2path" location="../beast2" />
+    <property name="beast2build" location="${beast2path}/build" />
+    <property name="libBeast2" location="${beast2path}/lib" />
+    <property name="srcBeast2" location="${beast2path}/src" />
+    <property name="beast2classpath" location="${beast2path}/build" />
+    <property name="beastappclasspath" location="../BeastFX/build" />
+    <property name="BEASTLabsclasspath" location="../BEASTLabs/build" />
 
 	<property name="main_class_SnAP" value="snap.app.mcmc.SNAPPMCMC" />
 	<property name="main_class_TSA" value="snap.app.analysis.TreeSetAnalyser" />
@@ -27,11 +30,21 @@
 		<fileset dir="${libBeast2}" includes="antlr-runtime-4.7.jar"/>
 		<fileset dir="${libBeast2}" includes="jam.jar"/>
 		<pathelement path="${beast2classpath}"/>
+		<pathelement path="${beastappclasspath}"/>
+		<pathelement path="${BEASTLabsclasspath}"/>
 	</path>
 
 	<!-- start -->
 	<target name="init">
 		<echo message="${ant.project.name}: ${ant.file}" />
+        <available file="${SNAPPdir}/version.xml" property="versionAvailable"/>
+        <fail unless="versionAvailable">
+              ** Required file version.xml does not exist. **
+        </fail>
+
+        <!-- Read package name and version from xml file -->
+        <xmlproperty file="${SNAPPdir}/version.xml" prefix="fromVersionFile" />
+        <property name="SNAPPversion" value="${fromVersionFile.package(version)}" />
 	</target>
 
 
@@ -61,12 +74,9 @@
 		<!-- Compile the java code from ${src} into ${build} /bin -->
 		<javac srcdir="${src}" destdir="${build}" classpathref="classpath"
 		       fork="true" includeantruntime='false'
-			   source="1.8"
-		       target="1.8"
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m">
 			<include name="snap/**/**" />
-			<include name="beast/**/**" />
 			<!-- compile JUnit test classes -->
 			<include name="test/snap/**" />
 			<exclude name="snap/SNAPPHeatedMCMC.java"/>
@@ -101,7 +111,6 @@
 			<fileset dir="${build}">
 				<include name="snap/**/*.class" />
 				<include name="snap/**/*.png" />
-				<include name="beast/**/*.class" />
 				<include name="**/*.properties" />
 			</fileset>
 		</jar>
@@ -134,7 +143,6 @@
 			<fileset dir="${build}">
 				<include name="snap/**/*.class" />
 				<include name="snap/**/*.png" />
-				<include name="beast/**/*.class" />
 				<include name="**/*.properties" />
 			</fileset>
 		</jar>
@@ -196,10 +204,8 @@
 
 
 	<!-- Release -->
-	<property name="version" value="1.5.2" />
-	<property name="version_number" value="1.5.2" />
 	<property name="release_dir" value="release" />
-	<property name="copyright" value="SNAPP development team 2011-2021" />
+	<property name="copyright" value="SNAPP development team 2011-2022" />
 
 	<property name="SNAPP_name" value="SNAPP" />
 	<property name="BEAUti_name" value="BEAUti" />
@@ -280,8 +286,8 @@
 		          productVersion="2.1.7.0"
 		          txtProductVersion="2.1.7.0" />
 
-		<copy todir="${Windows_package_dir}/templates/">
-			<fileset dir="templates/" />
+		<copy todir="${Windows_package_dir}/fxtemplates/">
+			<fileset dir="fxtemplates/" />
 		</copy>
 
 		<zip destfile="${Windows_dir}/${SNAPP_name} v${version}.zip">
@@ -321,8 +327,8 @@
 		<copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
 		<copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
 
-		<copy todir="${Linux_package_dir}/templates/">
-			<fileset dir="templates/" />
+		<copy todir="${Linux_package_dir}/fxtemplates/">
+			<fileset dir="fxtemplates/" />
 		</copy>
 		<copy file="${common_dir}/VERSION HISTORY.txt" todir="${Linux_package_dir}" />
 		<copy file="${common_dir}/README.txt" todir="${Linux_package_dir}" />
@@ -417,7 +423,7 @@
 		            icon="${common_dir}/icons/beauti.icns"
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M -Xdock:name=&quot;BEAUti 2&quot;"
-		            arguments="-template templates/SNAPP.xml"
+		            arguments="-template fxtemplates/SNAPP.xml"
 		            version="${version}"
 		            infostring="${BEAUti_name}, ${copyright}"
 		            bundleid="beast.app.beauti.Beauti">
@@ -447,8 +453,8 @@
 		</jarbundler>
 
 
-		<copy todir="${Mac_package_dir}/templates/">
-			<fileset dir="templates/" />
+		<copy todir="${Mac_package_dir}/fxtemplates/">
+			<fileset dir="fxtemplates/" />
 		</copy>
 
 		<echo message="Building disk image." />
@@ -480,7 +486,7 @@
 		<!-- Create the release directory -->
 		<mkdir dir="${Add_on_dir}" />
 		<mkdir dir="${Add_on_dir}/lib" />
-		<mkdir dir="${Add_on_dir}/templates" />
+		<mkdir dir="${Add_on_dir}/fxtemplates" />
 		<mkdir dir="${Add_on_dir}/examples" />
 		<mkdir dir="${Add_on_dir}/examples/nexus" />
 		<mkdir dir="${Add_on_dir}/doc" />
@@ -494,8 +500,8 @@
 		<copy todir="${Add_on_dir}">
 			<fileset dir="${dist}" includes="snap.src.jar" />
 		</copy>
-		<copy todir="${Add_on_dir}/templates">
-			<fileset file="templates/SNAPP.xml" />
+		<copy todir="${Add_on_dir}/fxtemplates">
+			<fileset file="fxtemplates/SNAPP.xml" />
 		</copy>
         <copy file="doc/SNAPP.pdf" tofile="${Add_on_dir}/doc/SNAPP.pdf" />
         <copy todir="${Add_on_dir}/examples" >
@@ -506,12 +512,12 @@
 			<fileset dir="examples/nexus" includes="*.nex" />
 			</copy>
 
-		<jar jarfile="${dist}/SNAPP.addon.v${version}.zip">
+		<jar jarfile="${dist}/SNAPP.addon.v${SNAPPversion}.zip">
 			<fileset dir="${Add_on_dir}">
 				<include name="**/*" />
 			</fileset>
         </jar>
-		<echo message="Add-on version release is finished." />
+		<echo message="Add-on v${SNAPPversion} release is finished." />
 	</target>
 
 

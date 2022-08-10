@@ -9,10 +9,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import beast.core.Logger;
-import beast.core.MCMC;
-import beast.util.Randomizer;
-import beast.util.XMLParser;
+import beast.base.inference.Logger;
+import beast.base.inference.MCMC;
+import beast.base.util.Randomizer;
+import beast.base.parser.XMLParser;
 
 
 import junit.framework.TestCase;
@@ -80,7 +80,7 @@ public class ExampleXmlParsingTest extends TestCase {
 				System.out.println("Processing " + sFileName);
 				XMLParser parser = new XMLParser();
 				try {
-					beast.core.Runnable runable = parser.parseFile(new File(sDir + "/" + sFileName));
+					beast.base.inference.Runnable runable = parser.parseFile(new File(sDir + "/" + sFileName));
 					if (runable instanceof MCMC) {
 						MCMC mcmc = (MCMC) runable;
 						mcmc.setInputValue("preBurnin", 0);

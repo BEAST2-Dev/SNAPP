@@ -1,6 +1,6 @@
 package snap.app.mcmc;
 
-import beast.app.util.Version;
+import beast.pkgmgmt.Version;
 
 /**
  * This class provides a mechanism for returning the version number of the

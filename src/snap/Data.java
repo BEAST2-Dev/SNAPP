@@ -32,17 +32,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.datatype.Binary;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.IntegerData;
-import beast.evolution.datatype.Nucleotide;
-import beast.evolution.datatype.StandardData;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.alignment.Taxon;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.datatype.Binary;
+import beast.base.evolution.datatype.DataType;
+import beast.base.evolution.datatype.IntegerData;
+import beast.base.evolution.datatype.Nucleotide;
+import beast.base.evolution.datatype.StandardData;
 
 
 
@@ -52,8 +52,8 @@ import beast.evolution.datatype.StandardData;
  "are removed + 2 patterns are added at the end representing these "+
  "constant sites, but with zero weight. The likelihood calculator "+
  "deals with these different sites.")
-public class Data extends beast.evolution.alignment.Alignment {
-	public Input<beast.evolution.alignment.Alignment> m_rawData = new Input<beast.evolution.alignment.Alignment>("rawdata","raw binary sequences");
+public class Data extends beast.base.evolution.alignment.Alignment {
+	public Input<beast.base.evolution.alignment.Alignment> m_rawData = new Input<beast.base.evolution.alignment.Alignment>("rawdata","raw binary sequences");
 	public Input<List<TaxonSet>> m_taxonsets = new Input<List<TaxonSet>>("taxonset","set of taxons that group a number of SNP sequences into a single sequence", 
 			new ArrayList<TaxonSet>());
 	

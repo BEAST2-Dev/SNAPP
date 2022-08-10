@@ -1,18 +1,20 @@
-package beast.app.draw;
+package snap.app.inputeditor;
+
 
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.JButton;
 
-import beast.app.beauti.BeautiDoc;
-import beast.app.draw.InputEditor;
-import beast.app.draw.ListInputEditor;
-import beast.app.draw.ParameterInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
-import beast.evolution.sitemodel.SiteModel;
+import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.InputEditor;
+import beastfx.app.inputeditor.ListInputEditor;
+import beastfx.app.inputeditor.ParameterInputEditor;
+import beastfx.app.util.FXUtils;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import beast.base.core.BEASTInterface;
+import beast.base.core.Input;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.sitemodel.SiteModel;
 import snap.Data;
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
@@ -30,7 +32,7 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     
     SnapSubstitutionModel substModel;
     Data data;
-    JButton muButton;
+    Button muButton;
     
     @Override
     public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpand, boolean bAddButtons) {
@@ -40,7 +42,7 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
         m_beastObject = plugin;
 		this.itemNr = itemNr;
 
-        m_listBox = Box.createVerticalBox();
+        m_listBox = FXUtils.newVBox();
         // list of inputs 
         for (Object o : (List<?>) input.get()) {
             if (o instanceof SnAPTreeLikelihood) {
@@ -51,13 +53,13 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
             	substModel = (SnapSubstitutionModel) ((SiteModel.Base) plugin2.siteModelInput.get()).substModelInput.get();
             	doc.getInputEditorFactory().addInputs(m_listBox, substModel, this, null, doc);
             	doc.getInputEditorFactory().addInputs(m_listBox, plugin2, this, null, doc);
-            	muButton = new JButton("Calc mutation rates");
-            	muButton.setToolTipText("Calcaulate mutation rates based on data in the alignment");
-            	muButton.addActionListener(e -> setUpMutationRates());
-            	add(muButton);
+            	muButton = new Button("Calc mutation rates");
+            	muButton.setTooltip(new Tooltip("Calcaulate mutation rates based on data in the alignment"));
+            	muButton.setOnAction(e -> setUpMutationRates());
+            	m_listBox.getChildren().add(muButton);
             }
         }
-		add(m_listBox);
+		getChildren().add(m_listBox);
         updateState();
     }
     

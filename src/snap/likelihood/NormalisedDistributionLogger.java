@@ -2,12 +2,12 @@ package snap.likelihood;
 
 import java.io.PrintStream;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.Input.Validate;
+import beast.base.core.BEASTObject;
+import beast.base.core.Description;
+import beast.base.inference.Distribution;
+import beast.base.core.Input;
+import beast.base.core.Loggable;
+import beast.base.core.Input.Validate;
 
 @Description("Log distribution normalised by taking out contribution by constant sites")
 public class NormalisedDistributionLogger extends BEASTObject implements Loggable {

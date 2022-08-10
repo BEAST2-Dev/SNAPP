@@ -7,17 +7,17 @@ import java.util.List;
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.OperatorSchedule;
-import beast.core.State;
-import beast.core.Input.Validate;
-import beast.core.Operator;
-import beast.core.StateNode;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.TreeInterface;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.OperatorSchedule;
+import beast.base.inference.State;
+import beast.base.core.Input.Validate;
+import beast.base.inference.Operator;
+import beast.base.inference.StateNode;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.TreeInterface;
+import beast.base.util.Randomizer;
 
 //Things to measure:
 //	time of full calculation over all samples

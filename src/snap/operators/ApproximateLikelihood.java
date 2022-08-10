@@ -1,6 +1,6 @@
 package snap.operators;
 
-import beast.evolution.tree.Node;
+import beast.base.evolution.tree.Node;
 
 public interface ApproximateLikelihood {
 

@@ -26,11 +26,11 @@
 package snap.operators;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.parameter.RealParameter;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
 
 @Description("Scales single value in gamma parameter.")
 public class GammaMover extends Operator {
@@ -46,7 +46,7 @@ public class GammaMover extends Operator {
 	
 	@Override
 	public double proposal() {
-		RealParameter coalescenceRate = m_coalescenceRate.get(this);
+		RealParameter coalescenceRate = m_coalescenceRate.get();
 		int whichNode = Randomizer.nextInt(coalescenceRate.getDimension());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));

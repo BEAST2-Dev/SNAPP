@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='SNAPP' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" version="2.0">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='SNAPP' beautistatus='' namespace="beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" version="2.0">
 
 
     <data
@@ -58,13 +58,13 @@ name="rawdata">
 
 
     
-<map name="subtemplate" >beast.app.beauti.BeautiSubTemplate</map>
-<map name="connect" >beast.app.beauti.BeautiConnector</map>
+<map name="subtemplate" >beastfx.app.inputeditor.BeautiSubTemplate</map>
+<map name="connect" >beastfx.app.inputeditor.BeautiConnector</map>
 
 
 <run id="mcmc" spec="MCMC" chainLength="10000000" storeEvery="1000">
     <state id="state" storeEvery="1000">
-        <stateNode id="Tree.aflp_25" spec="beast.util.ClusterTree" clusterType="upgma" nodetype="snap.NodeData">
+        <stateNode id="Tree.aflp_25" spec="beast.base.evolution.tree.ClusterTree" clusterType="upgma" nodetype="snap.NodeData">
             <taxa id="snap.aflp_25" spec="snap.Data" dataType="integerdata">
                 <rawdata idref="aflp_25"/>
                 <taxonset id="cae" spec="TaxonSet">
@@ -118,8 +118,8 @@ name="rawdata">
         <parameter id="coalescenceRate" name="stateNode">10.0</parameter>
     </state>
 
-    <distribution id="posterior" spec="util.CompoundDistribution">
-        <distribution id="prior" spec="util.CompoundDistribution">
+    <distribution id="posterior" spec="beast.base.inference.CompoundDistribution">
+        <distribution id="prior" spec="beast.base.inference.CompoundDistribution">
             <distribution id="snapprior.aflp_25" spec="snap.likelihood.SnAPPrior" coalescenceRate="@coalescenceRate" rateprior="gamma" tree="@Tree.aflp_25">
                 <parameter id="alpha" estimate="false" lower="0.0" name="alpha">11.75</parameter>
                 <parameter id="beta" estimate="false" lower="0.0" name="beta">109.73</parameter>
@@ -127,7 +127,7 @@ name="rawdata">
                 <parameter id="lambda" estimate="false" lower="0.0" name="lambda">0.00765</parameter>
             </distribution>
         </distribution>
-        <distribution id="likelihood" spec="util.CompoundDistribution">
+        <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution">
             <distribution id="treeLikelihood.aflp_25" spec="snap.likelihood.SnAPTreeLikelihood" data="@snap.aflp_25" pattern="coalescenceRate" tree="@Tree.aflp_25">
                 <siteModel id="MutationSiteModel.aflp_25" spec="SiteModel">
                     <parameter id="mutationRate" estimate="false" name="mutationRate">1.0</parameter>
@@ -183,7 +183,7 @@ name="rawdata">
         <log idref="likelihood"/>
         <log idref="prior"/>
         <log id="ThetaLogger" spec="snap.ThetaLogger" coalescenceRate="@coalescenceRate"/>
-        <log id="TreeHeightLogger" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.aflp_25"/>
+        <log id="TreeHeightLogger" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.aflp_25"/>
     </logger>
 
     <logger id="screenlog" logEvery="10">
@@ -194,7 +194,7 @@ name="rawdata">
     </logger>
 
     <logger id="treelog" fileName="snap.trees" logEvery="1000" mode="tree">
-        <log id="TreeWithMetaDataLogger.aflp_25" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.aflp_25">
+        <log id="TreeWithMetaDataLogger.aflp_25" spec="beast.base.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.aflp_25">
             <metadata id="theta" spec="snap.RateToTheta" coalescenceRate="@coalescenceRate"/>
         </log>
     </logger>

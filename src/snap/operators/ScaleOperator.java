@@ -24,12 +24,12 @@
 */
 package snap.operators;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.Tree;
+import beast.base.util.Randomizer;
 
 @Description("Scales a parameter or a complete beast.tree (depending on which of the two is specified.")
 public class ScaleOperator extends Operator {
@@ -73,7 +73,7 @@ public class ScaleOperator extends Operator {
         double scale = (m_fScaleFactor + (d * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
         
         if (m_bIsTreeScaler) {
-        	Tree tree = m_pTree.get(this); 
+        	Tree tree = m_pTree.get(); 
             // scale the beast.tree
         	int nInternalNodes = tree.scale(scale);
 
@@ -87,7 +87,7 @@ public class ScaleOperator extends Operator {
         int nDegreesOfFreedom = m_pDegreesOfFreedom.get();
         boolean bScaleAllIndependently = m_pScaleAllIndependently.get();
 
-        RealParameter param = m_pParameter.get(this);
+        RealParameter param = m_pParameter.get();
         int dim = param.getDimension();
 
         if (bScaleAllIndependently) {

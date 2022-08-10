@@ -26,20 +26,26 @@
 package snap;
 
 
+
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import beast.core.*;
-import beast.util.*;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Distribution;
+import beast.base.inference.Logger;
+import beast.base.inference.Operator;
+import beast.base.util.Randomizer;
+
 
 @Description("Allow sampling from the prior.")
-public class MCMC extends beast.core.MCMC {
-	public Input<Integer> m_oStateBurnIn = new Input<Integer>("stateBurnin", "Number of burn in samples taken on the prior only to determine initial state", 0);
-	public Input<Distribution> m_stateDistribution = new Input<Distribution>("stateDistribution", "Uncertainty from which the initial state is sampled for 'stateBurnin' of samples. Must be specified if stateBurnin is larger than zero.");
-	public Input<Integer> m_killAfterXSeconds = new Input<Integer>("killAfter", "Number of seconds after which the job is killed. When negative (default) this is ignored", -1);
+public class MCMC extends beast.base.inference.MCMC {
+	public Input<Integer> m_oStateBurnIn = new Input<>("stateBurnin", "Number of burn in samples taken on the prior only to determine initial state", 0);
+	public Input<Distribution> m_stateDistribution = new Input<>("stateDistribution", "Uncertainty from which the initial state is sampled for 'stateBurnin' of samples. Must be specified if stateBurnin is larger than zero.");
+	public Input<Integer> m_killAfterXSeconds = new Input<>("killAfter", "Number of seconds after which the job is killed. When negative (default) this is ignored", -1);
 	
 	@Override
 	public void initAndValidate() {

@@ -5,16 +5,16 @@ package snap.likelihood;
 import java.util.Arrays;
 
 import snap.Data;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.likelihood.GenericTreeLikelihood;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.math.Binomial;
-import beast.math.GammaFunction;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.likelihood.GenericTreeLikelihood;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.util.Binomial;
+import beast.base.util.GammaFunction;
 
 
 @Description("Implementation of Siren et al. Beta SNP approximation using Hiscott et al. integrator")

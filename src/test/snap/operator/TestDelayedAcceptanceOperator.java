@@ -3,14 +3,14 @@ package test.snap.operator;
 
 import org.junit.Test;
 
-import beast.core.Distribution;
-import beast.core.parameter.RealParameter;
-import beast.core.util.CompoundDistribution;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
+import beast.base.inference.Distribution;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.inference.CompoundDistribution;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeParser;
 import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 

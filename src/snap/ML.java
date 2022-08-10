@@ -30,12 +30,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.*;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Distribution;
+import beast.base.inference.Operator;
+import beast.base.inference.StateNode;
 
 
 
 @Description("Maximum likelihood search by hill climbing.")
-public class ML extends beast.core.MCMC {
+public class ML extends beast.base.inference.MCMC {
 	
 	public Input<Integer> m_oStateBurnIn = new Input<Integer>("stateBurnin", "Number of burn in samples taken on the prior only to determine initial state", new Integer(0));
 	public Input<Distribution> m_stateDistribution = new Input<Distribution>("stateDistribution", "Uncertainty from which the initial state is sampled for 'stateBurnin' of samples. Must be specified if stateBurnin is larger than zero.");

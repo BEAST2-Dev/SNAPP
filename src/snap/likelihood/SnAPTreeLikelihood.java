@@ -32,19 +32,20 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
-import beast.app.BeastMCMC;
-import beast.app.beauti.Beauti;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.Input.Validate;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.evolution.branchratemodel.StrictClockModel;
-import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.tree.TreeInterface;
+import beastfx.app.beast.BeastMCMC;
+import beastfx.app.beauti.Beauti;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.State;
+import beast.base.core.Input.Validate;
+import beast.base.core.ProgramStatus;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.branchratemodel.StrictClockModel;
+import beast.base.evolution.likelihood.TreeLikelihood;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.tree.TreeInterface;
 import snap.Data;
 import snap.NodeData;
 import snap.likelihood.SnAPLikelihoodCore;
@@ -186,7 +187,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
     	
     	
     	m_data2 = (Data) dataInput.get();
-    	if ( BeastMCMC.m_nThreads == 1) {
+    	if ( ProgramStatus.m_nThreads == 1) {
     		// single threaded likelihood core
     		m_core = new SnAPLikelihoodCore(treeInput.get().getRoot(), dataInput.get());
     	} else {

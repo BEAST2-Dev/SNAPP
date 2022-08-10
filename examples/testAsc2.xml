@@ -1,9 +1,9 @@
 
-<beast version='2.0' namespace='snap:beast.util:beast.core.util:beast.evolution'>
+<beast version='2.0' namespace='snap:beast.base.util:beast.base.math:beast.base.util:beast.base.math:beast.evolution'>
 
 <map name='snapprior'>snap.likelihood.SnAPPrior</map>
 <map name='snaptreelikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
-<map name="prior">beast.math.distributions.Prior</map>
+<map name="prior">beast.base.inference.distribution.Prior</map>
 
 <!-- Generated with SimSnap -->
 <!-- -->
@@ -45,7 +45,7 @@
 	</data>
 -->
 
-<run id="mcmc" spec='beast.core.MCMC' chainLength="1000000" preBurnin="0">
+<run id="mcmc" spec='beast.base.inference.MCMC' chainLength="1000000" preBurnin="0">
         <state storeEvery='1000'>
           <parameter name='stateNode' id='coalescenceRate' value='10'/>
 
@@ -55,16 +55,16 @@
           <parameter name='stateNode' id='alpha'  value='2' lower='0.0'/>
           <parameter name='stateNode' id='beta'   value='200' lower='0.0'/>
           <parameter name='stateNode' id='lambda' value='10' lower='0.0'/>
-		  <stateNode clusterType="upgma" estimate="true" id="tree" nodetype="snap.NodeData" spec="beast.util.ClusterTree" taxa='@alignment'/>
-          <stateNode spec="beast.core.parameter.IntegerParameter" dimension="2" id='ascSiteCount' value='100 100' lower='0'/>
+		  <stateNode clusterType="upgma" estimate="true" id="tree" nodetype="snap.NodeData" spec="beast.base.evolution.tree.ClusterTree" taxa='@alignment'/>
+          <stateNode spec="beast.base.inference.parameter.IntegerParameter" dimension="2" id='ascSiteCount' value='100 100' lower='0'/>
         </state>
 
         <distribution id="posterior" spec='CompoundDistribution'>
      	     <snapprior name='distribution' id='prior' alpha='@alpha' beta='@beta' lambda='@lambda' tree='@tree' coalescenceRate='@coalescenceRate'/>
  <!--
-    	         <distr spec="beast.math.distributions.Exponential" mean="1000"/>
+    	         <distr spec="beast.base.inference.distribution.Exponential" mean="1000"/>
     	     <prior id="ascCountPrior" name="distribution" x="@ascSiteCount">
-    	         <distr spec="beast.math.distributions.OneOnX"/>
+    	         <distr spec="beast.base.inference.distribution.OneOnX"/>
              </prior>
  -->
 
@@ -109,7 +109,7 @@
             <!--log idref="normalised.Likelihood"/>
             <log idref="normalised.Posterior"/-->
     	    <log idref='ascSiteCount'/>
-	        <!--log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/-->
+	        <!--log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree'/-->
         </logger>
         <logger logEvery="1000" fileName="testAsc2.log">
 	        <model idref='posterior'/>
@@ -124,12 +124,12 @@
             <log idref="posterior"/>
     	    <log idref='coalescenceRate'/>
     	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
-	        <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree'/>
+	        <log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree'/>
     	    <log spec='TreeLengthLogger' tree='@tree'/>
     	    <log idref='ascSiteCount'/>
         </logger>
         <logger logEvery="1000" fileName="testAsc2.trees" mode='tree'>
-            <log spec='beast.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
+            <log spec='beast.base.evolution.tree.TreeWithMetaDataLogger' tree="@tree" metadata='@coalescenceRate'/>
         </logger>
         
 <!--

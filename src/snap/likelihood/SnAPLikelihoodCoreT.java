@@ -35,9 +35,10 @@ import snap.NodeData;
 import java.util.Arrays;
 import java.util.concurrent.Future; 
 
-import beast.app.BeastMCMC;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Node;
+import beastfx.app.beast.BeastMCMC;
+import beast.base.core.ProgramStatus;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.tree.Node;
 
 
 
@@ -140,12 +141,12 @@ public class SnAPLikelihoodCoreT  extends SnAPLikelihoodCore {
 			//Temporarily store pattern probabilities... used for numerical checks.
 			patternProb = new double[numPatterns];
 			Arrays.fill(patternProb, -1);
-			int nThreads = BeastMCMC.m_nThreads;
+			int nThreads = ProgramStatus.m_nThreads;
 			m_siteProbabilityCalculatorT.clearCache(root.getNodeCount(), data.getMaxStateCount(), nThreads);
 
 			m_future = new Future<?>[nThreads];
 			for (int i = 0; i < nThreads; i++) {
-				m_future[i] = BeastMCMC.g_exec.submit(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, rate, bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache));
+				m_future[i] = ProgramStatus.g_exec.submit(new SSSRunnable(i, nThreads, numPatterns, data, coalescenceRate, root.copy(), u, v, rate, bMutationOnlyAtRoot, bHasDominantMarkers, bUseCache));
 			}
 
 			// correction for constant sites

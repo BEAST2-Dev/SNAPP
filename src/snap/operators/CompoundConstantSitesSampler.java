@@ -3,12 +3,12 @@ package snap.operators;
 
 import snap.distribution.GammaDist;
 import snap.likelihood.SnAPTreeLikelihood;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Operator;
-import beast.core.parameter.IntegerParameter;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.inference.Operator;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.util.Randomizer;
 
 @Description("Compound sampler for the number of constant sites, sampling from a negative multinomial distribution")
 public class CompoundConstantSitesSampler extends Operator {

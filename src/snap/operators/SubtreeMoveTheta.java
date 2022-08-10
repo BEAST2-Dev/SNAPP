@@ -26,13 +26,13 @@
 package snap.operators;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.core.parameter.RealParameter;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
 
 @Description("Scales all theta values in a subtree by the same amount")
 public class SubtreeMoveTheta extends Operator {
@@ -50,13 +50,13 @@ public class SubtreeMoveTheta extends Operator {
 	@Override
 	public double proposal() {
 
-		Tree tree = m_pTree.get(this); //Species tree
+		Tree tree = m_pTree.get(); //Species tree
 		Node [] nodes = tree.getNodesAsArray();
 		int nnodes = nodes.length; //Number of nodes in the species tree
 		int subtreeRootId = Randomizer.nextInt(nnodes);
 		Node subtreeRoot = nodes[subtreeRootId];
 		
-		RealParameter coalescenceRates = m_coalescenceRate.get(this);
+		RealParameter coalescenceRates = m_coalescenceRate.get();
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
 		
 		int numNodes = scaleSubtreeRates(subtreeRoot, coalescenceRates,scale);

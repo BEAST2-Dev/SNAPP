@@ -27,13 +27,13 @@ package snap.operators;
 
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.util.Randomizer;
 import snap.GammaParameter;
 import snap.NodeData;
 
@@ -52,8 +52,8 @@ public class BudgerAndScaler extends NodeSwapper {
 	@Override
 	public double proposal() {
 		double hastingsRatio = 1.0;
-		Tree tree = m_pTree.get(this);
-		GammaParameter gamma = m_gamma.get(this);
+		Tree tree = m_pTree.get();
+		GammaParameter gamma = m_gamma.get();
 		Node [] nodes = tree.getNodesAsArray();
 
 		//Choose a random node internal node 
