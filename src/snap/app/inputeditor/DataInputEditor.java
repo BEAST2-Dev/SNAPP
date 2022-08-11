@@ -2,6 +2,8 @@ package snap.app.inputeditor;
 
 
 
+
+
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
@@ -9,8 +11,8 @@ import java.util.regex.PatternSyntaxException;
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.GuessPatternDialog;
 import beastfx.app.inputeditor.InputEditor;
-import beastfx.app.inputeditor.TaxonSetInputEditor.TaxonMap;
 import beastfx.app.util.FXUtils;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -22,6 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -39,7 +42,6 @@ public class DataInputEditor extends InputEditor.Base {
 		super(doc);
 	}
 
-	private static final long serialVersionUID = 1L;
 	List<TaxonSet> m_taxonset;
 	List<Taxon> m_lineageset;
 	Map<String,String> m_taxonMap;
@@ -102,11 +104,11 @@ public class DataInputEditor extends InputEditor.Base {
 			}
 		}
 		
+		taxonMapping = FXCollections.observableArrayList();
 		// set up table.
 		// special features: background shading of rows
 		// custom editor allowing only Date column to be edited.		
 		taxonSetToModel();
-
 		
         // set up table.
         // special features: background shading of rows
@@ -123,17 +125,17 @@ public class DataInputEditor extends InputEditor.Base {
         	    new PropertyValueFactory<TaxonMap,String>("Taxon")
         	);
         m_table.getColumns().add(col1);
-        col1.getSortNode().setOnMouseClicked(e -> {
-            // The index of the column whose header was clicked
-			int vColIndex = 0;
-            if (vColIndex != m_sortByColumn) {
-                m_sortByColumn = vColIndex;
-                m_bIsAscending = true;
-            } else {
-                m_bIsAscending = !m_bIsAscending;
-            }
-            taxonSetToModel();
-        });
+//        col1.getSortNode().setOnMouseClicked(e -> {
+//            // The index of the column whose header was clicked
+//			int vColIndex = 0;
+//            if (vColIndex != m_sortByColumn) {
+//                m_sortByColumn = vColIndex;
+//                m_bIsAscending = true;
+//            } else {
+//                m_bIsAscending = !m_bIsAscending;
+//            }
+//            taxonSetToModel();
+//        });
 
         TableColumn<TaxonMap, String> col2 = new TableColumn<>("Species/Population");
         col2.setPrefWidth(500);
@@ -141,17 +143,32 @@ public class DataInputEditor extends InputEditor.Base {
         col2.setCellValueFactory(
         	    new PropertyValueFactory<TaxonMap,String>("Taxon2")
         	);
-        col2.getSortNode().setOnMouseClicked(e -> {
-                    // The index of the column whose header was clicked
-        			int vColIndex = 1;
-                    if (vColIndex != m_sortByColumn) {
-                        m_sortByColumn = vColIndex;
-                        m_bIsAscending = true;
-                    } else {
-                        m_bIsAscending = !m_bIsAscending;
-                    }
-                    taxonSetToModel();
-            });
+        col2.setCellFactory(TextFieldTableCell.forTableColumn());
+        col2.setOnEditCommit(
+                new EventHandler<CellEditEvent<TaxonMap, String>>() {
+  					@Override
+  					public void handle(CellEditEvent<TaxonMap, String> event) {
+  						String newValue = event.getNewValue();
+  						TaxonMap location = event.getRowValue();
+  						location.taxon2 = newValue;
+  						modelToTaxonset();
+  						m_table.refresh();
+    					validateInput();
+  					}
+  				}                
+            );
+        
+//        col2.getSortNode().setOnMouseClicked(e -> {
+//                    // The index of the column whose header was clicked
+//        			int vColIndex = 1;
+//                    if (vColIndex != m_sortByColumn) {
+//                        m_sortByColumn = vColIndex;
+//                        m_bIsAscending = true;
+//                    } else {
+//                        m_bIsAscending = !m_bIsAscending;
+//                    }
+//                    taxonSetToModel();
+//            });
         m_table.getColumns().add(col2);
         m_table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
@@ -415,7 +432,10 @@ public class DataInputEditor extends InputEditor.Base {
 				i++;
 			}
 		}
-		
+		if (taxonMapping == null) {
+			return;
+		}
+
 		// clear table model
 		taxonMapping.clear();
 
@@ -442,7 +462,9 @@ public class DataInputEditor extends InputEditor.Base {
 //		        }
 //			}
 //		});
-		m_table.refresh();
+		if (m_table != null) {
+			m_table.refresh();
+		}
     }
 
 

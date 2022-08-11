@@ -1,12 +1,12 @@
 <beast version='2.0' 
-	namespace='snap:beast.base.util:beast.base.math:beast.base.util:beast.base.math:beast.evolution:beast.base.evolution.alignment:snap.likelihood:beast.base.util:beast.base.math:beast.evolution:beast.base.math.distributions:beast.app.beauti'
+	namespace='snap:beast.base.util:beast.base.math:beast.base.util:beast.base.math:beast.evolution:beast.base.evolution.alignment:snap.likelihood:beast.base.util:beast.base.math:beast.evolution:beast.base.math.distributions:beastfx.app.beauti:beastfx.app.inputeditor:beast.base.inference'
     templateinfo='template for SNP and AFLP data which automatically integrates out all lineage trees'>
 
 <map name='connect'>beastfx.app.inputeditor.BeautiConnector</map>
 <map name='subtemplate'>beastfx.app.inputeditor.BeautiSubTemplate</map>
 
 
-    <beauticonfig spec='BeautiConfig'
+    <beauticonfig spec='beastfx.app.inputeditor.BeautiConfig'
         inputLabelMap='snap.MCMC.operator=Operators,
 	        snap.MCMC.logger=Loggers,
             beast.base.evolution.sitemodel.SiteModel.substModel=,
@@ -121,10 +121,10 @@
         />
 
 
-		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@SNAPPPartitionTemplate'/>
+		<alignmentProvider id="Add Alignment" spec='beastfx.app.inputeditor.BeautiAlignmentProvider' template='@SNAPPPartitionTemplate'/>
 
 
-        <partitiontemplate id='SNAPPPartitionTemplate' spec='BeautiSubTemplate' class='beast.base.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+        <partitiontemplate id='SNAPPPartitionTemplate' spec='beastfx.app.inputeditor.BeautiSubTemplate' class='beast.base.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
         <data spec='snap.Data' id='snap.$(n)' dataType='integerdata'>
@@ -150,7 +150,7 @@
 
 
          <snaptreelikelihood spec='snap.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate' non-polymorphic='true'>
-            <siteModel spec='sitemodel.SiteModel' id="MutationSiteModel.$(n)">
+            <siteModel spec='beast.base.evolution.sitemodel.SiteModel' id="MutationSiteModel.$(n)">
                 <parameter name='mutationRate' id='mutationRate' value='1.0' estimate='false'/>
                 <parameter name='proportionInvariant' id='proportionInvariant' value='0.0' estimate='false'/>
                 <parameter name='shape' value='2.0' id='shape' estimate='false'/>
@@ -193,7 +193,7 @@
         <log id='TreeHeightLogger' spec='beast.base.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
         <logger spec='Logger' logEvery='1000' fileName='snap.trees' mode='tree'  id='treelog'>  
-	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.base.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
+	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.base.evolution.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
 	            <metadata spec='snap.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
 	        </log>
 		</logger>
@@ -263,7 +263,7 @@
 <!-- Tree initialisation -->
 <!-- Random tree -->
 
-        <subtemplate id='RandomTree' spec='BeautiSubTemplate' class='beast.base.evolution.tree.coalescent.RandomTree' mainid='RandomTree.$(n)'>
+        <subtemplate id='RandomTree' spec='beastfx.app.inputeditor.BeautiSubTemplate' class='beast.base.evolution.tree.coalescent.RandomTree' mainid='RandomTree.$(n)'>
 <![CDATA[
             <tree spec='beast.base.evolution.tree.coalescent.RandomTree' id='RandomTree.$(n)' estimate='false' trait='@datetrait.$(n)'>
                 <taxa spec='Alignment' idref='data'/>
@@ -276,14 +276,14 @@
 
 <!-- Cluster tree (for UPGMA) -->
 
-        <subtemplate id='UPGMATree' spec='BeautiSubTemplate' class='beast.base.evolution.tree.ClusterTree' mainid='UPGMATree.$(n)'>
+        <subtemplate id='UPGMATree' spec='beastfx.app.inputeditor.BeautiSubTemplate' class='beast.base.evolution.tree.ClusterTree' mainid='UPGMATree.$(n)'>
 <![CDATA[
         <tree spec='beast.base.evolution.tree.ClusterTree' id='UPGMATree.$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
 ]]>
         </subtemplate>
 
 <!-- Newick tree -->
-        <subtemplate id='NewickTree' spec='BeautiSubTemplate' class='beast.base.evolution.tree.ClusterTree' mainid='NewickTree.$(n)'>
+        <subtemplate id='NewickTree' spec='beastfx.app.inputeditor.BeautiSubTemplate' class='beast.base.evolution.tree.ClusterTree' mainid='NewickTree.$(n)'>
 <![CDATA[
         <tree spec='beast.base.evolution.tree.TreeParser' id='NewickTree.$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
 ]]>
@@ -416,7 +416,7 @@
         <logger id='screenlog' logEvery="1000">
 	        <!--model idref='posterior'/-->
             <log idref="posterior"/>
-      	    <ESS spec='ESS' name='log' arg="@posterior"/>
+      	    <ESS spec='beast.base.inference.util.ESS' name='log' arg="@posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
         </logger>
