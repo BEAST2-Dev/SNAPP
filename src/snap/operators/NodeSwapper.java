@@ -53,6 +53,7 @@ public class NodeSwapper extends Operator {
 		m_nNodeCount = m_pTree.get().getNodeCount();
 		double hastingsRatio = 1.0;
 		Tree tree = m_pTree.get();
+		tree.startEditing(null);
 		Node [] nodes = tree.getNodesAsArray();
 
 		//First select a triple (x,y,m) where x and y are a random pair of leaves and m is the mrca of x and y.

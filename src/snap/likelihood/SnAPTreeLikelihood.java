@@ -34,6 +34,7 @@ import java.util.Random;
 
 import beastfx.app.beast.BeastMCMC;
 import beastfx.app.beauti.Beauti;
+import beastfx.app.beauti.BeautiTabPane;
 import beast.base.core.Citation;
 import beast.base.core.Description;
 import beast.base.core.Input;
@@ -115,7 +116,7 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	@Override
 	public void initAndValidate() {
-    	if (Beauti.isInBeauti()) {
+    	if (BeautiTabPane.isInBeauti()) {
     		return;
     	}
 		ascSiteCount = ascSiteCountInput.get();
