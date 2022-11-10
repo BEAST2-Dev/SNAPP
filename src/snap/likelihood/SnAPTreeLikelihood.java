@@ -270,8 +270,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	    	
 	    	double u = m_substitutionmodel.m_pU.get().getValue();
 	    	double v  = m_substitutionmodel.m_pV.get().getValue();
+			// boolean useCache = true;
 			boolean useCache = false;
-			//boolean useCache = false;
 			boolean dprint = showPatternLikelihoodsAndQuit.get();
 			if (dprint) {
 				System.out.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);
@@ -443,8 +443,8 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 			Double[] scaledCoalescenceRates = new Double[coalescenceRate.length];
 			double u = m_substitutionmodel.m_pU.get().getValue();
 			double v = m_substitutionmodel.m_pV.get().getValue();
-			boolean useCache = true;
-			// boolean useCache = false;
+			// boolean useCache = true;
+			boolean useCache = false;
 			boolean dprint = showPatternLikelihoodsAndQuit.get();
 			if (dprint) {
 				System.out.println("Log Likelihood Correction = " + m_fLogLikelihoodCorrection);

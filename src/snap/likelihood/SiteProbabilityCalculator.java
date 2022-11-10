@@ -25,6 +25,7 @@
  */
 package snap.likelihood;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import snap.FMatrix;
@@ -117,7 +118,6 @@ public class SiteProbabilityCalculator {
 		
 		
         double[][] conditional = findRootProbabilities(N, u, v, coalescenceRate[rootData.getNr()], dprint);
-
 		//System.err.println("Root theta = "+rootData.gamma());
 		
 
@@ -135,15 +135,20 @@ public class SiteProbabilityCalculator {
             }
         }
 
+        DecimalFormat df = new DecimalFormat("#.#####");
+        final StringBuffer sb = new StringBuffer();
         double sum = 0.0;
         for(int n=1;n<=N;n++) {
             for(int r=0;r<=n;r++) {
+                sb.append(df.format(rootData.getFb().get(n,r) * conditional[n][r]));
+                sb.append(", ");
                 double term =  conditional[n][r] * rootData.getFb().get(n,r);
                 sum += term;
                 if (sum<0.0)
                     System.out.println("Numerical problems");
             }
         }
+        System.out.println(" " + N + " " + u + " " + v + " " + coalescenceRate[rootData.getNr()] + " " + sb.toString() + " " + rootData);
         return sum;
     } // doRootLikelihood
 
@@ -463,6 +468,9 @@ public class SiteProbabilityCalculator {
      */
     void computeSiteLikelihood2(NodeData tree, double u, double v, double rate, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bHasDominantMarkers, boolean dprint/*=false*/) throws Exception {
         //Post-order traversal
+        final DecimalFormat df = new DecimalFormat("#.######");
+        final StringBuffer fbRepresentation = new StringBuffer();
+        final StringBuffer ftRepresentation = new StringBuffer();
         if (tree.isLeaf()) {
             doLeafLikelihood(tree, redCount[tree.getNr()], lineageCount[tree.getNr()], bHasDominantMarkers, dprint);
         } else if (tree.getNrOfChildren() == 1) {
@@ -479,6 +487,29 @@ public class SiteProbabilityCalculator {
             doTopOfBranchLikelihood(rightChild, u, v, rate, coalescenceRate, dprint);
             doInternalLikelihood(leftChild, rightChild, tree, dprint);
         }
+
+        final double[] leafFb = tree.getFb().asVectorCopy();
+        final double[] leafFt = tree.getFt().asVectorCopy();
+        fbRepresentation.append(df.format(leafFb[0]));
+        for (int i = 1; i < leafFb.length; i++) {
+            fbRepresentation.append(",");
+            fbRepresentation.append(df.format(leafFb[i]));
+        }
+        ftRepresentation.append(df.format(leafFt[0]));
+        for (int i = 1; i < leafFt.length; i++) {
+            ftRepresentation.append(",");
+            ftRepresentation.append(df.format(leafFt[i]));
+        }
+
+        String debugOutput;
+        if (tree.isLeaf()) {
+            debugOutput = String.format("node = %d, name = %s, Fb = %s, Ft = %s", tree.getNr(), tree.getID(), fbRepresentation, ftRepresentation);
+        } else if (tree.isRoot()) {
+            debugOutput = String.format("node = %d, left = %d, right = %d, Fb = %s, tree = %s", tree.getNr(), tree.getLeft().getNr(), tree.getRight().getNr(), fbRepresentation, tree.toString());
+        } else {
+            debugOutput = String.format("node = %d, left = %d, right = %d, Fb = %s, Ft = %s", tree.getNr(), tree.getLeft().getNr(), tree.getRight().getNr(), fbRepresentation, ftRepresentation);
+        }
+        System.out.println(debugOutput);
     } // computeSiteLikelihood2
 
     void computeCachedSiteLikelihood2(NodeData tree, double u, double v, double rate, Double [] coalescenceRate, int [] redCount, int [] lineageCount, boolean bHasDominantMarkers, boolean dprint/*=false*/) throws Exception {
