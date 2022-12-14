@@ -116,9 +116,10 @@ public class SnAPTreeLikelihood extends TreeLikelihood {
 	
 	@Override
 	public void initAndValidate() {
-    	if (BeautiTabPane.isInBeauti()) {
-    		return;
-    	}
+		final boolean runningInBeauti = ProgramStatus.name.equals("BEAUti");
+    	if (runningInBeauti) {
+			return;
+		}
 		ascSiteCount = ascSiteCountInput.get();
 		// check that alignment has same taxa as tree
     	if (!(dataInput.get() instanceof Data)) {
