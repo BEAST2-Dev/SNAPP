@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
+import beast.base.core.ProgramStatus;
 import beast.base.core.Input.Validate;
 import beast.base.evolution.alignment.Sequence;
 import beast.base.evolution.alignment.Taxon;
@@ -42,7 +43,7 @@ import beast.base.evolution.datatype.Binary;
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
 import beast.base.evolution.datatype.Nucleotide;
-import beast.base.evolution.datatype.StandardData;
+import beast.base.evolution.datatype.StandardData;import beastfx.app.beauti.Beauti;
 
 
 
@@ -171,6 +172,22 @@ public class Data extends beast.base.evolution.alignment.Alignment {
 			siteWeightsInput.setValue(oldSiteWeights, this);
 		}
 	} // initAndValidate
+	
+	@Override
+	public List<String> getTaxaNames() {
+		if (ProgramStatus.name.equals("BEAUti")) {
+			if (taxaNames == null) {
+				taxaNames = new ArrayList<>();
+			} else {
+				taxaNames.clear();
+			}
+			for (Taxon s : m_taxonsets.get()) {
+				taxaNames.add(s.getID());
+			}
+		}
+		return super.getTaxaNames();
+	}
+	
 	
 	private void determineTotalCount(Sequence sequence, DataType dataType) {
 		if (sequence.totalCountInput.get() > 0) {

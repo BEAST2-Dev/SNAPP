@@ -138,6 +138,7 @@
 	          <parameter name='kappa' id='kappa' value='1.0' lower='0.0' estimate='false'/>
 		      <tree spec='beast.base.evolution.tree.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma' clock.rate="1.0">
 		            <input name='taxa' idref='snap.$(n)'/>
+                    <taxonset spec="TaxonSet" alignment="@snap.$(n)"/>
 		      </tree>
 		      <parameter name='coalescenceRate' id='coalescenceRate' value='10'/>
         </distribution>
