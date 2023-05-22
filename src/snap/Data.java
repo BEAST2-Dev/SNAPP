@@ -36,6 +36,7 @@ import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.ProgramStatus;
 import beast.base.core.Input.Validate;
+import beast.base.core.Log;
 import beast.base.evolution.alignment.Sequence;
 import beast.base.evolution.alignment.Taxon;
 import beast.base.evolution.alignment.TaxonSet;
@@ -125,6 +126,13 @@ public class Data extends beast.base.evolution.alignment.Alignment {
 			} else if (rawDataType instanceof Nucleotide) {
 				// call SNPs by setting first sequence to all zero
 				// any character in subsequent sequences that is not the same will be set to one
+				Log.warning("=====================================================================");
+				Log.warning("WARNING: Calling SNPs by setting the first sequence to be all zero  ");
+				Log.warning("WARNING: This may not be appropriate if your data has more than two ");
+				Log.warning("WARNING: states on a site and the first sequence has a low frequency");
+				Log.warning("WARNING: state.");
+				Log.warning("=====================================================================");
+
 				String refferenceSeq = sequences.get(0).dataInput.get().replaceAll("\\s", "");
 				
 				for(TaxonSet set : m_taxonsets.get()) {
