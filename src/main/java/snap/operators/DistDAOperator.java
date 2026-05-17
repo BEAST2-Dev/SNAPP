@@ -35,7 +35,6 @@ import beast.base.util.Randomizer;
 //import beast.base.core.Input.Validate;
 //import beast.base.inference.parameter.RealParameter;
 //import beast.base.evolution.tree.TreeInterface;
-import static org.apache.commons.math.special.Gamma.logGamma;
 
 
 //Things to measure:

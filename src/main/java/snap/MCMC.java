@@ -59,7 +59,7 @@ public class MCMC extends beast.base.inference.MCMC {
 
 
 	@Override
-	public void run() throws SAXException, IOException, ParserConfigurationException {
+	public void run() throws IOException, SAXException, ParserConfigurationException {
         // initialises log so that log file headers are written, etc.
         for (Logger log : loggersInput.get()) {
             log.init();

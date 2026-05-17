@@ -2,8 +2,7 @@ package snap.util;
 
 import java.util.Vector;
 
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.NormalDistributionImpl;
+import org.apache.commons.statistics.distribution.NormalDistribution;
 
 import beast.base.util.Randomizer;
 
@@ -21,14 +20,14 @@ public class CIRSimulator {
 	static double m_fKappa = 138;
 
 	
-	static double randomNormal(double fMean, double fSigma) throws MathException {
-		NormalDistributionImpl normal = new NormalDistributionImpl(fMean, fSigma);
+	static double randomNormal(double fMean, double fSigma) {
+		NormalDistribution normal = NormalDistribution.of(fMean, fSigma);
 		double p = Randomizer.nextDouble();
 		double x = normal.inverseCumulativeProbability(p);
 		return x;
 	}
 	
-	static double randomGamma(double alpha, double beta) throws MathException {
+	static double randomGamma(double alpha, double beta) {
         if (alpha < 1.0) {
                 double u = Randomizer.nextDouble();
                 double gamma = randomGamma(alpha + 1.0, 1.0);
@@ -56,7 +55,7 @@ public class CIRSimulator {
 //	Generate a normal X  (mean 0, sd 1)
 //	Generate Y with gamma(df-1,2)
 //	return (X + sqrt(nc))^2 + Y
-	static double generateFromNonCentralChiSquare(double df, double nc) throws MathException {
+	static double generateFromNonCentralChiSquare(double df, double nc) {
 //		NormalDistributionImpl normal = new NormalDistributionImpl(0, 1);
 //		double p = Randomizer.nextDouble();
 //		double X = normal.inverseCumulativeProbability(p);
@@ -69,7 +68,7 @@ public class CIRSimulator {
 		return tmp * tmp + Y;
 	}
 	
-	static void generateThetasThroughCIR(Node node, double fParentRate) throws MathException {
+	static void generateThetasThroughCIR(Node node, double fParentRate) {
 		double fRate = 0.0;
 		if (node.isRoot()) {
 			// The stationary distribution (and the distribution of the root theta), is gamma with parameters \alpha, \beta.

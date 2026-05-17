@@ -109,16 +109,16 @@ public class Data extends beast.base.evolution.alignment.Alignment {
 								bFound = true;
 							}
 						}
-						if (!bFound) {
-							String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
-							if (seq != null) {
-								Sequence sequence = new Sequence(taxon.getID(), seq);
-								sequence.totalCountInput.setValue(2, sequence);
-								SNPSequence.m_sequences.setValue(sequence, SNPSequence);
-							} else {
-								throw new IllegalArgumentException("Could not find taxon " + taxon.getID() + " in alignment");
-							}
-						}
+//						if (!bFound) {
+//							String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
+//							if (seq != null) {
+//								Sequence sequence = new Sequence(taxon.getID(), seq);
+//								sequence.totalCountInput.setValue(2, sequence);
+//								SNPSequence.m_sequences.setValue(sequence, SNPSequence);
+//							} else {
+//								throw new IllegalArgumentException("Could not find taxon " + taxon.getID() + " in alignment");
+//							}
+//						}
 					}
 					SNPSequence.initAndValidate();
 					SNPsequences.add(SNPSequence);
@@ -148,15 +148,15 @@ public class Data extends beast.base.evolution.alignment.Alignment {
 								bFound = true;
 							}
 						}
-						if (!bFound) {
-							String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
-							if (seq != null) {
-								Sequence binarySequence = toBinarySequence(taxon.getID(), refferenceSeq, seq);
-								SNPSequence.m_sequences.setValue(binarySequence, SNPSequence);
-							} else {
-								throw new IllegalArgumentException("Could not find taxon " + taxon.getID() + " in alignment");
-							}
-						}
+//						if (!bFound) {
+//							String seq = m_rawData.get().defaultInput.get().get(taxon.getID());
+//							if (seq != null) {
+//								Sequence binarySequence = toBinarySequence(taxon.getID(), refferenceSeq, seq);
+//								SNPSequence.m_sequences.setValue(binarySequence, SNPSequence);
+//							} else {
+//								throw new IllegalArgumentException("Could not find taxon " + taxon.getID() + " in alignment");
+//							}
+//						}
 					}
 					SNPSequence.initAndValidate();
 					SNPsequences.add(SNPSequence);

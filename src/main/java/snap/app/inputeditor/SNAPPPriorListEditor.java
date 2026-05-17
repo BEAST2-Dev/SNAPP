@@ -2,8 +2,6 @@ package snap.app.inputeditor;
 
 import java.util.List;
 
-import javax.swing.Box;
-
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.ListInputEditor;
 import beastfx.app.util.FXUtils;
