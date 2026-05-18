@@ -41,7 +41,7 @@ import snap.Data;
 import snap.NodeData;
 
 public class SnAPLikelihoodCore  {
-    boolean m_bReuseCache = false;
+    public boolean m_bReuseCache = false;
     LineageCountCalculator m_lineageCountCalculator;
     SiteProbabilityCalculator m_siteProbabilityCalculator;
 
