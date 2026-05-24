@@ -29,13 +29,14 @@ package snap.spec.operators;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.inference.Operator;
-import beast.base.inference.parameter.RealParameter;
+import beast.base.spec.domain.PositiveReal;
+import beast.base.spec.inference.parameter.RealVectorParam;
 import beast.base.util.Randomizer;
 
 @Description("Scales single value in gamma parameter.")
 public class GammaMover extends Operator {
-	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate", "population sizes");
-	public Input<Double> m_pScale = new Input<Double>("scale", "scale of move");
+	public Input<RealVectorParam<PositiveReal>> m_coalescenceRate = new Input<>("coalescenceRate", "population sizes");
+	public Input<Double> m_pScale = new Input<>("scale", "scale of move");
 
 	double m_fScale;
 
@@ -46,16 +47,16 @@ public class GammaMover extends Operator {
 	
 	@Override
 	public double proposal() {
-		RealParameter coalescenceRate = m_coalescenceRate.get();
-		int whichNode = Randomizer.nextInt(coalescenceRate.getDimension());
+		RealVectorParam<PositiveReal> coalescenceRate = m_coalescenceRate.get();
+		int whichNode = Randomizer.nextInt(coalescenceRate.size());
 		
 		double scale = Math.exp(m_fScale*(2.0*Randomizer.nextDouble() - 1.0));
-		double newValue = coalescenceRate.getValue(whichNode)*scale;
+		double newValue = coalescenceRate.get(whichNode)*scale;
 		if (newValue < coalescenceRate.getLower() || newValue > coalescenceRate.getUpper()) {
 			return Double.NEGATIVE_INFINITY;
 		}
 
-		coalescenceRate.setValue(whichNode, newValue);
+		coalescenceRate.set(whichNode, newValue);
 		return Math.log(scale);
 	}
 

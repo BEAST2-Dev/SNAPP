@@ -7,15 +7,13 @@ import beastfx.app.inputeditor.ListInputEditor;
 import beastfx.app.util.FXUtils;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
-import snap.likelihood.SnAPPrior;
+import snap.spec.likelihood.SnAPPrior;
 
 public class SNAPPPriorListEditor extends ListInputEditor {
     public SNAPPPriorListEditor() {/*do not use -- here to make module-info compile only*/}
     public SNAPPPriorListEditor(BeautiDoc doc) {
 		super(doc);
 	}
-
-	private static final long serialVersionUID = 1L;
 
     public Class<?> baseType() {
         return SnAPPrior.class;

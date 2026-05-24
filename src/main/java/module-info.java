@@ -10,6 +10,20 @@ module SNAPP {
 
 	requires org.apache.commons.statistics.distribution;
 
+    exports snap;
+    exports snap.spec;
+    exports snap.datatype;
+    exports snap.distribution;
+    exports snap.matrix;
+    exports snap.tree;
+    exports snap.util;
+    exports snap.likelihood;
+    exports snap.spec.likelihood;
+    exports snap.operators;
+    exports snap.spec.operators;
+    exports snap.app.inputeditor;
+
+	
     provides beast.base.core.BEASTInterface with
 			snap.AncestralTreeHeightLogger,
 			snap.CoalescentUnitTreeLogger,
@@ -52,9 +66,11 @@ module SNAPP {
 			snap.spec.operators.ScaleOperator,
 			snap.operators.SubtreeMoveTheta,
 			snap.RateToTheta,
+			snap.spec.RateToTheta,
 			snap.SNPSequence,
 			snap.SubSampledData,
 			snap.ThetaLogger,
+			snap.spec.ThetaLogger,
 			snap.tree.YulePriorOneOnXBirthRatePrior,
 			snap.TreeLengthLogger,
 			snap.TreeNodeLogger,

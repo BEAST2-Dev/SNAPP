@@ -23,13 +23,16 @@ import beast.base.inference.Distribution;
 import beast.base.core.Input;
 import beast.base.inference.MCMC;
 import beast.base.inference.Operator;
-import beast.base.inference.parameter.IntegerParameter;
-import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.CompoundDistribution;
 import beast.base.evolution.alignment.Alignment;
-import beast.base.evolution.likelihood.GenericTreeLikelihood;
-import beast.base.inference.operator.DeltaExchangeOperator;
-import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.spec.domain.Int;
+import beast.base.spec.domain.NonNegativeInt;
+import beast.base.spec.evolution.likelihood.GenericTreeLikelihood;
+import beast.base.spec.inference.operator.DeltaExchangeOperator;
+import beast.base.spec.evolution.sitemodel.SiteModel;
+import beast.base.spec.inference.parameter.IntVectorParam;
+import beast.base.spec.inference.parameter.RealScalarParam;
+import beast.base.spec.type.Tensor;
 import snap.likelihood.SNAPSiteModel;
 
 public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
@@ -45,8 +48,6 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
     }
 
     
-    private static final long serialVersionUID = 1L;
-
     IntegerInputEditor categoryCountEditor;
     TextField categoryCountEntry;
     InputEditor gammaShapeEditor;
@@ -128,13 +129,11 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
         final Input<?> input = sitemodel.gammaCategoryCount;
         categoryCountEditor = new IntegerInputEditor(doc) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
+        	@Override
 			public void validateInput() {
         		super.validateInput();
             	SiteModel sitemodel = (SiteModel) m_beastObject; 
-                if (sitemodel.gammaCategoryCount.get() < 2 && sitemodel.shapeParameterInput.get().isEstimatedInput.get()) {
+                if (sitemodel.gammaCategoryCount.get() < 2 && ((RealScalarParam)sitemodel.shapeParameterInput.get()).isEstimatedInput.get()) {
                 	m_validateLabel.setColor("orange");
                 	m_validateLabel.setTooltip(new Tooltip("shape parameter is estimated, but not used"));
                 	m_validateLabel.setVisible(true);
@@ -170,7 +169,7 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
         String categories = categoryCountEntry.getText();
         try {
             int categoryCount = Integer.parseInt(categories);
-        	RealParameter shapeParameter = ((SiteModel) m_input.get()).shapeParameterInput.get();
+            RealScalarParam shapeParameter = (RealScalarParam)((SiteModel) m_input.get()).shapeParameterInput.get();
             if (!gammaShapeEditor.getComponent().isVisible() && categoryCount >= 2) {
             	// we are flipping from no gamma to gamma heterogeneity accross sites
             	// so set the estimate flag on the shape parameter
@@ -206,7 +205,7 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
  	        	return false;
  	        }
 
- 	       	List<RealParameter> parameters = operator.parameterInput.get();
+ 	       	List<Tensor<?, ?>> parameters = operator.parameterInput.get();
  	    	parameters.clear();
 		   	//String weights = "";
 		    CompoundDistribution likelihood = (CompoundDistribution) doc.pluginmap.get("likelihood");
@@ -222,7 +221,7 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
 	    		}
 	    		if (treelikelihood.siteModelInput.get() instanceof SiteModel) {
 		    		SiteModel siteModel = (SiteModel) treelikelihood.siteModelInput.get();
-		    		RealParameter mutationRate = siteModel.muParameterInput.get();
+		    		RealScalarParam mutationRate = (RealScalarParam) siteModel.muParameterInput.get();
 		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
 		    		if (mutationRate.isEstimatedInput.get()) {
 		    			hasOneEstimatedRate = true;
@@ -239,15 +238,15 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
 	    	}
 			
 			
-		    IntegerParameter weightParameter;
+		    IntVectorParam<Int> weightParameter;
 			if (weights.size() == 0) {
-		    	weightParameter = new IntegerParameter();
+		    	weightParameter = new IntVectorParam();
 			} else {
-				String weightString = "";
-				for (int k : weights) {
-					weightString += k + " ";
+				int [] values = new int[weights.size()];
+				for (int i = 0; i < values.length; i++) {
+					values[i] = weights.get(i);
 				}
-		    	weightParameter = new IntegerParameter(weightString);
+		    	weightParameter = new IntVectorParam<Int>(values, NonNegativeInt.INSTANCE);
 				weightParameter.setID("weightparameter");
 				
 			}
@@ -278,13 +277,13 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
     				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
     	    		if (treelikelihood.siteModelInput.get() instanceof SiteModel) {
     		    		SiteModel siteModel = (SiteModel) treelikelihood.siteModelInput.get();
-    		    		RealParameter mutationRate = siteModel.muParameterInput.get();
+    		    		RealScalarParam mutationRate = (RealScalarParam) siteModel.muParameterInput.get();
     		    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
     		    		if (mutationRate.isEstimatedInput.get()) {
     		    			if (commonClockRate < 0) {
-    		    				commonClockRate = mutationRate.valuesInput.get().get(0);
+    		    				commonClockRate = mutationRate.get(0);
     		    			} else {
-    		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
+    		    				if (Math.abs(commonClockRate - mutationRate.get(0)) > 1e-10) {
     		    					isAllClocksAreEqual = false;
     		    				}
     		    			}
@@ -296,7 +295,7 @@ public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
     			
     		}
    		
-    		List<RealParameter> parameters = operator.parameterInput.get();
+    		List<Tensor<?,?>> parameters = operator.parameterInput.get();
 	    	if (!fixMeanRatesCheckBox.isSelected()) {
 	    		fixMeanRatesValidateLabel.setVisible(false);
 				repaint();

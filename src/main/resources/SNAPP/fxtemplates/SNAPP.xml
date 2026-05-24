@@ -14,7 +14,7 @@
             beast.base.inference.parameter.IntegerParameter.estimate=Sample,
             beast.base.inference.parameter.BooleanParameter.estimate=Sample,
 	        snap.MCMC.preBurnin=Burn in,
-			snap.likelihood.SnAPTreeLikelihood.non-polymorphic=Include non-polymorphic sites'
+			snap.spec.likelihood.SnAPTreeLikelihood.non-polymorphic=Include non-polymorphic sites'
         inlinePlugins ='beast.base.inference.MCMC.distribution,
 	        beast.base.inference.MCMC.logger,
 	        beast.base.evolution.sitemodel.SiteModel.substModel,
@@ -29,8 +29,8 @@
 	        beast.base.inference.MCMC.init,
 	        beast.base.inference.MCMC.sampleFromPrior,
 	        beast.base.inference.MCMC.operatorschedule,
-	        snap.likelihood.SnAPPrior.tree,
-	        snap.likelihood.SnapSubstitutionModel.frequencies,
+	        snap.spec.likelihood.SnAPPrior.tree,
+	        snap.spec.likelihood.SnapSubstitutionModel.frequencies,
 			beast.base.inference.Logger.sanitiseHeaders,
 			beast.base.inference.Logger.sort,
             beast.base.evolution.sitemodel.SiteModel.mutationRate,
@@ -54,21 +54,21 @@
             beast.base.inference.distribution.Prior.x,
             beast.base.inference.Logger.model,
             beast.base.inference.Logger.mode,
-            snap.likelihood.SnAPTreeLikelihood.data,
-            snap.likelihood.SnAPTreeLikelihood.scaling,
-            snap.likelihood.SnAPTreeLikelihood.siteModel,
-            snap.likelihood.SnAPTreeLikelihood.branchRateModel,
-            snap.likelihood.SnAPTreeLikelihood.initFromTree,
-            snap.likelihood.SnAPTreeLikelihood.pattern,
-            snap.likelihood.SnAPTreeLikelihood.useTipDates,
-            snap.likelihood.SnAPTreeLikelihood.useAmbiguities,
-            snap.likelihood.SnAPTreeLikelihood.tree,
-            snap.likelihood.SnAPTreeLikelihood.dominant,
-            snap.likelihood.SnAPTreeLikelihood.ascSiteCount,
-            snap.likelihood.SnAPTreeLikelihood.totalSiteCount,
-            snap.likelihood.SnAPTreeLikelihood.useTipLikelihoods,
-            snap.likelihood.SnAPTreeLikelihood.implementation,
-            snap.likelihood.SnAPPrior.coalescenceRate
+            snap.spec.likelihood.SnAPTreeLikelihood.data,
+            snap.spec.likelihood.SnAPTreeLikelihood.scaling,
+            snap.spec.likelihood.SnAPTreeLikelihood.siteModel,
+            snap.spec.likelihood.SnAPTreeLikelihood.branchRateModel,
+            snap.spec.likelihood.SnAPTreeLikelihood.initFromTree,
+            snap.spec.likelihood.SnAPTreeLikelihood.pattern,
+            snap.spec.likelihood.SnAPTreeLikelihood.useTipDates,
+            snap.spec.likelihood.SnAPTreeLikelihood.useAmbiguities,
+            snap.spec.likelihood.SnAPTreeLikelihood.tree,
+            snap.spec.likelihood.SnAPTreeLikelihood.dominant,
+            snap.spec.likelihood.SnAPTreeLikelihood.ascSiteCount,
+            snap.spec.likelihood.SnAPTreeLikelihood.totalSiteCount,
+            snap.spec.likelihood.SnAPTreeLikelihood.useTipLikelihoods,
+            snap.spec.likelihood.SnAPTreeLikelihood.implementation,
+            snap.spec.likelihood.SnAPPrior.coalescenceRate
 '
         buttonLabelMap='beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters,
             beast.app.beauti.BeautiInitDlg.Create new specification=Import alignment(s),
@@ -96,7 +96,7 @@
 		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Model Parameters" tiptext="Specification of model parameters"
             path='distribution/distribution[id="likelihood"]/distribution'
             hasPartitions="none" icon='4.png' forceExpansion='TRUE'
-            buttonStatus='NONE' type='snap.likelihood.SnAPTreeLikelihood'
+            buttonStatus='NONE' type='snap.spec.likelihood.SnAPTreeLikelihood'
         />
 <!--
 		<panel spec='beastfx.app.inputeditor.BeautiPanelConfig' panelname="Mutation Model" tiptext="Mutation model specification"
@@ -154,7 +154,7 @@
             <siteModel spec='beast.base.spec.evolution.sitemodel.SiteModel' id="MutationSiteModel.$(n)">
 				<proportionInvariant spec="beast.base.spec.inference.parameter.RealScalarParam" domain="UnitInterval" id='proportionInvariant' value='0.0' estimate='false'/>
                 <mutationRate        spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='mutationRate' value='1.0' estimate='false'/>
-                <shape               spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='gammaShape' value='1.0' estimate='false'/>
+                <shape               spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='shape' value='1.0' estimate='false'/>
                 <substModel spec='snap.spec.likelihood.SnapSubstitutionModel' id='MutationModel' coalescenceRate='@coalescenceRate'>
 					  <mutationRateV spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='v' value='1.0' estimate='true'/>
 					  <mutationRateU spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='u' value='1.0' estimate='true'/>
@@ -167,31 +167,30 @@
 
         <operator id='NodeSwapper' spec='snap.operators.NodeSwapper' weight='0.5' tree='@Tree.$(n)'/>
         <operator id='NodeBudger' spec='snap.operators.NodeBudger' weight='0.5' size='0.5' tree='@Tree.$(n)'/>
-        <operator id='TreeScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@Tree.$(n)'/>
+		<operator id="TreeScaler" spec="beast.base.spec.evolution.operator.UpDownOperator" up="@Tree.$(n)" weight="0.5" scaleFactor="0.1"/>
+        <operator id='TreeRootScaler' spec='kernel.BactrianScaleOperator' scaleFactor="0.5" weight="0.1" tree="@Tree.$(n)" rootOnly='true'/>
         <operator id='GammaMover' spec='snap.spec.operators.GammaMover' scale='0.5' weight='8' coalescenceRate='@coalescenceRate'/>
         <operator id='RateMixer' spec='snap.spec.operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@Tree.$(n)' />
-
-        <!--operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="3" parameter='@birthRate'/-->
 
 
         <operator id='MutationMover' spec='snap.spec.operators.MutationMover' window="0.1" weight="1" u='@u' v='@v'/>
 
-        <operator id='alphaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@alpha'/>
-        <operator id='betaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@beta'/>
-        <operator id='lambdaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@lambda'/>
-        <operator id='kappaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@kappa'/>
+        <operator id='alphaScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@alpha'/>
+        <operator id='betaScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@beta'/>
+        <operator id='lambdaScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@lambda'/>
+        <operator id='kappaScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@kappa'/>
 
-        <operator id='mutationRateScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@mutationRate'/>
-        <operator id='propInvariantScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@proportionInvariant'/>
-        <operator id='gammaShapeScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@shape'/>
+        <operator id='mutationRateScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@mutationRate'/>
+        <operator id='propInvariantScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@proportionInvariant'/>
+        <operator id='gammaShapeScaler' spec='beast.base.spec.inference.operator.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@shape'/>
 
 
         <log id='ThetaLogger' spec='snap.spec.ThetaLogger' coalescenceRate='@coalescenceRate'/>
-        <log id='TreeHeightLogger' spec='beast.base.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
+        <log id='TreeStatLogger' spec='beast.base.evolution.tree.TreeStatLogger' tree='@Tree.$(n)'/>
 
         <logger spec='Logger' logEvery='1000' fileName='snap.trees' mode='tree'  id='treelog'>  
 	        <log id='TreeWithMetaDataLogger.$(n)' spec='beast.base.evolution.TreeWithMetaDataLogger' tree='@Tree.$(n)'>
-	            <metadata spec='snap.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
+	            <metadata spec='snap.spec.RateToTheta' id='theta' coalescenceRate='@coalescenceRate'/>
 	        </log>
 		</logger>
 
@@ -202,6 +201,7 @@
             <connect spec='BeautiConnector' srcID='NodeSwapper' targetID='mcmc' inputName='operator'>swaps nodes in tree</connect>
             <connect spec='BeautiConnector' srcID='NodeBudger' targetID='mcmc' inputName='operator'>moves node in tree</connect>
             <connect spec='BeautiConnector' srcID='TreeScaler' targetID='mcmc' inputName='operator'>scale the tree</connect>
+            <connect spec='BeautiConnector' srcID='TreeRootScaler' targetID='mcmc' inputName='operator'>scale the root of the tree</connect>
             <connect spec='BeautiConnector' srcID='GammaMover' targetID='mcmc' inputName='operator' if='coalescenceRate/estimate=true'>moves a coalescent rate</connect>
             <connect spec='BeautiConnector' srcID='RateMixer' targetID='mcmc' inputName='operator' if='coalescenceRate/estimate=true'>moves both coalescent rates and tree</connect>
 
@@ -240,7 +240,7 @@
             <connect spec='BeautiConnector' srcID='coalescenceRate' targetID='tracelog' inputName='log'/>
 -->
             <connect spec='BeautiConnector' srcID='ThetaLogger' targetID='tracelog' inputName='log'/>
-            <connect spec='BeautiConnector' srcID='TreeHeightLogger' targetID='tracelog' inputName='log'/>
+            <connect spec='BeautiConnector' srcID='TreeStatLogger' targetID='tracelog' inputName='log'/>
 
             <connect spec='BeautiConnector' srcID='snapprior.$(n)' targetID='prior' inputName='distribution'/>
             <connect spec='BeautiConnector' srcID='alphaPrior.$(n)' targetID='prior' inputName='distribution' if='alpha/estimate=true'/>

@@ -76,7 +76,7 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             <log idref="normalised.Likelihood"/>
             <log idref="normalised.Posterior"/>
     	    <log idref='ascSiteCount'/>
-	        <!--log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree'/-->
+	        <!--log spec='beast.base.evolution.tree.TreeStatLogger' tree='@tree'/-->
         </logger>
         <logger logEvery="1000" fileName="testAsc.log">
 	        <model idref='posterior'/>
@@ -89,8 +89,8 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
             <log idref="posterior"/>
     	    <log idref='coalescenceRate'/>
     	    <log spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
-	        <log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree'/>
-    	    <log spec='TreeLengthLogger' tree='@tree'/>
+	        <log spec='beast.base.evolution.tree.TreeStatLogger' tree='@tree'/>
+    	    
     	    <log idref='ascSiteCount'/>
         </logger>
         <logger logEvery="1000" fileName="testAsc.trees" mode='tree'>

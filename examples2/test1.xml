@@ -140,10 +140,10 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    <log spec='snap.ThetaLogger'>
 	        	<coalescenceRate idref='coalescenceRate'/>
     	    </log>
-	        <log spec='beast.base.evolution.tree.TreeHeightLogger'>
-	        	<tree idref='tree'/>
+    	    <log spec='beast.base.evolution.tree.TreeStatLogger'>
+        		<tree idref='tree'/>
     	    </log>
-        </logger>
+	        </logger>
         <logger logEvery="100" fileName="test.$(seed).log">
 	        <model idref='posterior'/>
             <parameter name='log' idref="u"/>
@@ -155,11 +155,8 @@ u=v=1.0 alpha=2, beta=0.2 lambda=10
     	    <log spec='snap.ThetaLogger'>
         		<coalescenceRate idref='coalescenceRate'/>
     	    </log>
-    	    <log spec='beast.base.evolution.tree.TreeHeightLogger'>
+    	    <log spec='beast.base.evolution.tree.TreeStatLogger'>
         		<tree idref='tree'/>
-    	    </log>
-    	    <log spec='TreeLengthLogger'>
-	        	<tree idref='tree'/>
     	    </log>
         </logger>
         <logger logEvery="1000" fileName="test.$(seed).trees" mode='tree'>

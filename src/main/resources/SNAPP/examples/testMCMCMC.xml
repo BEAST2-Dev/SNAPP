@@ -140,7 +140,7 @@ name="rawdata">
         <log idref="likelihood"/>
         <log idref="prior"/>
         <log id="ThetaLogger" spec="snap.ThetaLogger" coalescenceRate="@coalescenceRate"/>
-        <log id="TreeHeightLogger" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.aflp_25"/>
+        <log id="TreeStatLogger" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.aflp_25"/>
     </logger>
 
     <logger id="screenlog" logEvery="10">

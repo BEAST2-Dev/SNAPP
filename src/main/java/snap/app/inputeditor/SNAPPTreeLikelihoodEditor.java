@@ -13,19 +13,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
-import beast.base.inference.parameter.RealParameter;
-import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.spec.domain.PositiveReal;
+import beast.base.spec.evolution.sitemodel.SiteModel;
+import beast.base.spec.inference.parameter.RealScalarParam;
 import snap.Data;
-import snap.likelihood.SnAPTreeLikelihood;
-import snap.likelihood.SnapSubstitutionModel;
+import snap.spec.likelihood.SnAPTreeLikelihood;
+import snap.spec.likelihood.SnapSubstitutionModel;
 
 public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     public SNAPPTreeLikelihoodEditor() {/*do not use -- here to make module-info compile only*/}
     public SNAPPTreeLikelihoodEditor(BeautiDoc doc) {
 		super(doc);
 	}
-
-	private static final long serialVersionUID = 1L;
 
     public Class<?> baseType() {
         return SnAPTreeLikelihood.class;
@@ -69,9 +68,9 @@ public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
     	double proportionZeros = data.getProportionZeros();
     	double muU = 1 / (2.0 * (1.0 - proportionZeros));
     	double muV = 1 / (2.0 * proportionZeros);
-    	RealParameter pU = substModel.m_pU.get();
+    	RealScalarParam<PositiveReal> pU = (RealScalarParam) substModel.m_pU.get();
     	pU.valuesInput.setValue(muU + "", pU);
-    	RealParameter pV = substModel.m_pV.get();
+    	RealScalarParam<PositiveReal> pV = (RealScalarParam) substModel.m_pV.get();
     	pV.valuesInput.setValue(muV + "", pV);
     	refreshPanel();
 		return null;
