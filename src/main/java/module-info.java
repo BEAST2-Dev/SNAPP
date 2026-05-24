@@ -20,9 +20,12 @@ module SNAPP {
 			snap.likelihood.NormalisedDistributionLogger,
 			snap.likelihood.RatePrior,
 			snap.likelihood.SnAPPrior,
+			snap.spec.likelihood.SnAPPrior,
 			snap.likelihood.SNAPSiteModel,
 			snap.likelihood.SnapSubstitutionModel,
+			snap.spec.likelihood.SnapSubstitutionModel,
 			snap.likelihood.SnAPTreeLikelihood,
+			snap.spec.likelihood.SnAPTreeLikelihood,
 			snap.likelihood.ThresholdTreeLikelihood,
 			snap.MCMC,
 			snap.ML,
@@ -36,13 +39,17 @@ module SNAPP {
 			snap.operators.DistDAOperator,
 			snap.operators.GammaMoveAll,
 			snap.operators.GammaMover,
+			snap.spec.operators.GammaMover,
 			snap.operators.MergeSplitSpeciesTree,
 			snap.operators.MutationMover,
+			snap.spec.operators.MutationMover,
 			snap.operators.NodeBudger,
 			snap.operators.NodeSwapper,
 			snap.operators.RateMixer,
+			snap.spec.operators.RateMixer,
 			snap.operators.RootGammaMover,
 			snap.operators.ScaleOperator,
+			snap.spec.operators.ScaleOperator,
 			snap.operators.SubtreeMoveTheta,
 			snap.RateToTheta,
 			snap.SNPSequence,
@@ -61,10 +68,10 @@ module SNAPP {
      provides beast.base.evolution.datatype.DataType with
 			snap.datatype.IntegerData2;
 
-//    provides beastfx.app.inputeditor.InputEditor  with
-//			snap.app.inputeditor.DataInputEditor,
-//			snap.app.inputeditor.SNAPPPriorListEditor,
-//			snap.app.inputeditor.SNAPPSubstitutionModelInputEditor,
-//			snap.app.inputeditor.SNAPPTreeLikelihoodEditor,
-//			snap.app.inputeditor.SNAPSiteModelInputEditor;
+     provides beastfx.app.inputeditor.InputEditor with
+			snap.app.inputeditor.DataInputEditor,
+			snap.app.inputeditor.SNAPPPriorListEditor,
+			snap.app.inputeditor.SNAPPSubstitutionModelInputEditor,
+			snap.app.inputeditor.SNAPPTreeLikelihoodEditor,
+			snap.app.inputeditor.SNAPSiteModelInputEditor;
 }

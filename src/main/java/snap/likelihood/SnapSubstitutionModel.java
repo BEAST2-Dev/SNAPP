@@ -9,6 +9,10 @@ import beast.base.evolution.substitutionmodel.EigenDecomposition;
 import beast.base.evolution.substitutionmodel.SubstitutionModel;
 import beast.base.evolution.tree.Node;
 
+/**
+ * @deprecated use snap.spec.likelihood.SnapSubstitutionModel instead
+ */
+@Deprecated
 public class SnapSubstitutionModel extends SubstitutionModel.Base {
 	public Input<RealParameter> m_pU = new Input<RealParameter>("mutationRateU", "Instantaneous rate of mutating from the 0 allele to the 1 alelle");
 	public Input<RealParameter> m_pV = new Input<RealParameter>("mutationRateV", "Instantaneous rate of mutating from the 1 allele to the 0 alelle");

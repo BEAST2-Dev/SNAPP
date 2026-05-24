@@ -32,9 +32,6 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
-import beastfx.app.beast.BeastMCMC;
-import beastfx.app.beauti.Beauti;
-import beastfx.app.beauti.BeautiTabPane;
 import beast.base.core.Citation;
 import beast.base.core.Description;
 import beast.base.core.Input;
@@ -49,13 +46,16 @@ import beast.base.evolution.sitemodel.SiteModel;
 import beast.base.evolution.tree.TreeInterface;
 import snap.Data;
 import snap.NodeData;
-import snap.likelihood.SnAPLikelihoodCore;
 
 
 @Description("Implements a tree Likelihood Function for Single Site Sorted-sequences on a tree.") 
 
 @Citation(value="David Bryant, Remco Bouckaert, Joseph Felsenstein, Noah Rosenberg, Arindam RoyChoudhury. Inferring Species Trees Directly from Biallelic Genetic Markers: Bypassing Gene Trees in a Full Coalescent Analysis. Mol. Biol. Evol. 29(8):1917-1932, 2012", 
 	DOI="10.1093/molbev/mss086")
+/**
+ * @deprecated use snap.spec.likelihood.SnAPTreeLikelihood instead
+ */
+@Deprecated
 public class SnAPTreeLikelihood extends TreeLikelihood {
 //	public Input<Data> m_pData = new Input<Data>("data", "set of alignments");
 //	public Input<Tree> m_pTree = new Input<Tree>("tree", "tree with phylogenetic relations");

@@ -10,6 +10,7 @@ import beast.base.core.Input;
 import snap.likelihood.SnAPPrior;
 
 public class SNAPPPriorListEditor extends ListInputEditor {
+    public SNAPPPriorListEditor() {/*do not use -- here to make module-info compile only*/}
     public SNAPPPriorListEditor(BeautiDoc doc) {
 		super(doc);
 	}

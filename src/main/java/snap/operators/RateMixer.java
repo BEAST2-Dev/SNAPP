@@ -34,6 +34,10 @@ import beast.base.evolution.tree.Tree;
 import beast.base.util.Randomizer;
 
 @Description("Moves length of branch and coalescence rate of branch in the opposit direction.")
+/**
+ * @deprecated use snap.spec.operators.RateMixer instead
+ */
+@Deprecated
 public class RateMixer extends Operator {
 
 	public Input<Double> m_pScale = new Input<Double>("scaleFactors", "scaling factor: larger means more bold proposals");

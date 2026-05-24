@@ -33,6 +33,7 @@ import beast.base.evolution.sitemodel.SiteModel;
 import snap.likelihood.SNAPSiteModel;
 
 public class SNAPSiteModelInputEditor extends SiteModelInputEditor {
+    public SNAPSiteModelInputEditor() {/*do not use -- here to make module-info compile only*/}
 
 	public SNAPSiteModelInputEditor(BeautiDoc doc) {
 		super(doc);

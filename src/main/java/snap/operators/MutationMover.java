@@ -31,6 +31,10 @@ import beast.base.util.Randomizer;
 
  */
 @Description("Operation that moves both U and V frequency parameters without changing the average rate")
+/**
+ * @deprecated use snap.spec.operators.MutationMover instead
+ */
+@Deprecated
 public class MutationMover extends Operator {
 	public Input<RealParameter> m_u = new Input<RealParameter>("u","frequency of the number of reds", Validate.REQUIRED); 
 	public Input<RealParameter> m_v = new Input<RealParameter>("v","frequency of the number of greens", Validate.REQUIRED); 

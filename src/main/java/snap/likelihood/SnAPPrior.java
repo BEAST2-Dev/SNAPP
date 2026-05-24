@@ -47,6 +47,10 @@ import beast.base.evolution.tree.Tree;
         "and gamma distribution over the theta values " +
         "(with parameters alpha and beta). " +
         "Thetas are represented by the coalescenceRate parameter where values are theta=2/coalescenceRate")
+/**
+ * @deprecated use snap.spec.likelihood.SnAPPrior instead
+ */
+@Deprecated
 public class SnAPPrior extends Distribution {
     public Input<RealParameter> m_pAlpha = new Input<RealParameter>("alpha", "Alpha parameter for the gamma prior on population size (theta) values", Validate.REQUIRED);
     public Input<RealParameter> m_pBeta = new Input<RealParameter>("beta", "Beta parameter for the gamma prior on population size (theta) values", Validate.REQUIRED);

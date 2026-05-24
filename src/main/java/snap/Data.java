@@ -44,7 +44,7 @@ import beast.base.evolution.datatype.Binary;
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
 import beast.base.evolution.datatype.Nucleotide;
-import beast.base.evolution.datatype.StandardData;import beastfx.app.beauti.Beauti;
+import beast.base.evolution.datatype.StandardData;
 
 
 

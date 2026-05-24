@@ -32,6 +32,10 @@ import beast.base.evolution.tree.Tree;
 import beast.base.util.Randomizer;
 
 @Description("Scales a parameter or a complete beast.tree (depending on which of the two is specified.")
+/**
+ * @deprecated use snap.spec.operators.ScaleOperator instead
+ */
+@Deprecated
 public class ScaleOperator extends Operator {
 
     public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");

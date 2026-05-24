@@ -23,7 +23,7 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
-package snap.operators;
+package snap.spec.operators;
 
 
 import beast.base.core.Description;
@@ -33,10 +33,6 @@ import beast.base.inference.parameter.RealParameter;
 import beast.base.util.Randomizer;
 
 @Description("Scales single value in gamma parameter.")
-/**
- * @deprecated use snap.spec.operators.GammaMover instead
- */
-@Deprecated
 public class GammaMover extends Operator {
 	public Input<RealParameter> m_coalescenceRate = new Input<RealParameter>("coalescenceRate", "population sizes");
 	public Input<Double> m_pScale = new Input<Double>("scale", "scale of move");

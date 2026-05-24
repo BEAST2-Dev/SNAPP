@@ -124,40 +124,40 @@
 		<alignmentProvider id="Add Alignment" spec='beastfx.app.inputeditor.BeautiAlignmentProvider' template='@SNAPPPartitionTemplate'/>
 
 
-        <partitiontemplate id='SNAPPPartitionTemplate' spec='beastfx.app.inputeditor.BeautiSubTemplate' class='beast.base.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+        <partitiontemplate id='SNAPPPartitionTemplate' spec='beastfx.app.inputeditor.BeautiSubTemplate' class='beast.base.spec.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
         <data spec='snap.Data' id='snap.$(n)' dataType='integerdata'>
             <rawdata idref='$(n)'/>
         </data>
 
-        <distribution spec='snap.likelihood.SnAPPrior' name='distribution' id='snapprior.$(n)' rateprior='gamma'>
-			  <parameter name='alpha' id='alpha'  value='11.750' lower='0.0' estimate='false'/>
-			  <parameter name='beta' id='beta'   value='109.73' lower='0.0' estimate='false'/>
-			  <parameter name='lambda' id='lambda' value='0.01' lower='0.0' estimate='true'/>
-	          <parameter name='kappa' id='kappa' value='1.0' lower='0.0' estimate='false'/>
+        <distribution spec='snap.spec.likelihood.SnAPPrior' name='distribution' id='snapprior.$(n)' rateprior='gamma'>
+			  <alpha spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='alpha'  value='11.750' estimate='false'/>
+			  <beta  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='beta'   value='109.73' estimate='false'/>
+			  <lambda spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='lambda' value='0.01' estimate='true'/>
+	          <kappa spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='kappa' value='1.0' estimate='false'/>
 		      <tree spec='beast.base.evolution.tree.ClusterTree' id='Tree.$(n)' nodetype='snap.NodeData' clusterType='upgma' clock.rate="1.0">
 		            <input name='taxa' idref='snap.$(n)'/>
                     <taxonset spec="TaxonSet" alignment="@snap.$(n)"/>
 		      </tree>
-		      <parameter name='coalescenceRate' id='coalescenceRate' value='10'/>
+		      <coalescenceRate id='coalescenceRate' spec="beast.base.spec.inference.parameter.RealVectorParam" domain="PositiveReal" value='10'/>
         </distribution>
-        <distribution id='alphaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@alpha'><distr spec='OneOnX'/></distribution>
-        <distribution id='betaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@beta'><distr spec='OneOnX'/></distribution>
-        <distribution id='lambdaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@lambda'><distr spec='OneOnX'/></distribution>
-        <distribution id='kappaPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@kappa'><distr spec='OneOnX'/></distribution>
-        <distribution id='uPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@u'><distr spec='OneOnX'/></distribution>
-        <distribution id='vPrior.$(n)' spec='beast.base.inference.distribution.Prior' x='@v'><distr spec='OneOnX'/></distribution>
+        
+        <distribution id='alphaPrior.$(n)'  spec="beast.base.spec.inference.distribution.LogUniform" param="@alpha" upper="1e6"/>
+        <distribution id='betaPrior.$(n)'   spec="beast.base.spec.inference.distribution.LogUniform" param="@beta" upper="1e6"/>
+        <distribution id='lambdaPrior.$(n)' spec="beast.base.spec.inference.distribution.LogUniform" param="@lambda" upper="1e6"/>
+        <distribution id='kappaPrior.$(n)'  spec="beast.base.spec.inference.distribution.LogUniform" param="@kappa" upper="1e6"/>
+        <distribution id='uPrior.$(n)'      spec="beast.base.spec.inference.distribution.LogUniform" param="@u" upper="1e6"/>
+        <distribution id='vPrior.$(n)'      spec="beast.base.spec.inference.distribution.LogUniform" param="@v" upper="1e6"/>
 
-
-         <snaptreelikelihood spec='snap.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate' non-polymorphic='true'>
-            <siteModel spec='beast.base.evolution.sitemodel.SiteModel' id="MutationSiteModel.$(n)">
-                <parameter name='mutationRate' id='mutationRate' value='1.0' estimate='false'/>
-                <parameter name='proportionInvariant' id='proportionInvariant' value='0.0' estimate='false'/>
-                <parameter name='shape' value='2.0' id='shape' estimate='false'/>
-                <substModel spec='snap.likelihood.SnapSubstitutionModel' id='MutationModel' coalescenceRate='@coalescenceRate'>
-					  <parameter name='mutationRateV' id='v' value='1.0' lower='0.0' estimate='true'/>
-					  <parameter name='mutationRateU' id='u' value='1.0' lower='0.0' estimate='true'/>
+         <snaptreelikelihood spec='snap.spec.likelihood.SnAPTreeLikelihood' name='distribution' id='treeLikelihood.$(n)' initFromTree='false' pattern='coalescenceRate' non-polymorphic='true'>
+            <siteModel spec='beast.base.spec.evolution.sitemodel.SiteModel' id="MutationSiteModel.$(n)">
+				<proportionInvariant spec="beast.base.spec.inference.parameter.RealScalarParam" domain="UnitInterval" id='proportionInvariant' value='0.0' estimate='false'/>
+                <mutationRate        spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='mutationRate' value='1.0' estimate='false'/>
+                <shape               spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='gammaShape' value='1.0' estimate='false'/>
+                <substModel spec='snap.spec.likelihood.SnapSubstitutionModel' id='MutationModel' coalescenceRate='@coalescenceRate'>
+					  <mutationRateV spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='v' value='1.0' estimate='true'/>
+					  <mutationRateU spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" id='u' value='1.0' estimate='true'/>
                 </substModel>
             </siteModel>
             <data idref='snap.$(n)'/>
@@ -167,30 +167,26 @@
 
         <operator id='NodeSwapper' spec='snap.operators.NodeSwapper' weight='0.5' tree='@Tree.$(n)'/>
         <operator id='NodeBudger' spec='snap.operators.NodeBudger' weight='0.5' size='0.5' tree='@Tree.$(n)'/>
-        <operator id='TreeScaler' spec='snap.operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@Tree.$(n)'/>
-        <operator id='GammaMover' spec='snap.operators.GammaMover' scale='0.5' weight='8' coalescenceRate='@coalescenceRate'/>
-        <operator id='RateMixer' spec='snap.operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@Tree.$(n)' />
+        <operator id='TreeScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor='0.25' weight='0.5' tree='@Tree.$(n)'/>
+        <operator id='GammaMover' spec='snap.spec.operators.GammaMover' scale='0.5' weight='8' coalescenceRate='@coalescenceRate'/>
+        <operator id='RateMixer' spec='snap.spec.operators.RateMixer' scaleFactors='0.25' weight='1' coalescenceRate='@coalescenceRate' tree='@Tree.$(n)' />
 
         <!--operator spec='operators.ScaleOperator' scaleFactor="0.75" weight="3" parameter='@birthRate'/-->
 
 
-        <operator id='MutationMover' spec='snap.operators.MutationMover' window="0.1" weight="1" u='@u' v='@v'/>
-<!--
-        <operator id='uScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@u'/>
-        <operator id='vScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@v'/>
--->
+        <operator id='MutationMover' spec='snap.spec.operators.MutationMover' window="0.1" weight="1" u='@u' v='@v'/>
 
-        <operator id='alphaScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@alpha'/>
-        <operator id='betaScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@beta'/>
-        <operator id='lambdaScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@lambda'/>
-        <operator id='kappaScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@kappa'/>
+        <operator id='alphaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@alpha'/>
+        <operator id='betaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@beta'/>
+        <operator id='lambdaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@lambda'/>
+        <operator id='kappaScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@kappa'/>
 
-        <operator id='mutationRateScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@mutationRate'/>
-        <operator id='propInvariantScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@proportionInvariant'/>
-        <operator id='gammaShapeScaler' spec='snap.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@shape'/>
+        <operator id='mutationRateScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@mutationRate'/>
+        <operator id='propInvariantScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@proportionInvariant'/>
+        <operator id='gammaShapeScaler' spec='snap.spec.operators.ScaleOperator' scaleFactor="0.75" weight="1" parameter='@shape'/>
 
 
-        <log id='ThetaLogger' spec='snap.ThetaLogger' coalescenceRate='@coalescenceRate'/>
+        <log id='ThetaLogger' spec='snap.spec.ThetaLogger' coalescenceRate='@coalescenceRate'/>
         <log id='TreeHeightLogger' spec='beast.base.evolution.tree.TreeHeightLogger' tree='@Tree.$(n)'/>
 
         <logger spec='Logger' logEvery='1000' fileName='snap.trees' mode='tree'  id='treelog'>  

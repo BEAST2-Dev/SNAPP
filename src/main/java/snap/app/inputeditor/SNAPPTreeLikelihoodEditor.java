@@ -20,6 +20,7 @@ import snap.likelihood.SnAPTreeLikelihood;
 import snap.likelihood.SnapSubstitutionModel;
 
 public class SNAPPTreeLikelihoodEditor extends ListInputEditor {
+    public SNAPPTreeLikelihoodEditor() {/*do not use -- here to make module-info compile only*/}
     public SNAPPTreeLikelihoodEditor(BeautiDoc doc) {
 		super(doc);
 	}

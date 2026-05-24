@@ -41,6 +41,7 @@ import beast.base.evolution.datatype.Nucleotide;
 
 
 public class DataInputEditor extends InputEditor.Base {
+    public DataInputEditor() {/*do not use -- here to make module-info compile only*/}
 	public DataInputEditor(BeautiDoc doc) {
 		super(doc);
 	}
